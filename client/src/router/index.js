@@ -4,7 +4,6 @@ import Router from 'vue-router';
 
 import 'vuesax/dist/vuesax.css';
 import 'material-icons/iconfont/material-icons.css';
-
 import LoginPage from './../pages/LoginPage';
 
 Vue.use(Router);

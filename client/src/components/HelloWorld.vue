@@ -1,6 +1,6 @@
 <template>
   <vs-row>
-    <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-w="2">
+    <vs-col vs-type="flex" vs-justify="center" vs-align="center" vs-w="12">
       <vs-card>
         <div slot="header">
           <h3>{{ title }}</h3>

@@ -5,6 +5,7 @@ import Router from 'vue-router';
 import 'vuesax/dist/vuesax.css';
 import 'material-icons/iconfont/material-icons.css';
 import LoginPage from './../pages/LoginPage';
+import JoinPage from './../pages/JoinPage';
 
 Vue.use(Router);
 Vue.use(Vuesax);
@@ -19,6 +20,11 @@ export default new Router({
       path: '/login',
       name: 'LoginPage',
       component: LoginPage,
+    },
+    {
+      path: '/join',
+      name: 'JoinPage',
+      component: JoinPage,
     },
   ],
 });

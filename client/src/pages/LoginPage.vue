@@ -17,15 +17,26 @@
             v-model="password" />
         </div>
         <div class="flex-container flex-center-sort margin--bottom-20">
-          <vs-button class="button-common" color="primary" type="flat">로그인</vs-button>
+          <vs-button
+            class="button-common"
+            color="primary"
+            type="flat">로그인</vs-button>
         </div>
         <div class="flex-container flex-center-sort margin--bottom-20">
-          <vs-button class="button-common" color="primary" type="flat">회원가입</vs-button>
+          <vs-button
+            :to="{ name: 'JoinPage' }"
+            class="button-common"
+            color="primary"
+            type="flat">회원가입</vs-button>
         </div>
         <div class="flex-container flex-center-sort margin-bottom-20">
           <label><span class="keep-login">로그인 유지</span></label>
           <vs-switch v-model="keepLogin"/>
         </div>
+      </div>
+      <div class="find-info-box text-center">
+        <span class="find-info">아이디찾기</span>
+        <span class="find-info">비밀번호찾기</span>
       </div>
     </div>
   </div>
@@ -74,6 +85,18 @@ export default {
 
       .button-common {
         min-width: 200px;
+      }
+    }
+
+    .find-info-box {
+      width: 100%;
+      height: 50px;
+      line-height: 50px;
+
+      .find-info {
+        @include font-size-xx-small;
+        color: rgb(75, 75, 75);
+        margin: 0 5px;
       }
     }
 

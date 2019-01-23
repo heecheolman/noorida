@@ -42,6 +42,7 @@
               placeholder="email@email.email"
               v-model="email"/>
             <vs-button
+              @click="sendMail()"
               style="width: 40px; margin-left: 10px; height: 27px;"
               size="small"
               color="primary"
@@ -92,6 +93,13 @@ export default {
       email: '',
       secureKey: '',
     };
+  },
+  methods: {
+    async sendMail() {
+      this.$http.post('/api/send-mail', { email: this.email })
+        .then(result => console.log(result))
+        .catch(err => console.error(err));
+    },
   },
 };
 </script>

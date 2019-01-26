@@ -1,4 +1,3 @@
-// 회원가입
 const knex = require('./service.config');
 
 module.exports = {
@@ -21,9 +20,9 @@ module.exports = {
       .catch(err => err);
     return token === tokenData;
   },
-  activeSet: async ({ userId }) => {
-    const settedActive = await knex('users')
-      .where()
-      .update({ active: 1 });
-  },
+  // activeSet: async ({ userId }) => {
+  //   const settedActive = await knex('users')
+  //     .where()
+  //     .update({ active: 1 });
+  // },
 };

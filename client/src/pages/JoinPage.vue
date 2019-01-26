@@ -5,17 +5,27 @@
         <div class="input-box flex-container flex-center-sort flex-column">
           <div class="input-item-wrap flex-container flex-center-sort">
             <vs-input
-              :success="true"
-              val-icon-success="done"
+              name="realName"
+              v-validate="{ required: true, regex: /^[가-힝]{2,}$/ }"
+              :success="!errors.has('realName')"
+              :danger="errors.has('realName')"
               success-text="좋은 이름이에요!"
-              placeholder="이름을 입력하세요"
+              danger-text="이름은 2~4글자로 해주세요!"
+              val-icon-success="done"
+              val-icon-danger="clear"
+              placeholder="이름"
               v-model="realName"/>
           </div>
           <div class="input-item-wrap flex-container flex-center-sort">
             <vs-input
-              :success="true"
+              name="nickName"
+              v-validate="{ required: true, regex: /[a-z0-9]/ }"
+              :success="!errors.has('nickName')"
+              :danger="errors.has('nickName')"
               val-icon-success="done"
+              val-icon-danger="clear"
               success-text="좋은 닉네임이에요!"
+              danger-text="4~22 글자이내, 특수문자 언더바(_), 마침표(.), 영문 대소문자만 가능합니다."
               placeholder="닉네임을 입력하세요"
               v-model="nickName"/>
           </div>
@@ -38,32 +48,19 @@
           </div>
           <div class="input-item-wrap flex-container flex-center-sort">
             <vs-input
-              style="width: 150px;"
+              :success="!errors.has('email')"
+              :danger="errors.has('email')"
+              val-icon-success="done"
+              val-icon-danger="clear"
+              name="email"
+              v-validate="{ required: true, regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/ }"
               placeholder="email@email.email"
               v-model="email"/>
-            <vs-button
-              @click="sendMail()"
-              style="width: 40px; margin-left: 10px; height: 27px;"
-              size="small"
-              color="primary"
-              type="border">인증</vs-button>
-          </div>
-          <div class="input-item-wrap flex-container flex-center-sort">
-            <vs-input
-              :success="true"
-              val-icon-success="done"
-              style="width: 150px;"
-              placeholder="C O D E"
-              v-model="secureKey"/>
-            <vs-button
-              style="width: 40px; margin-left: 10px; height: 27px;"
-              size="small"
-              color="primary"
-              type="border">확인</vs-button>
           </div>
           <div class="navigation-box">
             <div class="flex-container flex-center-sort margin--bottom-10">
               <vs-button
+                @click="joinUser()"
                 class="button-common"
                 color="primary"
                 type="flat">회원가입</vs-button>
@@ -91,14 +88,10 @@ export default {
       password: '',
       confirmPassword: '',
       email: '',
-      secureKey: '',
     };
   },
   methods: {
-    async sendMail() {
-      this.$http.post('/api/send-mail', { email: this.email })
-        .then(result => console.log(result))
-        .catch(err => console.error(err));
+    joinUser() {
     },
   },
 };

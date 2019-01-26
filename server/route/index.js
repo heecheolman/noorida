@@ -11,9 +11,13 @@ router.get('/members', (req, res) => {
   res.json(members);
 });
 
-router.post('/send-mail', (req, res) => {
-  const email = req.body.email;
+router.post('/user', (req, res) => {
+  // 1. 회원가입
+  // 2. 토큰도 같이 insert
+});
 
+router.post('/cert-email', (req, res) => {
+  const email = req.body.email;
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -23,11 +27,16 @@ router.post('/send-mail', (req, res) => {
   });
 
   const mailOptions = {
-    from: 'heecheol.bot@gmail.com',
-    to: email,
-    subject: '안녕하세요 누리다입니다.',
-    html: `<p>안녕하세요 누리다입니다. 아래의 링크를 클릭해주세요.</p>
-            <a href="http://localhost:3000/api/auth/?email=$${email}&token=abcdefg">인증하기</a>`,
+    from: {
+      name: '누리다',
+      address: 'heecheol.bot@gmail.com',
+    },
+    to: {
+      address: email,
+    },
+    subject: '안녕하세요 누리다입니다. 이메일 인증을 해주세요',
+    html: `<p>안녕하세요 누리다입니다. 인증 코드는 다음과 같습니다.</p>
+            <a href="http://localhost:3000/api/auth/?email=$${email}&token=${token}">인증하기</a>`,
   };
 
   transporter.sendMail(mailOptions, (err, info) => {
@@ -51,10 +60,11 @@ router.get('/auth', (req, res) => {
 
   if (token === 'abcdefg') {
     console.log('join success');
+    // active true
   } else {
     console.log('join failed');
+    // active false
   }
-
   res.send('ok');
 });
 

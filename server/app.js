@@ -12,6 +12,7 @@ const DIST_DIR = './../client/dist';
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/api', router);
+
 app.use('/static', express.static(path.resolve(__dirname, `${DIST_DIR}/static`)));
 
 /* 기본 라우팅 */

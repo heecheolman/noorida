@@ -16,10 +16,16 @@ app.use('/static', express.static(path.resolve(__dirname, `${DIST_DIR}/static`))
 
 /* 기본 라우팅 */
 app.get('/', (req, res) => {
-  res.sendFile(path.resolve(__dirname, `${DIST_DIR}/index.html`));
+    res.sendFile(path.resolve(__dirname, `${DIST_DIR}/index.html`));
 });
 
 /* 3000번 포트 */
 app.listen(PORT, () => {
-  console.log('SERVER START!!!');
+    console.log('SERVER START!!!')
+
+    require('./models').sequelize.sync({force: true})
+        .then(() => {
+            console.log('Databases sync');
+        });
 });
+

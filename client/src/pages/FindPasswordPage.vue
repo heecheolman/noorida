@@ -1,6 +1,5 @@
 <template>
   <div>
-    FindPasswordPage
   </div>
 </template>
 

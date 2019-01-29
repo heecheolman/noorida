@@ -77,9 +77,30 @@
               val-icon-success="done"
               val-icon-danger="clear"
               placeholder="이메일"
+              style="width: 150px;"
               v-model="email"/>
-            <button @click="certificate()">인증</button>
-            <input type="text" placeholder="token" v-model="token"><button @click="confirmToken()">확인</button>
+            <vs-button color="primary" type="flat"
+                       style="margin-left: 10px;"
+                       :disabled="errors.has('email')"
+                       @click="certificate()">전송</vs-button>
+          </div>
+          <div class="input-item-wrap flex-container flex-center-sort">
+            <vs-input
+              name="certified"
+              v-validate.initial="{ required: true }"
+              :success="certified"
+              :danger="!certified"
+              danger-text="인증버튼을 눌러주세요"
+              success-text="인증 완료!"
+              val-icon-success="done"
+              val-icon-danger="clear"
+              placeholder="인증코드"
+              style="width: 150px;"
+              v-model="token"/>
+            <vs-button color="primary" type="flat"
+                       style="margin-left: 10px;"
+                       :disabled="errors.has('email') || token.length < 36"
+                       @click="confirmToken()">확인</vs-button>
           </div>
           <div class="navigation-box">
             <div class="flex-container flex-center-sort margin--bottom-10">
@@ -117,28 +138,31 @@ export default {
       confirmPassword: '',
       email: '',
       token: '',
+      certified: false,
     };
   },
   methods: {
     joinUser() {
-      console.log(this.errors.any());
+      /**
+       * this.errors.any() 가 최종적으로 false 이면 모든 양식이 유효하므로 회원가입처리 진행
+       * console.log(this.errors.any());
+       */
     },
     certificate() {
       this.$http.post('/api/cert/mail', {
         email: this.email,
       })
-        .then(results => console.log(results))
         .catch(err => console.error(err));
     },
-    confirmToken() {
-      this.$http.get(`/api/cert/compare/${this.email}/${this.token}`, {
+    async confirmToken() {
+      this.certified = await this.$http.get(`/api/cert/user/${this.email}/${this.token}`, {
         params: {
           email: this.email,
           token: this.token,
         },
       })
-        .then(results => console.log(results))
-        .catch(err => console.error(err));
+        .then(result => result.data)
+        .catch(err => err);
     },
   },
 };

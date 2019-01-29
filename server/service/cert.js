@@ -8,4 +8,11 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
   },
+  canCertified: async ({ tmpEmail, tmpToken }) => {
+    const result = await knex('cert')
+      .where({ tmpEmail, tmpToken })
+      .then(results => results)
+      .catch(err => err);
+    return result.length !== 0;
+  },
 };

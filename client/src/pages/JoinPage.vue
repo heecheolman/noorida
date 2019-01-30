@@ -147,7 +147,6 @@ export default {
        * this.errors.any() 가 최종적으로 false 이면 모든 양식이 유효하므로 회원가입처리 진행
        * console.log(this.errors.any());
        */
-
       if (!this.errors.any()) {
         this.$http.post('/api/join', {
           realName: this.realName,

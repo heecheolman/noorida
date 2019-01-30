@@ -12,5 +12,4 @@ router.post('/join', async (req, res) => {
     email: req.body.email })
     .catch(error => error);
 });
-
 module.exports = router;

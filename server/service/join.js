@@ -26,9 +26,5 @@ module.exports = {
       .catch(err => err);
     return token === tokenData;
   },
-  // activeSet: async ({ userId }) => {
-  //   const settedActive = await knex('users')
-  //     .where()
-  //     .update({ active: 1 });
-  // },
+
 };

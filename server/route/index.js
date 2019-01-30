@@ -4,12 +4,12 @@ const joinService = require('../service/join');
 
 const router = express.Router();
 
-router.post('/user', async (req, res) => {
-  const result = await joinService.insertUser({
-    nickname: req.body.nickname,
+router.post('/join', async (req, res) => {
+  await joinService.insertUser({
+    realName: req.body.realName,
+    nickName: req.body.nickName,
     password: req.body.password,
-    email: req.body.email,
-  });
+    email: req.body.email })
+    .catch(error => error);
 });
-
 module.exports = router;

@@ -1,14 +1,20 @@
 const knex = require('./service.config');
 
 module.exports = {
-  insertUser: async ({ nickName, password, email, token }) => {
+  /* insertUser: async ({ realName, nickName, password, email }) => {
     const result = await knex('users')
-      .insert({ nickName, password, email, token })
+      .insert({ realName, nickName, password, email })
       .then(results => results)
       .catch(err => err);
     return result;
-  },
+  }, */
 
+  insertUser: async ({ realName, nickName, password, email }) => {
+    const QUERY = 'INSERT INTO users (realName, nickName, password, email) VALUES (?,?,?,?)';
+    await knex.raw(QUERY, [realName, nickName, password, email])
+      .then(results => results)
+      .catch(err => err);
+  },
   compareToken: async ({ email, token }) => {
     const tokenData = await knex('users')
       .select('token')

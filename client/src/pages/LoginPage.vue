@@ -3,40 +3,41 @@
     <div class="login-box">
       <h1 class="title text-center">누리다</h1>
       <div class="input-box flex-container flex-center-sort flex-column">
-        <div class="flex-container flex-center-sort margin--bottom-20">
-          <vs-input
-            size="large"
-            placeholder="아이디"
-            v-model="id" />
+        <a-form
+          :form="form"
+          @submit="handleSubmit">
+          <a-form-item>
+            <a-input
+              placeholder='아이디'
+              v-decorator="['userName', { rules: [{ required: true, message: '아이디를 입력해주세요' }] }]">
+              <a-icon slot="prefix" type='user' style="color: rgba(0,0,0,.25)" />
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <a-input
+              v-decorator="['password', { rules: [{ required: true, message: '비밀번호를 입력해주세요' }] }]"
+              type="password"
+              placeholder="패스워드">
+              <a-icon slot="prefix" type="lock" style="color: rgba(0,0,0,.25)" />
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <div class="flex-container flex-center-sort">
+              <a-checkbox
+                v-decorator="['remember', { valuePropName: 'checked', initialValue: true, }]">
+                로그인 유지
+              </a-checkbox>
+            </div>
+            <div class="flex-container flex-column flex-center-sort">
+              <a-button type="primary" htmlType="submit" class="login-button">로그인</a-button>
+              <router-link :to="{ name: 'JoinPage' }">회원가입</router-link>
+            </div>
+          </a-form-item>
+        </a-form>
+        <div class="find-info-box text-center">
+          <span class="find-info">아이디찾기</span>
+          <span class="find-info">비밀번호찾기</span>
         </div>
-        <div class="flex-container flex-center-sort margin--bottom-20">
-          <vs-input
-            size="large"
-            type="password"
-            placeholder="패스워드"
-            v-model="password" />
-        </div>
-        <div class="flex-container flex-center-sort margin--bottom-20">
-          <vs-button
-            class="button-common"
-            color="primary"
-            type="flat">로그인</vs-button>
-        </div>
-        <div class="flex-container flex-center-sort margin--bottom-20">
-          <vs-button
-            :to="{ name: 'JoinPage' }"
-            class="button-common"
-            color="primary"
-            type="flat">회원가입</vs-button>
-        </div>
-        <div class="flex-container flex-center-sort margin-bottom-20">
-          <label><span class="keep-login">로그인 유지</span></label>
-          <vs-switch v-model="keepLogin"/>
-        </div>
-      </div>
-      <div class="find-info-box text-center">
-        <span class="find-info">아이디찾기</span>
-        <span class="find-info">비밀번호찾기</span>
       </div>
     </div>
   </div>
@@ -45,12 +46,25 @@
 <script>
 export default {
   name: 'LoginPage',
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
+  },
   data() {
     return {
       id: '',
       password: '',
       keepLogin: false,
     };
+  },
+  methods: {
+    handleSubmit(e) {
+      e.preventDefault();
+      this.form.validateFields((err, values) => {
+        if (!err) {
+          console.log('Received values of form: ', values);
+        }
+      });
+    },
   },
 };
 </script>
@@ -76,15 +90,9 @@ export default {
       width: 100%;
       height: auto;
 
-      .keep-login {
-        margin-right: 10px;
-        color: rgb(30, 30, 30);
-        @include font-size-xxx-small();
-        @include v-text-align(30px);
-      }
-
-      .button-common {
-        min-width: 200px;
+      .login-button {
+        width: 100%;
+        margin-top: 10px;
       }
     }
 

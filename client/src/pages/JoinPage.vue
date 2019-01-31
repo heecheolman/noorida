@@ -187,7 +187,6 @@ export default {
     },
     handleSubmit(e) {
       e.preventDefault();
-      console.log(this.form.getFieldsError());
     },
 
     validateToNextPassword(rule, value, callback) {

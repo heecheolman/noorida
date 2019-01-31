@@ -3,7 +3,7 @@
     <div class="join-box">
       <h1 class="title text-center">회원가입</h1>
         <div class="input-box flex-container flex-center-sort flex-column">
-          <div class="input-item-wrap flex-container flex-center-sort">
+          <div class="input-item-wrap flex-container flex-center-sort flex-column">
             <a-form
               :form="form"
               @submit="handleSubmit"
@@ -17,9 +17,11 @@
                     'realName',
                     {
                       rules: [{
-                        required: true,
-                        message: '유효하지 않은 이름이에요',
-                        pattern: /^[가-힝]{2,}$/,
+                          required: true,
+                          message: '이름을 입력해주세요',
+                        }, {
+                          pattern: /^[가-힝]{2,}$/,
+                          message: '유효하지 않은 이름이에요',
                       }]
                     }
                  ]" />
@@ -34,9 +36,11 @@
                     'nickName',
                     {
                       rules: [{
-                        required: true,
-                        pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,
-                        message: '유효하지 않은 닉네임이에요',
+                          required: true,
+                          message: '닉네임을 입력해주세요',
+                        }, {
+                          pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,
+                          message: '유효하지 않은 닉네임이에요',
                       }]
                     }
                   ]"/>
@@ -54,7 +58,8 @@
                         pattern: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,}$/,
                         message: '비밀번호를 입력하세요',
                       }, {
-                        validator: this.validateToNextPassword
+                        validator: validateToNextPassword,
+                        message: '비밀번호가 일치하지 않아요',
                       }]
                     }
                   ]"
@@ -73,7 +78,8 @@
                         required: true,
                         message: '비밀번호확인을 입력하세요',
                       }, {
-                        validator: compareToFirstPassword
+                        validator: compareToFirstPassword,
+                        message: '비밀번호가 일치하지 않아요',
                       }]
                     }
                   ]"
@@ -81,120 +87,50 @@
                   @blur="handleConfirmBlur"
                 />
               </a-form-item>
+              <div class="flex-container flex-between-sort flex-row">
+                <a-form-item
+                  hasFeedback
+                >
+                  <a-input
+                    placeholder="이메일입력"
+                    v-decorator="[
+                      'email',
+                      {
+                        rules: [{
+                            required: true,
+                            message: '이메일을 입력해주세요!',
+                          }, {
+                            type: 'email',
+                            message: '이메일형식이 아니에요',
+                            pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                          }]
+                      }
+                    ]"
+                  />
+                </a-form-item>
+                <div class="button-wrap">
+                  <a-button type="default" style="font-size: 10px;"
+                            @click="certificate()">인증</a-button>
+                </div>
+              </div>
+              <div class="flex-container flex-between-sort flex-row" style="margin-bottom: 20px;">
+                <div>
+                  <a-input
+                    v-model="token"
+                    placeholder="보안코드입력"
+                    type="text"
+                  />
+                </div>
+                <div>
+                  <a-button type="default" style="font-size: 10px;"
+                            @click="confirmToken()">확인</a-button>
+                </div>
+              </div>
+              <a-form-item>
+                <a-button type="primary" htmlType="submit" block>회원가입</a-button>
+              </a-form-item>
             </a-form>
-            <!--<vs-input-->
-              <!--name="realName"-->
-              <!--v-validate.initial="{-->
-                <!--required: true,-->
-                <!--regex: /^[가-힝]{2,}$/,-->
-              <!--}"-->
-              <!--:success="!errors.has('realName')"-->
-              <!--:danger="errors.has('realName')"-->
-              <!--danger-text="유효하지 않은 이름이에요!"-->
-              <!--val-icon-success="done"-->
-              <!--val-icon-danger="clear"-->
-              <!--placeholder="이름"-->
-              <!--v-model="realName"/>-->
-          <!--</div>-->
-          <!--<div class="input-item-wrap flex-container flex-center-sort">-->
-            <!--<vs-input-->
-              <!--name="nickName"-->
-              <!--v-validate.initial="{-->
-                <!--required: true,-->
-                <!--regex: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/-->
-              <!--}"-->
-              <!--:success="!errors.has('nickName')"-->
-              <!--:danger="errors.has('nickName')"-->
-              <!--danger-text="유효하지 않은 닉네임이에요!"-->
-              <!--val-icon-success="done"-->
-              <!--val-icon-danger="clear"-->
-              <!--placeholder="닉네임"-->
-              <!--v-model="nickName"/>-->
-          <!--</div>-->
-          <!--<div class="input-item-wrap flex-container flex-center-sort">-->
-            <!--<vs-input-->
-              <!--name="password"-->
-              <!--v-validate.initial="{-->
-                <!--required: true,-->
-                <!--regex: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,}$/-->
-              <!--}"-->
-              <!--:success="!errors.has('password')"-->
-              <!--:danger="errors.has('password')"-->
-              <!--danger-text="대소문자, 특수문자, 숫자가 적어도 1글자, 10글자이상 필요합니다"-->
-              <!--val-icon-success="done"-->
-              <!--val-icon-danger="clear"-->
-              <!--type="password"-->
-              <!--placeholder="비밀번호"-->
-              <!--ref="password"-->
-              <!--v-model="password"/>-->
-          <!--</div>-->
-          <!--<div class="input-item-wrap flex-container flex-center-sort">-->
-            <!--<vs-input-->
-              <!--name="confirmPassword"-->
-              <!--v-validate.initial="'required|confirmed:password'"-->
-              <!--:success="!errors.has('confirmPassword') && !errors.has('password')"-->
-              <!--:danger="errors.has('confirmPassword') || errors.has('password')"-->
-              <!--danger-text="비밀번호가 일치하지 않습니다"-->
-              <!--val-icon-success="done"-->
-              <!--val-icon-danger="clear"-->
-              <!--data-vv-as="password"-->
-              <!--type="password"-->
-              <!--placeholder="비밀번호 확인"-->
-              <!--v-model="confirmPassword"/>-->
-          <!--</div>-->
-          <!--<div class="input-item-wrap flex-container flex-center-sort">-->
-            <!--<vs-input-->
-              <!--name="email"-->
-              <!--v-validate.initial="{-->
-                <!--required: true,-->
-                <!--regex: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/-->
-              <!--}"-->
-              <!--:success="!errors.has('email')"-->
-              <!--:danger="errors.has('email')"-->
-              <!--danger-text="이메일형식이 아닙니다"-->
-              <!--val-icon-success="done"-->
-              <!--val-icon-danger="clear"-->
-              <!--placeholder="이메일"-->
-              <!--style="width: 150px;"-->
-              <!--v-model="email"/>-->
-            <!--<vs-button color="primary" type="flat"-->
-                       <!--style="margin-left: 10px;"-->
-                       <!--:disabled="errors.has('email')"-->
-                       <!--@click="certificate()">전송</vs-button>-->
-          <!--</div>-->
-          <!--<div class="input-item-wrap flex-container flex-center-sort">-->
-            <!--<vs-input-->
-              <!--name="certified"-->
-              <!--v-validate.initial="{ required: true }"-->
-              <!--:success="certified"-->
-              <!--:danger="!certified"-->
-              <!--danger-text="인증버튼을 눌러주세요"-->
-              <!--success-text="인증 완료!"-->
-              <!--val-icon-success="done"-->
-              <!--val-icon-danger="clear"-->
-              <!--placeholder="인증코드"-->
-              <!--style="width: 150px;"-->
-              <!--v-model="token"/>-->
-            <!--<vs-button color="primary" type="flat"-->
-                       <!--style="margin-left: 10px;"-->
-                       <!--:disabled="errors.has('email') || token.length < 36"-->
-                       <!--@click="confirmToken()">확인</vs-button>-->
-          <!--</div>-->
-          <!--<div class="navigation-box">-->
-            <!--<div class="flex-container flex-center-sort margin&#45;&#45;bottom-10">-->
-              <!--<vs-button-->
-                <!--@click="joinUser()"-->
-                <!--class="button-common"-->
-                <!--color="primary"-->
-                <!--type="flat">회원가입</vs-button>-->
-            <!--</div>-->
-            <!--<div class="flex-container flex-center-sort margin&#45;&#45;bottom-10">-->
-              <!--<vs-button-->
-                <!--:to="{ name: 'LoginPage' }"-->
-                <!--class="button-common"-->
-                <!--color="primary"-->
-                <!--type="flat">뒤로가기</vs-button>-->
-            <!--</div>-->
+            <a-button type="dashed" block style="width: 200px;">뒤로</a-button>
           </div>
         </div>
     </div>
@@ -216,6 +152,7 @@ export default {
       email: '',
       token: '',
       certified: false,
+      confirmDirty: false,
     };
   },
   methods: {
@@ -250,12 +187,13 @@ export default {
     },
     handleSubmit(e) {
       e.preventDefault();
+      console.log(this.form.getFieldsError());
     },
 
     validateToNextPassword(rule, value, callback) {
       const form = this.form;
       if (value && this.confirmDirty) {
-        form.validateFields(['confirm'], { force: true });
+        form.validateFields(['confirm'], { force: true }, err => err);
       }
       callback();
     },
@@ -279,13 +217,16 @@ export default {
   @import './../assets/scss/mixin/typography';
   @import './../assets/scss/variables/colors';
 
-  input::placeholder {
-    font-size: 12px;
+  form {
+    width: 80%;
+  }
+  input, input::placeholder {
+    font-size: 10px;
   }
 
   .join-box {
     width: 100%;
-    height: 90%;
+    height: 100%;
     padding: 20px;
 
     .title {
@@ -296,14 +237,19 @@ export default {
 
     .input-box {
       margin: 0 auto;
-      max-width: 80%;
+      max-width: 90%;
       min-height: 70%;
       width: 100%;
       height: auto;
 
       .input-item-wrap {
         width: 250px;
-        height: 60px;
+
+        .button-wrap {
+          padding-top: 5px;
+          display: flex;
+          height: 63px;
+        }
       }
     }
 
@@ -317,12 +263,5 @@ export default {
       }
     }
 
-  }
-
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
   }
 </style>

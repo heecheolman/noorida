@@ -15,16 +15,4 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
   },
-  compareToken: async ({ email, token }) => {
-    const tokenData = await knex('users')
-      .select('token')
-      .where({ email })
-      .then((result) => {
-        console.log(result);
-        return result;
-      })
-      .catch(err => err);
-    return token === tokenData;
-  },
-
 };

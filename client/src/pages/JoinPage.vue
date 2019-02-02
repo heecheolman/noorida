@@ -3,7 +3,7 @@
     <div class="join-box">
       <h1 class="title text-center">회원가입</h1>
         <div class="input-box flex-container flex-center-sort flex-column">
-          <div class="input-item-wrap flex-container flex-center-sort flex-column">
+          <div class="input-item-wrap">
             <label
               :class="isTypedLabel"
               class="label--base">{{ realNamePlaceholder }}</label>
@@ -98,15 +98,10 @@ export default {
   name: 'JoinPage',
   computed: {
     isTypedLabel() {
-      return {
+      return {  // 개별적이지 않음. 디렉티브를 만들어야하나 고려
         'typed-label': this.realName.length !== 0,
-        'valid': this.realNamePlaceholder === '사용 가능합니다!' ||
-          this.realNamePlaceholder === '유효한 형식입니다!' ||
-          this.realNamePlaceholder === '유효한 형식입니다!',
-        'not-valid': this.realNamePlaceholder === '이미 있어요!' ||
-          this.realNamePlaceholder === '형식이 틀립니다!' ||
-          this.realNamePlaceholder === '제대로 입력해주세요!' ||
-          this.realNamePlaceholder === '형식이 틀립니다!',
+        'valid': !this.errors.has('realName'),
+        'invalid': this.errors.has('realName'),
       };
     },
   },
@@ -144,8 +139,6 @@ export default {
         .catch(err => console.error(err));
     },
     async confirmToken() {
-      console.log(this.password);
-      console.log(this.confirmPassword);
       this.certified = await this.$http.get(`/api/cert/user/${this.email}/${this.token}`, {
         params: {
           email: this.email,
@@ -166,11 +159,11 @@ export default {
 
   .label--base {
     color: #999;
-    height: 50px;
-    line-height: 60px;
+    height: 40px;
+    line-height: 50px;
     white-space: nowrap;
     font-size:  12px;
-    left: 75px;
+    left: 13px;
     z-index: 99;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -184,12 +177,11 @@ export default {
     transform: scale(.7333) translateX(-20%) translateY(-15px);
   }
   .valid { color: #1DA1F2 !important; }
-  .not-valid { color: #ff2128 !important; }
+  .invalid { color: #ff2128 !important; }
   .error { color: #ff2128 !important; }
 
   input {
     padding-top: 14px;
-    position: relative;
     font-size: 10px;
     height: 40px;
   }
@@ -214,6 +206,7 @@ export default {
       height: auto;
 
       .input-item-wrap {
+        position: relative;
         width: 100%;
         height: 50px;
 

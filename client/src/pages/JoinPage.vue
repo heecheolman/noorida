@@ -231,15 +231,16 @@ export default {
         .finally(() => {
           this.tokenLoading = false;
         });
+      /**
+       * 인증 실패시 가이드
+       * */
       if (!this.certified) {
-
+        this.$message.warning('보안코드가 다릅니다.');
       }
     },
     joinUser(e) {
       e.preventDefault();
-      console.log('join');
       this.form.validateFieldsAndScroll((err, values) => {
-        console.log('1');
         if (!err && !this.certified) { // 인증도 성공하고 폼도 맞다면 회원가입 진행
           console.log('2');
           console.log('Recieved values of form: ', values);
@@ -248,7 +249,6 @@ export default {
            */
         } else {
           // 에러 존재시
-          console.log('3');
           console.log('err', err);
           console.log('ciertified', this.certified);
         }

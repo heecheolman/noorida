@@ -6,7 +6,7 @@
         <div class="input-item-wrap flex-container flex-center-sort flex-column">
           <a-form
             :form="form"
-            @submit="joinUser()"
+            @submit="joinUser"
           >
             <a-form-item
               hasFeedback
@@ -22,14 +22,30 @@
                         }, {
                           pattern: /^[가-힝]{2,}$/,
                           message: '유효하지 않은 이름이에요',
-                      }]
+                        }]
                     }
                  ]" />
             </a-form-item>
             <a-form-item
               hasFeedback
-              validateStatus="validating"
+              :validate-status="nickNameStatus"
             >
+              <!--<a-input-->
+                <!--placeholder="닉네임"-->
+                <!--v-decorator="[-->
+                    <!--'nickName',-->
+                    <!--{-->
+                      <!--rules: [{-->
+                          <!--required: true,-->
+                          <!--message: '닉네임을 입력해주세요',-->
+                        <!--}, {-->
+                          <!--pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,-->
+                          <!--message: '유효하지 않은 닉네임이에요',-->
+                      <!--}]-->
+                    <!--}-->
+                  <!--]"-->
+                <!--@input="nicknameChecker"-->
+              <!--/>-->
               <a-input
                 placeholder="닉네임"
                 v-decorator="[
@@ -40,10 +56,13 @@
                           message: '닉네임을 입력해주세요',
                         }, {
                           pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,
-                          message: '유효하지 않은 닉네임이에요',
+                          message: '닉네임형식이 유효하지 않습니다.',
                       }]
                     }
-                  ]"/>
+                  ]"
+                @input="nicknameChecker"
+                @change="nickNameStatus='validating'"
+              />
             </a-form-item>
             <a-form-item
               hasFeedback
@@ -175,6 +194,10 @@ export default {
   beforeCreate() {
     this.form = this.$form.createForm(this);
   },
+  computed: {
+  },
+  watch: {
+  },
   data() {
     return {
       token: '',
@@ -183,12 +206,12 @@ export default {
       emailValidate: false,
       emailPopVisible: false,
       tokenLoading: false,
+      nickNameStatus: '',
     };
   },
   methods: {
     certificate() {
       const email = this.form.getFieldValue('email');
-
       this.$http.post('/api/cert/mail', {
         email,
       })
@@ -204,21 +227,28 @@ export default {
         },
       })
         .then(result => result.data)
-        .catch(err => err)
+        .catch(err => false)
         .finally(() => {
           this.tokenLoading = false;
         });
+      if (!this.certified) {
+
+      }
     },
     joinUser(e) {
       e.preventDefault();
+      console.log('join');
       this.form.validateFieldsAndScroll((err, values) => {
+        console.log('1');
         if (!err && !this.certified) { // 인증도 성공하고 폼도 맞다면 회원가입 진행
+          console.log('2');
           console.log('Recieved values of form: ', values);
           /**
            * api 인터페이스 작성
            */
         } else {
           // 에러 존재시
+          console.log('3');
           console.log('err', err);
           console.log('ciertified', this.certified);
         }
@@ -244,6 +274,18 @@ export default {
       const value = e.target.value;
       this.confirmDirty = this.confirmDirty || !!value;
     },
+    nicknameChecker: _.debounce(
+      function () {
+        const nickName = this.form.getFieldValue('nickName');
+        const pattern = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/;
+        if (!!nickName && pattern.test(nickName)) {
+          this.nickNameStatus = 'success';
+        } else {
+          this.nickNameStatus = 'error';
+          console.log(this.form.getFieldInstance('nickName'));
+        }
+      }, 500,
+    ),
   },
 };
 </script>

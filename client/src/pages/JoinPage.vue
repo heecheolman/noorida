@@ -6,7 +6,7 @@
         <div class="input-item-wrap flex-container flex-center-sort flex-column">
           <a-form
             :form="form"
-            @submit="handleSubmit"
+            @submit="joinUser()"
           >
             <a-form-item
               hasFeedback
@@ -93,7 +93,7 @@
               >
                 <a-input
                   placeholder="이메일입력"
-                  v-model="email"
+                  style="max-width: 130px;"
                   v-decorator="[
                       'email',
                       {
@@ -110,21 +110,50 @@
                 />
               </a-form-item>
               <div class="button-wrap">
-                <a-button type="default" style="font-size: 10px;"
-                          @click="certificate()">인증</a-button>
+                <a-popover
+                  v-if="!form.getFieldError('email') && !!form.isFieldTouched('email')"
+                  trigger="click"
+                  placement="topLeft"
+                  v-model="emailPopVisible"
+                >
+                  <div slot="content">
+                    <div style="text-align: right;">
+                      인증코드가 전송되었습니다.
+                      <a style="margin-left: 15px;" @click="emailPopVisible = false">닫기</a>
+                    </div>
+                  </div>
+                  <a-button
+                    :disabled="!!form.getFieldError('email') || !form.isFieldTouched('email')"
+                    style="font-size: 10px;"
+                    @click="certificate()"
+                    type="default">인증
+                  </a-button>
+                </a-popover>
+                <a-button
+                  v-else
+                  disabled
+                  style="font-size: 10px;">인증</a-button>
               </div>
             </div>
             <div class="flex-container flex-between-sort flex-row" style="margin-bottom: 20px;">
               <div>
                 <a-input
                   v-model="token"
+                  style="max-width: 130px;"
                   placeholder="보안코드입력"
                   type="text"
                 />
               </div>
               <div>
-                <a-button type="default" style="font-size: 10px;"
+                <a-button v-if="!certified"
+                          type="default" style="font-size: 10px;"
+                          :disabled="!!form.getFieldError('email') || token.length !== 36"
+                          :loading="tokenLoading"
                           @click="confirmToken()">확인</a-button>
+                <a-icon v-else-if="certified"
+                        type="check-circle"
+                        theme="filled"
+                        style="color: #52c41a" />
               </div>
             </div>
             <a-form-item>
@@ -146,30 +175,39 @@ export default {
   },
   data() {
     return {
-      email: '',
       token: '',
       certified: false,
       confirmDirty: false,
+      emailValidate: false,
+      emailPopVisible: false,
+      tokenLoading: false,
     };
   },
   methods: {
     certificate() {
+      const email = this.form.getFieldValue('email');
+
       this.$http.post('/api/cert/mail', {
-        email: this.email,
+        email,
       })
         .catch(err => console.error(err));
     },
     async confirmToken() {
-      this.certified = await this.$http.get(`/api/cert/user/${this.email}/${this.token}`, {
+      this.tokenLoading = true;
+      const email = this.form.getFieldValue('email');
+      this.certified = await this.$http.get(`/api/cert/user/${email}/${this.token}`, {
         params: {
-          email: this.email,
+          email,
           token: this.token,
         },
       })
         .then(result => result.data)
-        .catch(err => err);
+        .catch(err => err)
+        .finally(() => {
+          this.tokenLoading = false;
+        });
     },
-    handleSubmit(e) {
+    joinUser(e) {
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
         if (!err && !this.certified) { // 인증도 성공하고 폼도 맞다면 회원가입 진행
@@ -258,5 +296,17 @@ export default {
       }
     }
 
+    .info {
+      font-size: 10px !important;
+      color: #314659 !important;
+      margin-right: 5px !important;
+    }
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
   }
 </style>

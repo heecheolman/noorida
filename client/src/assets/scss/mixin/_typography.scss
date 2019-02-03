@@ -38,6 +38,10 @@
   font-size: 6px;
 }
 
+@mixin font-color-info {
+  color: #314659;
+}
+
 
 /* 수직정렬 */
 @mixin v-text-align ($height) {

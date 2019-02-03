@@ -28,4 +28,22 @@ router.get('/user/:email/:token', async (req, res) => {
   res.send(isCertified);
 });
 
+router.get('/user/:nickName', async (req, res) => {
+  const requestNickname = req.params.nickName;
+  const isComparedNickname = await certService.compareNickname({ requestNickname })
+    .then(result => result)
+    .catch(err => err);
+  res.send(isComparedNickname);
+  console.log(isComparedNickname);
+});
+
+router.get('/user/:email', async (req, res) => {
+  const requestEmail = req.params.email;
+  const isComparedEmail = await certService.compareEmail({ requestEmail })
+    .then(result => result)
+    .catch(err => err);
+  res.send(isComparedEmail);
+  console.log(isComparedEmail);
+});
+
 module.exports = router;

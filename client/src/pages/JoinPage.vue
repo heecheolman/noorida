@@ -6,11 +6,9 @@
         <div class="input-item-wrap flex-container flex-center-sort flex-column">
           <a-form
             :form="form"
-            @submit="joinUser"
-          >
+            @submit="joinUser">
             <a-form-item
-              hasFeedback
-            >
+              hasFeedback>
               <a-input
                 placeholder="이름"
                 v-decorator="[
@@ -30,22 +28,6 @@
               hasFeedback
               :validate-status="nickNameStatus"
             >
-              <!--<a-input-->
-                <!--placeholder="닉네임"-->
-                <!--v-decorator="[-->
-                    <!--'nickName',-->
-                    <!--{-->
-                      <!--rules: [{-->
-                          <!--required: true,-->
-                          <!--message: '닉네임을 입력해주세요',-->
-                        <!--}, {-->
-                          <!--pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,-->
-                          <!--message: '유효하지 않은 닉네임이에요',-->
-                      <!--}]-->
-                    <!--}-->
-                  <!--]"-->
-                <!--@input="nicknameChecker"-->
-              <!--/>-->
               <a-input
                 placeholder="닉네임"
                 v-decorator="[
@@ -103,7 +85,6 @@
                     }
                   ]"
                 type="password"
-                @blur="handleConfirmBlur"
               />
             </a-form-item>
             <div class="flex-container flex-between-sort flex-row">
@@ -194,15 +175,10 @@ export default {
   beforeCreate() {
     this.form = this.$form.createForm(this);
   },
-  computed: {
-  },
-  watch: {
-  },
   data() {
     return {
       token: '',
       certified: false,
-      confirmDirty: false,
       emailValidate: false,
       emailPopVisible: false,
       tokenLoading: false,
@@ -217,6 +193,7 @@ export default {
       })
         .catch(err => console.error(err));
     },
+
     async confirmToken() {
       this.tokenLoading = true;
       const email = this.form.getFieldValue('email');
@@ -231,37 +208,34 @@ export default {
         .finally(() => {
           this.tokenLoading = false;
         });
-      /**
-       * 인증 실패시 가이드
-       * */
       if (!this.certified) {
         this.$message.warning('보안코드가 다릅니다.');
       }
     },
+
     joinUser(e) {
       e.preventDefault();
       this.form.validateFieldsAndScroll((err, values) => {
-        if (!err && !this.certified) { // 인증도 성공하고 폼도 맞다면 회원가입 진행
-          console.log('2');
+        if (!err && this.certified) {
           console.log('Recieved values of form: ', values);
           /**
            * api 인터페이스 작성
            */
         } else {
           // 에러 존재시
-          console.log('err', err);
-          console.log('ciertified', this.certified);
+          this.$message.warning('회원가입 양식을 다시 확인해보세요');
         }
       });
     },
 
     validateToNextPassword(rule, value, callback) {
       const form = this.form;
-      if (value && this.confirmDirty) {
+      if (value) {
         form.validateFields(['confirm'], { force: true }, err => err);
       }
       callback();
     },
+
     compareToFirstPassword(rule, value, callback) {
       const form = this.form;
       if (value && value !== form.getFieldValue('password')) {
@@ -270,10 +244,7 @@ export default {
         callback();
       }
     },
-    handleConfirmBlur(e) {
-      const value = e.target.value;
-      this.confirmDirty = this.confirmDirty || !!value;
-    },
+
     nicknameChecker: _.debounce(
       function () {
         const nickName = this.form.getFieldValue('nickName');
@@ -294,11 +265,12 @@ export default {
   @import './../assets/scss/mixin/typography';
   @import './../assets/scss/variables/colors';
 
+  input {
+    @include font-size-small;
+  }
+
   form {
     width: 80%;
-  }
-  input, input::placeholder {
-    font-size: 10px;
   }
 
   .join-box {
@@ -340,17 +312,5 @@ export default {
       }
     }
 
-    .info {
-      font-size: 10px !important;
-      color: #314659 !important;
-      margin-right: 5px !important;
-    }
-  }
-
-  .fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
-  }
-  .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-    opacity: 0;
   }
 </style>

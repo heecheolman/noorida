@@ -15,4 +15,20 @@ module.exports = {
       .catch(err => err);
     return result.length !== 0;
   },
+
+  compareEmail: async ({ email }) => {
+    const result = await knex('users')
+      .where({ email })
+      .then(results => results)
+      .catch(err => err);
+    return result.length !== 0;
+  },
+
+  compareNickname: async ({ nickName }) => {
+    const result = await knex('users')
+      .where({ nickName })
+      .then(results => results)
+      .catch(err => err);
+    return result.length !== 0;
+  },
 };

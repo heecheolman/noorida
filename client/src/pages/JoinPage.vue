@@ -1,5 +1,6 @@
 <template>
   <div class="page flex-container flex-center-sort">
+    <a-spin size="large" :spinning="joinLoading">
     <div class="join-box">
       <h1 class="title text-center">회원가입</h1>
       <div class="input-box flex-container flex-center-sort flex-column">
@@ -26,8 +27,7 @@
             </a-form-item>
             <a-form-item
               hasFeedback
-              :validate-status="nickNameStatus"
-            >
+              :validate-status="nickNameStatus">
               <a-input
                 placeholder="닉네임"
                 v-decorator="[
@@ -42,13 +42,11 @@
                       }]
                     }
                   ]"
-                @input="nicknameChecker"
-                @change="nickNameStatus='validating'"
-              />
+                @input="nickNameChecker"
+                @change="nickNameStatus='validating'" />
             </a-form-item>
             <a-form-item
-              hasFeedback
-            >
+              hasFeedback>
               <a-input
                 placeholder="비밀번호"
                 v-decorator="[
@@ -68,8 +66,7 @@
               />
             </a-form-item>
             <a-form-item
-              hasFeedback
-            >
+              hasFeedback>
               <a-input
                 placeholder="비밀번호 확인"
                 v-decorator="[
@@ -84,13 +81,12 @@
                       }]
                     }
                   ]"
-                type="password"
-              />
+                type="password" />
             </a-form-item>
             <div class="flex-container flex-between-sort flex-row">
               <a-form-item
                 hasFeedback
-              >
+                :validate-status="emailStatus">
                 <a-input
                   placeholder="이메일입력"
                   style="max-width: 130px;"
@@ -107,32 +103,15 @@
                           }]
                       }
                     ]"
-                />
+                  @input="emailChecker"
+                  @change="emailStatus='validating'" />
               </a-form-item>
               <div class="button-wrap">
-                <a-popover
-                  v-if="!form.getFieldError('email') && !!form.isFieldTouched('email')"
-                  trigger="click"
-                  placement="topLeft"
-                  v-model="emailPopVisible"
-                >
-                  <div slot="content">
-                    <div style="text-align: right;">
-                      인증코드가 전송되었습니다.
-                      <a style="margin-left: 15px;" @click="emailPopVisible = false">닫기</a>
-                    </div>
-                  </div>
-                  <a-button
-                    :disabled="!!form.getFieldError('email') || !form.isFieldTouched('email')"
-                    style="font-size: 10px;"
-                    @click="certificate()"
-                    type="default">인증
-                  </a-button>
-                </a-popover>
                 <a-button
-                  v-else
-                  disabled
-                  style="font-size: 10px;">인증</a-button>
+                  @click="certificate()"
+                  style="font-size: 10px;"
+                  :loading="emailLoading"
+                  :disabled="emailStatus !== 'success'">인증</a-button>
               </div>
             </div>
             <div class="flex-container flex-between-sort flex-row" style="margin-bottom: 20px;">
@@ -141,8 +120,7 @@
                   v-model="token"
                   style="max-width: 130px;"
                   placeholder="보안코드입력"
-                  type="text"
-                />
+                  type="text" />
               </div>
               <div>
                 <a-button v-if="!certified"
@@ -164,6 +142,7 @@
         </div>
       </div>
     </div>
+    </a-spin>
   </div>
 </template>
 
@@ -183,46 +162,77 @@ export default {
       emailPopVisible: false,
       tokenLoading: false,
       nickNameStatus: '',
+      emailStatus: '',
+      joinLoading: false,
+      emailLoading: false,
     };
   },
   methods: {
     certificate() {
+      this.emailLoading = true;
       const email = this.form.getFieldValue('email');
-      this.$http.post('/api/cert/mail', {
-        email,
-      })
-        .catch(err => console.error(err));
+      this.$http.post('/api/cert/mail', { email })
+        .then(() => {
+          this.$message.success('인증 코드가 전송되었습니다.');
+        })
+        .catch(() => {
+          this.$message.error('서버 오류입니다. 다시 시도해주세요.');
+        })
+        .finally(() => {
+          this.emailLoading = false;
+        });
     },
 
     async confirmToken() {
       this.tokenLoading = true;
       const email = this.form.getFieldValue('email');
-      this.certified = await this.$http.get(`/api/cert/user/${email}/${this.token}`, {
+      this.certified = await this.$http.get(`/api/cert/user/valid/${email}/${this.token}`, {
         params: {
           email,
           token: this.token,
         },
       })
         .then(result => result.data)
-        .catch(err => false)
+        .catch(() => {
+          this.$message.error('서버 오류입니다. 다시 시도해주세요');
+        })
         .finally(() => {
           this.tokenLoading = false;
         });
-      if (!this.certified) {
-        this.$message.warning('보안코드가 다릅니다.');
+
+      if (this.certified) {
+        this.$message.success('인증 완료');
+      } else {
+        this.$message.warning('보안코드가 다릅니다');
       }
     },
 
     joinUser(e) {
       e.preventDefault();
-      this.form.validateFieldsAndScroll((err, values) => {
-        if (!err && this.certified) {
-          console.log('Recieved values of form: ', values);
-          /**
-           * api 인터페이스 작성
-           */
+      this.form.validateFieldsAndScroll(async (error, values) => {
+        if (!error && this.certified) {
+          this.joinLoading = true;
+          const vm = this;
+          const { realName, nickName, password, email } = values;
+          await this.$http.post('/api/join', { realName, nickName, password, email })
+            .then(() => {
+              this.$success({
+                title: '회원가입 완료! 🎉',
+                content: '가입이 완료되었습니다.',
+                okText: '확인',
+                centered: true,
+                onOk() {
+                  vm.$router.push({ name: 'LoginPage' });
+                },
+              });
+            })
+            .catch(() => {
+              this.$message.error('예상하지 못한 에러가 발생했습니다. 다시 시도해주세요');
+            })
+            .finally(() => {
+              this.joinLoading = false;
+            });
         } else {
-          // 에러 존재시
           this.$message.warning('회원가입 양식을 다시 확인해보세요');
         }
       });
@@ -245,15 +255,50 @@ export default {
       }
     },
 
-    nicknameChecker: _.debounce(
+    nickNameChecker: _.debounce(
       function () {
         const nickName = this.form.getFieldValue('nickName');
         const pattern = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/;
+
         if (!!nickName && pattern.test(nickName)) {
-          this.nickNameStatus = 'success';
+          this.$http.get(`/api/cert/user/nick-names/${nickName}`, {
+            params: { nickName },
+          })
+            .then((result) => {
+              if (!result.data) {
+                this.nickNameStatus = 'success';
+                this.$message.success('사용하실 수 있습니다');
+              } else {
+                this.nickNameStatus = 'warning';
+                this.$message.warning('이미 사용하고 있어요!');
+              }
+            });
         } else {
           this.nickNameStatus = 'error';
-          console.log(this.form.getFieldInstance('nickName'));
+        }
+      }, 500,
+    ),
+
+    emailChecker: _.debounce(
+      function () {
+        const email = this.form.getFieldValue('email');
+        const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+        if (!!email && pattern.test(email)) {
+          this.$http.get(`api/cert/user/emails/${email}`, {
+            params: { email },
+          })
+            .then((result) => {
+              if (!result.data) {
+                this.emailStatus = 'success';
+                this.$message.success('사용할 수 있는 이메일입니다');
+              } else {
+                this.emailStatus = 'warning';
+                this.$message.warning('이미 사용하고 있어요');
+              }
+            });
+        } else {
+          this.emailStatus = 'error';
         }
       }, 500,
     ),
@@ -311,6 +356,5 @@ export default {
         min-width: 200px;
       }
     }
-
   }
 </style>

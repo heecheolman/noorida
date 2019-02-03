@@ -7,18 +7,26 @@ const router = express.Router();
 
 router.post('/mail', async (req, res) => {
   const requestEmail = req.body.email;
-  const token = tokenBuilder(); // 토큰생성
-
+  const token = tokenBuilder();
   await certService.upsertUserToken({ tmpEmail: requestEmail, tmpToken: token })
+    .then(results => results)
     .catch(error => error);
 
   PostOffice.transporter.sendMail(
     PostOffice.mailOptionBuilder(requestEmail, token),
-    PostOffice.mailErrorHandler,
+    (err, info) => {
+      if (err) {
+        console.error(err);
+        res.sendStatus(500);
+      } else {
+        console.log(`EMAIL SENT ${info.response}`);
+        res.sendStatus(200);
+      }
+    },
   );
 });
 
-router.get('/user/:email/:token', async (req, res) => {
+router.get('/user/valid/:email/:token', async (req, res) => {
   const tmpEmail = req.params.email;
   const tmpToken = req.params.token;
 
@@ -28,22 +36,20 @@ router.get('/user/:email/:token', async (req, res) => {
   res.send(isCertified);
 });
 
-router.get('/user/:nickName', async (req, res) => {
-  const requestNickname = req.params.nickName;
-  const isComparedNickname = await certService.compareNickname({ requestNickname })
+router.get('/user/nick-names/:nickName', async (req, res) => {
+  const nickName = req.params.nickName;
+  const isComparedNickname = await certService.compareNickname({ nickName })
     .then(result => result)
     .catch(err => err);
   res.send(isComparedNickname);
-  console.log(isComparedNickname);
 });
 
-router.get('/user/:email', async (req, res) => {
-  const requestEmail = req.params.email;
-  const isComparedEmail = await certService.compareEmail({ requestEmail })
+router.get('/user/emails/:email', async (req, res) => {
+  const email = req.params.email;
+  const isComparedEmail = await certService.compareEmail({ email })
     .then(result => result)
     .catch(err => err);
   res.send(isComparedEmail);
-  console.log(isComparedEmail);
 });
 
 module.exports = router;

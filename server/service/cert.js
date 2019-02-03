@@ -4,9 +4,10 @@ module.exports = {
   upsertUserToken: async ({ tmpEmail, tmpToken }) => {
     const QUERY = `INSERT INTO cert (tmpEmail, tmpToken) VALUES (?, ?) 
     ON DUPLICATE KEY UPDATE tmpEmail=VALUES(tmpEmail), tmpToken=VALUES(tmpToken)`;
-    await knex.raw(QUERY, [tmpEmail, tmpToken])
+    const result = await knex.raw(QUERY, [tmpEmail, tmpToken])
       .then(results => results)
       .catch(err => err);
+    return result;
   },
   canCertified: async ({ tmpEmail, tmpToken }) => {
     const result = await knex('cert')
@@ -18,6 +19,7 @@ module.exports = {
 
   compareEmail: async ({ email }) => {
     const result = await knex('users')
+      .select('email')
       .where({ email })
       .then(results => results)
       .catch(err => err);
@@ -26,6 +28,7 @@ module.exports = {
 
   compareNickname: async ({ nickName }) => {
     const result = await knex('users')
+      .select('nickName')
       .where({ nickName })
       .then(results => results)
       .catch(err => err);

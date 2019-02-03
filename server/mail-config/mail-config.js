@@ -24,11 +24,4 @@ module.exports = {
     subject: '안녕하세요 누리다입니다. 이메일 인증을 해주세요',
     html: htmlBuilder(token),
   }),
-  mailErrorHandler: (err, info) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log(`Email sent ${info.response}`);
-    }
-  },
 };

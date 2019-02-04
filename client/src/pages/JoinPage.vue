@@ -5,107 +5,58 @@
       <h1 class="title text-center">회원가입</h1>
       <div class="input-box flex-container flex-center-sort flex-column">
         <div class="input-item-wrap flex-container flex-center-sort flex-column">
+
           <a-form
             :form="form"
             @submit="joinUser">
+
             <a-form-item
               hasFeedback>
               <a-input
                 placeholder="이름"
-                v-decorator="[
-                    'realName',
-                    {
-                      rules: [{
-                          required: true,
-                          message: '이름을 입력해주세요',
-                        }, {
-                          pattern: /^[가-힝]{2,}$/,
-                          message: '유효하지 않은 이름이에요',
-                        }]
-                    }
-                 ]" />
+                v-decorator="['realName', validateConfig.realName]" />
             </a-form-item>
+
             <a-form-item
               hasFeedback
               :validate-status="nickNameStatus">
               <a-input
                 placeholder="닉네임"
-                v-decorator="[
-                    'nickName',
-                    {
-                      rules: [{
-                          required: true,
-                          message: '닉네임을 입력해주세요',
-                        }, {
-                          pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,
-                          message: '닉네임형식이 유효하지 않습니다.',
-                      }]
-                    }
-                  ]"
+                v-decorator="['nickName', validateConfig.nickName]"
                 @input="nickNameChecker"
                 @change="nickNameStatus='validating'" />
             </a-form-item>
+
             <a-form-item
               hasFeedback>
               <a-input
                 placeholder="비밀번호"
-                v-decorator="[
-                    'password',
-                    {
-                      rules: [{
-                        required: true,
-                        pattern: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,}$/,
-                        message: '비밀번호를 입력하세요',
-                      }, {
-                        validator: validateToNextPassword,
-                        message: '비밀번호가 일치하지 않아요',
-                      }]
-                    }
-                  ]"
+                v-decorator="['password', validateConfig.password]"
                 type="password"
               />
             </a-form-item>
+
             <a-form-item
               hasFeedback>
               <a-input
                 placeholder="비밀번호 확인"
-                v-decorator="[
-                    'confirm',
-                    {
-                      rules: [{
-                        required: true,
-                        message: '비밀번호확인을 입력하세요',
-                      }, {
-                        validator: compareToFirstPassword,
-                        message: '비밀번호가 일치하지 않아요',
-                      }]
-                    }
-                  ]"
+                v-decorator="['confirm', validateConfig.confirmPassword]"
                 type="password" />
             </a-form-item>
+
             <div class="flex-container flex-between-sort flex-row">
+
               <a-form-item
                 hasFeedback
                 :validate-status="emailStatus">
                 <a-input
                   placeholder="이메일입력"
                   style="max-width: 130px;"
-                  v-decorator="[
-                      'email',
-                      {
-                        rules: [{
-                            required: true,
-                            message: '이메일을 입력해주세요!',
-                          }, {
-                            type: 'email',
-                            message: '이메일형식이 아니에요',
-                            pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                          }]
-                      }
-                    ]"
+                  v-decorator="['email', validateConfig.email]"
                   @input="emailChecker"
                   @change="emailStatus='validating'" />
               </a-form-item>
+
               <div class="button-wrap">
                 <a-button
                   @click="certificate()"
@@ -113,7 +64,9 @@
                   :loading="emailLoading"
                   :disabled="emailStatus !== 'success'">인증</a-button>
               </div>
+
             </div>
+
             <div class="flex-container flex-between-sort flex-row" style="margin-bottom: 20px;">
               <div>
                 <a-input
@@ -128,17 +81,24 @@
                           :disabled="!!form.getFieldError('email') || token.length !== 36"
                           :loading="tokenLoading"
                           @click="confirmToken()">확인</a-button>
+
                 <a-icon v-else-if="certified"
                         type="check-circle"
                         theme="filled"
                         style="color: #52c41a" />
               </div>
             </div>
+
             <a-form-item>
               <a-button type="primary" htmlType="submit" block>회원가입</a-button>
             </a-form-item>
           </a-form>
-          <a-button type="dashed" block style="width: 200px;">뒤로</a-button>
+
+          <a-button
+            block
+            type="dashed"
+            style="width: 200px;"
+            @click="routeLoginPage()">뒤로</a-button>
         </div>
       </div>
     </div>
@@ -156,15 +116,62 @@ export default {
   },
   data() {
     return {
-      token: '',
-      certified: false,
-      emailValidate: false,
-      emailPopVisible: false,
+      joinLoading: false,
+      emailLoading: false,
       tokenLoading: false,
       nickNameStatus: '',
       emailStatus: '',
-      joinLoading: false,
-      emailLoading: false,
+      token: '',
+      certified: false,
+      validateConfig: {
+        realName: {
+          rules: [{
+            required: true,
+            message: '이름을 입력해주세요',
+          }, {
+            pattern: /^[가-힝]{2,}$/,
+            message: '유효하지 않은 이름이에요',
+          }],
+        },
+        nickName: {
+          rules: [{
+            required: true,
+            message: '닉네임을 입력해주세요',
+          }, {
+            pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,
+            message: '닉네임형식이 유효하지 않습니다.',
+          }],
+        },
+        password: {
+          rules: [{
+            required: true,
+            pattern: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,}$/,
+            message: '비밀번호를 입력하세요',
+          }, {
+            validator: this.validateToNextPassword,
+            message: '비밀번호가 일치하지 않아요',
+          }],
+        },
+        confirmPassword: {
+          rules: [{
+            required: true,
+            message: '비밀번호확인을 입력하세요',
+          }, {
+            validator: this.compareToFirstPassword,
+            message: '비밀번호가 일치하지 않아요',
+          }],
+        },
+        email: {
+          rules: [{
+            required: true,
+            message: '이메일을 입력해주세요!',
+          }, {
+            type: 'email',
+            message: '이메일형식이 아니에요',
+            pattern: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+          }],
+        },
+      },
     };
   },
   methods: {
@@ -302,6 +309,10 @@ export default {
         }
       }, 500,
     ),
+
+    routeLoginPage() {
+      this.$router.push({ name: 'LoginPage' });
+    },
   },
 };
 </script>

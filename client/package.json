@@ -18,7 +18,8 @@
     "vee-validate": "^2.1.5",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
-    "vuesax": "^3.8.11"
+    "vuesax": "^3.8.11",
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",

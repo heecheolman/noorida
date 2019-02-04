@@ -8,8 +8,8 @@
           @submit="handleSubmit">
           <a-form-item>
             <a-input
-              placeholder='아이디'
-              v-decorator="['userName', { rules: [{ required: true, message: '아이디를 입력해주세요' }] }]">
+              placeholder='닉네임'
+              v-decorator="['nickName', { rules: [{ required: true, message: '닉네임을 입력해주세요' }] }]">
               <a-icon slot="prefix" type='user' style="color: rgba(0,0,0,.25)" />
             </a-input>
           </a-form-item>
@@ -51,17 +51,31 @@ export default {
   },
   data() {
     return {
-      id: '',
-      password: '',
       keepLogin: false,
     };
   },
   methods: {
     handleSubmit(e) {
       e.preventDefault();
-      this.form.validateFields((err, values) => {
+      this.form.validateFields(async (err, values) => {
         if (!err) {
           console.log('Received values of form: ', values);
+          // const user = await this.$http.post('/api/login', {
+          //   nickName: values.nickName,
+          //   password: values.password,
+          // })
+          //   .then(result => result.data)
+          //   .catch(err => console.error(err));
+          //
+          // if (user) {
+          //   console.log(user);
+          // } else {
+          //   console.log(user);
+          // }
+          this.$store.dispatch('login/loginProcess', {
+            nickName: values.nickName,
+            password: values.password,
+          });
         }
       });
     },

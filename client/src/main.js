@@ -11,6 +11,7 @@ import App from './App';
 import router from './router';
 import './assets/scss/main.scss';
 import api from './api/ApiService';
+import store from './store/store';
 
 
 Vue.config.productionTip = false;
@@ -27,4 +28,5 @@ new Vue({
   router,
   components: { App },
   template: '<App/>',
+  store,
 });

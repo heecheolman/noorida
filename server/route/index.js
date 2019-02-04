@@ -1,5 +1,6 @@
 const express = require('express');
 const joinService = require('../service/join');
+const loginService = require('../service/login');
 
 const router = express.Router();
 
@@ -17,4 +18,23 @@ router.post('/join', async (req, res) => {
     res.sendStatus(500);
   }
 });
+
+router.post('/login', async (req, res) => {
+  const result = await loginService.login({
+    nickName: req.body.nickName,
+    password: req.body.password,
+  })
+    .then(results => results)
+    .catch(err => err);
+
+  console.log('server result', result);
+
+  if (result.length === 1) {
+    res.json(result[0]);
+  } else {
+    res.send(false);
+  }
+});
+
+
 module.exports = router;

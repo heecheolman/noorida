@@ -10,10 +10,12 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import './assets/scss/main.scss';
+import api from './api/ApiService';
 
 
 Vue.config.productionTip = false;
 Vue.prototype.$http = axios;
+Vue.prototype.$api = api;
 
 Vue.use(VeeValidate);
 Vue.use(Antd);

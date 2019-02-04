@@ -123,6 +123,9 @@ export default {
       emailStatus: '',
       token: '',
       certified: false,
+      /**
+       * 유효성 검사 규칙들
+       */
       validateConfig: {
         realName: {
           rules: [{
@@ -178,7 +181,7 @@ export default {
     certificate() {
       this.emailLoading = true;
       const email = this.form.getFieldValue('email');
-      this.$http.post('/api/cert/mail', { email })
+      this.$api.sendCertMail(email)
         .then(() => {
           this.$message.success('인증 코드가 전송되었습니다.');
         })
@@ -193,15 +196,10 @@ export default {
     async confirmToken() {
       this.tokenLoading = true;
       const email = this.form.getFieldValue('email');
-      this.certified = await this.$http.get(`/api/cert/user/valid/${email}/${this.token}`, {
-        params: {
-          email,
-          token: this.token,
-        },
-      })
+      this.certified = await this.$api.confirmToken(email, this.token)
         .then(result => result.data)
         .catch(() => {
-          this.$message.error('서버 오류입니다. 다시 시도해주세요');
+          this.$message.error('서버 오류입니다. 다시 시도해주세요.');
         })
         .finally(() => {
           this.tokenLoading = false;
@@ -221,7 +219,7 @@ export default {
           this.joinLoading = true;
           const vm = this;
           const { realName, nickName, password, email } = values;
-          await this.$http.post('/api/join', { realName, nickName, password, email })
+          await this.$api.join(realName, nickName, password, email)
             .then(() => {
               this.$success({
                 title: '회원가입 완료! 🎉',
@@ -268,9 +266,7 @@ export default {
         const pattern = /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/;
 
         if (!!nickName && pattern.test(nickName)) {
-          this.$http.get(`/api/cert/user/nick-names/${nickName}`, {
-            params: { nickName },
-          })
+          this.$api.validateNickName(nickName)
             .then((result) => {
               if (!result.data) {
                 this.nickNameStatus = 'success';
@@ -292,9 +288,7 @@ export default {
         const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
         if (!!email && pattern.test(email)) {
-          this.$http.get(`api/cert/user/emails/${email}`, {
-            params: { email },
-          })
+          this.$api.validateEmail(email)
             .then((result) => {
               if (!result.data) {
                 this.emailStatus = 'success';

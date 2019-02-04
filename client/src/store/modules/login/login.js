@@ -1,43 +1,46 @@
 import * as types from './mutation_types';
-import axios from 'axios';
+import api from '@/api/ApiService';
 
 const state = {
   login: false,
-  user: {},
+  user: null,
 };
 
 const mutations = {
   [types.LOGIN](state, payload) {
     state.login = payload;
   },
-  [types.FETCH_USER](state, payload) {
-    state.user = payload.user;
+  [types.FETCH_USER_DATA](state, user) {
+    state.user = user;
+  },
+  [types.INIT_LOGIN_DATA](state) {
+    state.login = false;
+    state.user = {};
   },
 };
 
 const getters = {
-  getLoginStatus: state => state.login,
+  getLoginSuccess: state => state.login && !!state.user,
   getUserData: state => state.user,
 };
 
 const actions = {
   loginProcess: async ({ commit }, payload) => {
-    console.log('commit', commit);
-    console.log('payload', payload);
-    const user = await axios.post('/api/login', {
-      nickName: payload.nickName,
-      password: payload.password,
-    })
+    const { nickName, password } = payload;
+    const user = await api.login(nickName, password)
       .then(result => result.data)
-      .catch(err => console.error(err));
+      .catch(err => err);
 
     if (user) {
-      commit(types.FETCH_USER, user);
+      commit(types.FETCH_USER_DATA, user);
       commit(types.LOGIN, true);
     } else {
-      commit(types.FETCH_USER, null);
+      commit(types.FETCH_USER_DATA, null);
       commit(types.LOGIN, false);
     }
+  },
+  initLoginData: ({ commit }) => {
+    commit(types.INIT_LOGIN_DATA);
   },
 };
 

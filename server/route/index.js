@@ -27,8 +27,6 @@ router.post('/login', async (req, res) => {
     .then(results => results)
     .catch(err => err);
 
-  console.log('server result', result);
-
   if (result.length === 1) {
     res.json(result[0]);
   } else {

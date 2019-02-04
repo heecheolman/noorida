@@ -61,4 +61,17 @@ export default {
       params: { email },
     });
   },
+
+  /**
+   * 로그인
+   * @param nickName
+   * @param password
+   * @returns {AxiosPromise<any>}
+   */
+  login(nickName, password) {
+    return axios.post('/api/login', {
+      nickName,
+      password,
+    });
+  },
 };

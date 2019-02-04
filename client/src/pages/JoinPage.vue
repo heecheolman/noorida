@@ -227,7 +227,7 @@ export default {
                 okText: '확인',
                 centered: true,
                 onOk() {
-                  vm.$router.push({ name: 'LoginPage' });
+                  vm.$router.replace({ name: 'LoginPage' });
                 },
               });
             })
@@ -305,7 +305,7 @@ export default {
     ),
 
     routeLoginPage() {
-      this.$router.push({ name: 'LoginPage' });
+      this.$router.replace({ name: 'LoginPage' });
     },
   },
 };

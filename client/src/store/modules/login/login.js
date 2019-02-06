@@ -31,7 +31,7 @@ const actions = {
       .then(result => result.data)
       .catch(err => err);
 
-    if (user) {
+    if (user && !(user instanceof Error)) {
       commit(types.FETCH_USER_DATA, user);
       commit(types.LOGIN, true);
     } else {

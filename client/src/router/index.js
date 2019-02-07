@@ -1,9 +1,15 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 
+/*  Pages  */
 import LoginPage from './../pages/LoginPage';
 import JoinPage from './../pages/JoinPage';
 import MainPage from '../pages/MainPage';
+
+/*  Tabs  */
+import LocalNewsTab from './../pages/tabs/local-news-tab/LocalNewsTab';
+import SubscribeNewsTab from './../pages/tabs/subscribe-news-tab/SubscribeNewsTab';
+import HotNewsTab from './../pages/tabs/hot-news-tab/HotNewsTab';
 
 import store from './../store/store';
 
@@ -21,7 +27,8 @@ export default new Router({
   routes: [
     {
       path: '',
-      redirect: LoginPage,
+      // redirect: LoginPage,
+      redirect: MainPage,
     },
     {
       path: '/login',
@@ -37,7 +44,12 @@ export default new Router({
       path: '/main',
       name: 'MainPage',
       component: MainPage,
-      beforeEnter: requireAuth(),
+      // beforeEnter: requireAuth(),
+      children: [
+        { path: 'local', name: 'LocalNewsTab', component: LocalNewsTab },
+        { path: 'subscribe', name: 'SubscribeNewsTab', component: SubscribeNewsTab },
+        { path: 'hot', name: 'HotNewsTab', component: HotNewsTab },
+      ],
     },
     {
       path: '*',

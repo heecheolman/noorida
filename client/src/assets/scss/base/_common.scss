@@ -17,5 +17,16 @@ html, body {
   #app {
     width: 100%;
     height: 100%;
+
+    /* quill editor style */
+    .quill-editor {
+      .ql-container {
+        height: 250px;
+      }
+
+      .ql-toolbar {
+        line-height: 1.5;
+      }
+    }
   }
 }

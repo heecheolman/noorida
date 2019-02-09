@@ -34,13 +34,21 @@
                           padding: '0',
                        }">
         <div class="flex-container flex-between-sort flex-row footer">
-          <a-button class="button-common" shape="circle" size="large">
+          <a-button class="button-common"
+                    shape="circle"
+                    size="large">
             <a-icon type="search" />
           </a-button>
-          <a-button class="button-primary" type="primary" shape="circle" size="large">
+          <a-button class="button-primary"
+                    type="primary"
+                    shape="circle"
+                    size="large"
+                    @click="routeWritePage()">
             <a-icon type="edit" />
           </a-button>
-          <a-button class="button-common" shape="circle" size="large"
+          <a-button class="button-common"
+                    shape="circle"
+                    size="large"
                     @click="openSidebar">
             <a-icon type="ellipsis" />
           </a-button>
@@ -92,6 +100,9 @@ export default {
     },
     closeSidebar() {
       this.sidebarVisible = false;
+    },
+    routeWritePage() {
+      this.$router.replace({ name: 'WritePage' });
     },
     // getLocation() {
     //   this.$http.post(this.baseUrl + this.key)

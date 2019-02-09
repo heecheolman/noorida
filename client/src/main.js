@@ -5,15 +5,14 @@ import 'ant-design-vue/dist/antd.css';
 import Antd from 'ant-design-vue';
 import VeeValidate from 'vee-validate';
 import Vue from 'vue';
-import axios from 'axios';
 import VueGeolocation from 'vue-browser-geolocation';
+import axios from 'axios';
 
 import router from './router';
 import api from './api/ApiService';
 import App from './App';
 import store from './store/store';
 import './assets/scss/main.scss';
-
 
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;

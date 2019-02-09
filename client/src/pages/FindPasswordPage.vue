@@ -87,6 +87,7 @@ export default {
       window.history.go(-1);
     },
     FindPassword() {
+      /* test */
       alert('해당 이메일로 임시비밀번호를 발송하였습니다!\n로그인 창으로 이동합니다');
       location.href = '#/login';
     },

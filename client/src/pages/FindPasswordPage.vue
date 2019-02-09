@@ -59,8 +59,12 @@
         <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
       </div>
       <div class="flex-container flex-center-sort">
-        <router-link :tag="span" class="id-password-link" :to="{name: 'LoginPage'}">로그인</router-link>
-        <router-link :tag="span" class="id-password-link" :to="{ name: 'FindIdPage' }">
+        <router-link :tag="span"
+                     class="id-password-link"
+                     :to="{name: 'LoginPage'}">로그인</router-link>
+        <router-link :tag="span"
+                     class="id-password-link"
+                     :to="{ name: 'FindIdPage' }">
           아이디 찾기</router-link>
       </div>
     </div>
@@ -112,16 +116,4 @@ export default {
     color: #1f74ff;
     font-size: 30px;
   }
-
 </style>
-
-
-
-
-
-
-
-
-
-
-

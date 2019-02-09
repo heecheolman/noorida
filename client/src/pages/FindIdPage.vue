@@ -54,33 +54,32 @@
 </template>
 
 <script>
+export default {
+  name: 'FindIdPage',
+  data() {
+    return {
+      name: '',
+      email: '',
+      id: '',
 
-  export default {
-    name: 'FindIdPage',
-    data() {
-      return {
-        name: '',
-        email: '',
-        id: '',
-
-      };
+    };
+  },
+  methods : {
+    goToBack() {
+      window.history.go(-1);
     },
-    methods : {
-      goToBack() {
-        window.history.go(-1);
-      },
-      FindId() {
-        /*아이디 찾기 버튼 클릭시!! */
-        var check =confirm(this.name+'님 의 ID는 '+this.id + '입니다. \n 비밀번호찾기 창으로 이동하시겠습니까?');
-        if(check == true){
-          location.href = '#/find-password' ;
-        }else{
-          location.href = '#/login' ;
-        }
+    FindId() {
+      /*아이디 찾기 버튼 클릭시!! */
+      var check =confirm(this.name+'님 의 ID는 '+this.id + '입니다. \n 비밀번호찾기 창으로 이동하시겠습니까?');
+      if(check == true){
+        location.href = '#/find-password' ;
+      }else{
+        location.href = '#/login' ;
+      }
 
-      },
     },
-  };
+  },
+};
 </script>
 
 <style>

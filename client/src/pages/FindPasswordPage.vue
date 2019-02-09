@@ -68,27 +68,27 @@
 </template>
 
 <script>
-  export default {
-    name: 'FindPasswordPage',
-    data() {
-      return {
-        name: '',
-        id: '',
-        email: '',
-        password: '',
-      };
+export default {
+  name: 'FindPasswordPage',
+  data() {
+    return {
+      name: '',
+      id: '',
+      email: '',
+      password: '',
+    };
+  },
+  methods: {
+    goToBack() {
+      window.history.go(-1);
     },
-    methods: {
-      goToBack() {
-        window.history.go(-1);
-      },
-      FindPassword() {
-        /*비밀번호 찾기 버튼 클릭시!! */
-        alert('해당 이메일로 임시비밀번호를 발송하였습니다!\n로그인 창으로 이동합니다');
-        location.href = '#/login';
-      },
-    }
-  }
+    FindPassword() {
+      /*비밀번호 찾기 버튼 클릭시!! */
+      alert('해당 이메일로 임시비밀번호를 발송하였습니다!\n로그인 창으로 이동합니다');
+      location.href = '#/login';
+    },
+  },
+};
 </script>
 
 <style>

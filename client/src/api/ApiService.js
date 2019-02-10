@@ -74,4 +74,14 @@ export default {
       password,
     });
   },
+
+  /**
+   * 이미지 업로드
+   * @returns {AxiosPromise<any>}
+   */
+  uploadImage(formData) {
+    return axios.post('/api/post/image', formData, {
+      timeout: 5000,
+    });
+  },
 };

@@ -20,8 +20,12 @@ html, body {
 
     /* quill editor style */
     .quill-editor {
+      .ql-snow {
+        border: none;
+      }
+
       .ql-container {
-        height: 250px;
+        height: calc(100vh - 200px);
       }
 
       .ql-toolbar {

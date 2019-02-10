@@ -1,4 +1,5 @@
 import axios from 'axios';
+import env from './apiEnv';
 
 /**
  * apiService
@@ -83,5 +84,21 @@ export default {
     return axios.post('/api/post/image', formData, {
       timeout: 5000,
     });
+  },
+
+  /**
+   * 사용자 위치정보 얻어오기
+   * google geolocation api
+   */
+  getLocation() {
+    return axios.post(`${env.geoLocation.baseUrl}?key=${env.key}`);
+  },
+
+  /**
+   * 위도 경도값을 지역이름으로 바꿔줌
+   * google reverse geocoding api
+   */
+  getParsedLocalName(lat, lng) {
+    return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
   },
 };

@@ -4,6 +4,12 @@ import api from '@/api/ApiService';
 const state = {
   login: false,
   user: null,
+  location: {
+    lat: '',
+    lng: '',
+  },
+  address: '',
+  placeId: '',
 };
 
 const mutations = {
@@ -16,6 +22,16 @@ const mutations = {
   [types.INIT_LOGIN_DATA](state) {
     state.login = false;
     state.user = {};
+  },
+  [types.FETCH_LOCATION](state, payload) {
+    state.location.lat = payload.lat;
+    state.location.lng = payload.lng;
+  },
+  [types.SET_ADDRESS](state, payload) {
+    state.address = payload;
+  },
+  [types.SET_PLACE_ID](state, payload) {
+    state.placeId = payload;
   },
 };
 
@@ -41,6 +57,32 @@ const actions = {
   },
   initLoginData: ({ commit }) => {
     commit(types.INIT_LOGIN_DATA);
+  },
+  fetchUserLocation: async ({ commit }) => {
+    const data = await api.getLocation()
+      .then(result => result.data)
+      .catch(err => err);
+
+    // 임시 데이터
+    // console.log('login vuex location', data.location);
+    // const location = {
+    //   lat: 37.6689979,
+    //   lng: 127.05075719999999,
+    // };
+    commit(types.FETCH_LOCATION, data.location);
+  },
+  fetchParsedLocalName: async ({ commit }) => {
+    const location = state.location;
+    const data = await api.getParsedLocalName(location.lat, location.lng)
+      .then(result => result.data)
+      .catch(err => err);
+
+    const localMeta = data.results.filter(local =>
+      local.types.indexOf('political') !== -1 &&
+      local.types.indexOf('sublocality_level_1') !== -1)[0];
+
+    commit(types.SET_ADDRESS, localMeta.formatted_address);
+    commit(types.SET_PLACE_ID, localMeta.place_id);
   },
 };
 

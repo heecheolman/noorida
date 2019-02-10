@@ -82,6 +82,12 @@
 <script>
 export default {
   name: 'MainPage',
+  async created() {
+    await this.$store.dispatch('login/fetchUserLocation');
+    await this.$store.dispatch('login/fetchParsedLocalName');
+  },
+  computed: {
+  },
   data() {
     return {
       sidebarVisible: false,
@@ -104,22 +110,6 @@ export default {
     routeWritePage() {
       this.$router.replace({ name: 'WritePage' });
     },
-    // getLocation() {
-    //   this.$http.post(this.baseUrl + this.key)
-    //     .then(result => console.log('result', result))
-    //     .catch(err => console.error('err', err));
-    // },
-    // parseLocation() {
-    //   const lat = '37.6689979';
-    //   const lng = '127.05075719999999';
-    //   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=`;
-    //   this.$http.get(url)
-    //     .then(result => {
-    //       console.log(result);
-    //       this.location = result.data;
-    //     })
-    //     .catch(err => console.log('err', err));
-    // },
   },
 };
 </script>

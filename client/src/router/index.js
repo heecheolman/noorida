@@ -2,11 +2,12 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 /*  Pages  */
-import LoginPage from './../pages/LoginPage';
-import JoinPage from './../pages/JoinPage';
+import LoginPage from '../pages/LoginPage';
+import JoinPage from '../pages/JoinPage';
 import MainPage from '../pages/MainPage';
 import FindIdPage from '../pages/FindIdPage';
 import FindPasswordPage from '../pages/FindPasswordPage';
+import WritePage from '../pages/WritePage';
 
 
 /*  Tabs  */
@@ -59,10 +60,16 @@ export default new Router({
       component: MainPage,
       // beforeEnter: requireAuth(),
       children: [
+        { path: '', redirect: 'local' },
         { path: 'local', name: 'LocalNewsTab', component: LocalNewsTab },
         { path: 'subscribe', name: 'SubscribeNewsTab', component: SubscribeNewsTab },
         { path: 'hot', name: 'HotNewsTab', component: HotNewsTab },
       ],
+    },
+    {
+      path: '/write',
+      name: 'WritePage',
+      component: WritePage,
     },
     {
       path: '*',

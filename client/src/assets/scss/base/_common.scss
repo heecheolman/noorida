@@ -17,5 +17,20 @@ html, body {
   #app {
     width: 100%;
     height: 100%;
+
+    /* quill editor style */
+    .quill-editor {
+      .ql-snow {
+        border: none;
+      }
+
+      .ql-container {
+        height: calc(100vh - 200px);
+      }
+
+      .ql-toolbar {
+        line-height: 1.5;
+      }
+    }
   }
 }

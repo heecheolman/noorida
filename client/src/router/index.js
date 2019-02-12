@@ -5,7 +5,10 @@ import Router from 'vue-router';
 import LoginPage from '../pages/LoginPage';
 import JoinPage from '../pages/JoinPage';
 import MainPage from '../pages/MainPage';
+import FindIdPage from '../pages/FindIdPage';
+import FindPasswordPage from '../pages/FindPasswordPage';
 import WritePage from '../pages/WritePage';
+
 
 /*  Tabs  */
 import LocalNewsTab from './../pages/tabs/local-news-tab/LocalNewsTab';
@@ -40,6 +43,16 @@ export default new Router({
       path: '/join',
       name: 'JoinPage',
       component: JoinPage,
+    },
+    {
+      path: '/find-id',
+      name: 'FindIdPage',
+      component: FindIdPage,
+    },
+    {
+      path: '/find-password',
+      name: 'FindPasswordPage',
+      component: FindPasswordPage,
     },
     {
       path: '/main',

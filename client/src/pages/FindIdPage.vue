@@ -82,7 +82,9 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+  @import './../assets/scss/mixin/typography';
+
   .find-box{
     width: 100%;
     height: 90%;
@@ -90,10 +92,10 @@ export default {
   }
   .id-password-link{
     font-size: 12px;
-    text-decoration: underline blue;
+    text-decoration: underline;
     margin: 10px;
     color: blue;
-    align-text: right;
+    text-align: right;
   }
   .title-color{
     color:#1f74ff;

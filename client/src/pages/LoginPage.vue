@@ -42,8 +42,10 @@
           </a-form>
 
           <div class="find-info-box text-center">
-            <span class="find-info">아이디찾기</span>
-            <span class="find-info">비밀번호찾기</span>
+            <router-link :tag ="span" class="find-info"  :to="{name: 'FindIdPage'}">
+              아이디찾기</router-link>
+            <router-link :tag="span" class= "find-info" :to="{name:'FindPasswordPage'}">
+              비밀번호찾기</router-link>
           </div>
 
         </div>
@@ -56,7 +58,6 @@
 export default {
   name: 'LoginPage',
   beforeCreate() {
-    this.$store.dispatch('login/initLoginData');
     this.form = this.$form.createForm(this);
   },
   data() {
@@ -84,20 +85,26 @@ export default {
       e.preventDefault();
       this.form.validateFields(async (err, values) => {
         if (!err) {
-          this.loginLoading = true;
-          await this.$store.dispatch('login/loginProcess', {
-            nickName: values.nickName,
-            password: values.password,
+          this.$store.dispatch('login/loginProcess', {
+            nickName : values.nickName,
+            password:  values.password,
           });
-          this.loginLoading = false;
-          if (this.$store.getters['login/getLoginSuccess']) {
-            this.$router.replace({ name: 'MainPage' });
-          } else {
-            this.$message.warning('아이디 또는 비밀번호가 일치하지 않습니다');
-          }
+
+          console.log('component getters', this.$store.getters['login/getLogin']);
+
         }
       });
     },
+
+
+
+
+
+
+
+
+
+
   },
 };
 </script>

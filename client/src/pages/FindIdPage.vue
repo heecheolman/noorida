@@ -44,9 +44,9 @@
       </div>
 
       <div class="link-move flex-container flex-center-sort margin--bottom-10">
-        <router-link :tag="span" class="id-password-link" :to="{name: 'LoginPage'}">로그인</router-link>
+        <router-link tag="span" class="id-password-link" :to="{ name: 'LoginPage' }">로그인</router-link>
         <br>
-        <router-link :tag="span" class= "id-password-link" :to="{name:'FindPasswordPage'}">
+        <router-link tag="span" class= "id-password-link" :to="{ name:'FindPasswordPage' }">
           비밀번호 찾기</router-link>
       </div>
     </div>

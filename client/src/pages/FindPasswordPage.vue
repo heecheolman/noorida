@@ -53,16 +53,16 @@
       <div class="flex-container flex-center-sort margin--top-30">
         <a-button class="button-size" color="primary"
                   type="primary" @click="FindPassword()">비밀번호 찾기</a-button>
-        <router-link v-if="flag" :to="{name :'LoginPage'}"></router-link>
+        <router-link :to="{name :'LoginPage'}"></router-link>
       </div>
       <div class="flex-container flex-center-sort margin--10">
         <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
       </div>
       <div class="flex-container flex-center-sort">
-        <router-link :tag="span"
+        <router-link tag="span"
                      class="id-password-link"
-                     :to="{name: 'LoginPage'}">로그인</router-link>
-        <router-link :tag="span"
+                     :to="{ name: 'LoginPage' }">로그인</router-link>
+        <router-link tag="span"
                      class="id-password-link"
                      :to="{ name: 'FindIdPage' }">
           아이디 찾기</router-link>
@@ -86,8 +86,8 @@ export default {
     goToBack() {
       window.history.go(-1);
     },
-    FindPassword() {
 
+    FindPassword() {
       alert('해당 이메일로 임시비밀번호를 발송하였습니다!\n로그인 창으로 이동합니다');
       location.href = '#/login';
     },

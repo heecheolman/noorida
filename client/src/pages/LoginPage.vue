@@ -42,9 +42,9 @@
           </a-form>
 
           <div class="find-info-box text-center">
-            <router-link :tag ="span" class="find-info"  :to="{name: 'FindIdPage'}">
+            <router-link tag="span" class="find-info" :to="{ name: 'FindIdPage' }">
               아이디찾기</router-link>
-            <router-link :tag="span" class= "find-info" :to="{name:'FindPasswordPage'}">
+            <router-link tag="span" class="find-info" :to="{ name:'FindPasswordPage' }">
               비밀번호찾기</router-link>
           </div>
 

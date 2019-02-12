@@ -87,7 +87,7 @@ export default {
       window.history.go(-1);
     },
     FindPassword() {
-      /* test */
+
       alert('해당 이메일로 임시비밀번호를 발송하였습니다!\n로그인 창으로 이동합니다');
       location.href = '#/login';
     },
@@ -95,7 +95,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
   .find-box{
     width: 100%;
     height: 90%;
@@ -108,6 +108,10 @@ export default {
     color: blue;
     align-text: right;
   }
+  .components-input-demo-size .ant-input {
+    width: 200px;
+    margin: 8px;
+  }
 
   .head-title{
     height: 100px;
@@ -116,5 +120,18 @@ export default {
   .title-color{
     color: #1f74ff;
     font-size: 30px;
+  }
+  .margin--10{
+    margin: 10px;
+  }
+  .margin--top-30{
+    margin-top: 30px;
+  }
+  .margin--top-30{
+    margin-top: 30px;
+  }
+  .button-size{
+    width: 200px;
+    height: 32px;
   }
 </style>

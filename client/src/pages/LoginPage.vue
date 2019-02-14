@@ -36,7 +36,7 @@
                           htmlType="submit"
                           class="login-button">로그인</a-button>
                 <router-link :to="{ name: 'JoinPage' }"
-                             replace>회원가입</router-link>
+                             replac해e>회원가입</router-link>
               </div>
             </a-form-item>
           </a-form>

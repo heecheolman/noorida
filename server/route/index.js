@@ -3,6 +3,7 @@ const multer = require('multer');
 const joinService = require('../service/join');
 const loginService = require('../service/login');
 
+
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -66,6 +67,7 @@ router.post('/post/image', upload.single('image'), (req, res) => {
   const url = req.file.filename;
   res.send(url);
 });
+
 
 
 module.exports = router;

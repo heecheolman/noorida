@@ -27,4 +27,4 @@ export default {
   geoCoding: {
     baseUrl: 'https://maps.googleapis.com/maps/api/geocode/json',
   },
-};
+}

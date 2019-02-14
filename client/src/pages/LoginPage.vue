@@ -140,6 +140,5 @@ export default {
         margin: 0 5px;
       }
     }
-
   }
 </style>

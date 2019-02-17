@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const joinService = require('../service/join');
 const loginService = require('../service/login');
+const postService = require('../service/post');
 
 const router = express.Router();
 
@@ -53,7 +54,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.post('/post/image', upload.single('image'), (req, res) => {
+router.post('/upload/image', upload.single('image'), (req, res) => {
   // file:
   // { fieldname: 'image',
   //   originalname: '스크린샷 2019-02-06 오후 8.59.17.png',
@@ -65,6 +66,15 @@ router.post('/post/image', upload.single('image'), (req, res) => {
   //   size: 408267 } }
   const url = req.file.filename;
   res.send(url);
+});
+
+router.post('/post/news', async (req, res) => {
+  const { userNo, title, content, address } = req.body;
+  const result = await postService.publishNews({ userNo, title, content, address })
+    .then(results => results)
+    .catch(err => err);
+
+  res.json('ok');
 });
 
 

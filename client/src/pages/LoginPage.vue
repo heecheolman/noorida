@@ -85,26 +85,20 @@ export default {
       e.preventDefault();
       this.form.validateFields(async (err, values) => {
         if (!err) {
-          this.$store.dispatch('login/loginProcess', {
-            nickName : values.nickName,
-            password:  values.password,
+          this.loginLoading = true;
+          await this.$store.dispatch('login/loginProcess', {
+            nickName: values.nickName,
+            password: values.password,
           });
-
-          console.log('component getters', this.$store.getters['login/getLogin']);
-
+          this.loginLoading = false;
+          if (this.$store.getters['login/getLoginSuccess']) {
+            this.$router.replace({ name: 'MainPage' });
+          } else {
+            this.$message.warning('아이디 또는 비밀번호가 일치하지 않습니다');
+          }
         }
       });
     },
-
-
-
-
-
-
-
-
-
-
   },
 };
 </script>

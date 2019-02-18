@@ -81,7 +81,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   uploadImage(formData) {
-    return axios.post('/api/post/image', formData, {
+    return axios.post('/api/upload/image', formData, {
       timeout: 5000,
     });
   },
@@ -100,5 +100,11 @@ export default {
    */
   getParsedLocalName(lat, lng) {
     return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
+  },
+
+  publishNews(userNo, title, content, address) {
+    return axios.post('/api/post/news', {
+      userNo, title, content, address,
+    });
   },
 };

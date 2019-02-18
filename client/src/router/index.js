@@ -31,8 +31,7 @@ export default new Router({
   routes: [
     {
       path: '',
-      // redirect: LoginPage,
-      redirect: MainPage,
+      redirect: LoginPage,
     },
     {
       path: '/login',
@@ -58,7 +57,7 @@ export default new Router({
       path: '/main',
       name: 'MainPage',
       component: MainPage,
-      // beforeEnter: requireAuth(),
+      beforeEnter: requireAuth(),
       children: [
         { path: '', redirect: 'local' },
         { path: 'local', name: 'LocalNewsTab', component: LocalNewsTab },
@@ -69,6 +68,7 @@ export default new Router({
     {
       path: '/write',
       name: 'WritePage',
+      beforeEnter: requireAuth(),
       component: WritePage,
     },
     {

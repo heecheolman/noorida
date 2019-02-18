@@ -80,7 +80,6 @@ router.post('/post/news', async (req, res) => {
 });
 
 router.get('/find-id', async (req, res) => {
-  console.log('tq');
   const { realName, email } = req.param;
   const result = await findService.findId({ realName, email })
     .then(results => results)

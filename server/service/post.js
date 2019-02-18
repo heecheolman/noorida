@@ -32,7 +32,7 @@ module.exports = {
     const result = await knex('contents')
       .join('users', 'users.userNo', '=', 'contents.userNo')
       .join('local', 'local.localNo', '=', 'contents.localNo')
-      .select('users.nickName', 'users.avatar', 'contnets.title', 'contents.content', 'contents.updatedAt', 'local.localName')
+      .select('users.nickName', 'users.avatar', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
       .where(localNo)
       .limit(moreContents * 15)
       .offset(15)

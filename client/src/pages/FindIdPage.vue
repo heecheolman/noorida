@@ -37,7 +37,7 @@
         </div>
       </div>
       <div class="flex-container flex-center-sort margin--top-30">
-        <a-button class="button-size" color="primary" type="primary" @click="FindId()">아이디 찾기</a-button>
+        <a-button class="button-size" color="primary" type="primary">아이디 찾기</a-button>
       </div>
       <div class="flex-container flex-center-sort margin--10">
         <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
@@ -66,17 +66,7 @@ export default {
   },
   methods : {
     goToBack() {
-      window.history.go(-1);
-    },
-    FindId() {
-      /*아이디 찾기 버튼 클릭시!! */
-      var check =confirm(this.name+'님 의 ID는 '+this.id + '입니다. \n 비밀번호찾기 창으로 이동하시겠습니까?');
-      if(check == true){
-        location.href = '#/find-password' ;
-      }else{
-        location.href = '#/login' ;
-      }
-
+      this.$router.push({ name: 'LoginPage' });
     },
   },
 };

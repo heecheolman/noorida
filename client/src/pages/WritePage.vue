@@ -53,7 +53,7 @@ export default {
               [{ list: 'ordered' }, { list: 'bullet' }],
               ['blockquote'],
               [{ align: [] }],
-              ['link', 'image','video'],
+              ['link', 'image', 'video'],
             ],
             handlers: {
               image: this.imageUploadHandler,

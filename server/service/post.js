@@ -28,4 +28,16 @@ module.exports = {
 
     return result;
   },
+  previewNewsList: async ({ localNo, moreContents }) => {
+    const result = await knex('contents')
+      .join('users', 'users.userNo', '=', 'contents.userNo')
+      .join('local', 'local.localNo', '=', 'contents.localNo')
+      .select('users.nickName', 'users.avatar', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
+      .where(localNo)
+      .limit(moreContents * 15)
+      .offset(15)
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
 };

@@ -36,7 +36,7 @@
                           htmlType="submit"
                           class="login-button">로그인</a-button>
                 <router-link :to="{ name: 'JoinPage' }"
-                             replace>회원가입</router-link>
+                             replac해e>회원가입</router-link>
               </div>
             </a-form-item>
           </a-form>
@@ -47,17 +47,16 @@
             <router-link tag="span" class="find-info" :to="{ name:'FindPasswordPage' }">
               비밀번호찾기</router-link>
           </div>
-
         </div>
       </div>
     </a-spin>
   </div>
 </template>
-
 <script>
 export default {
   name: 'LoginPage',
   beforeCreate() {
+    this.$store.dispatch('login/initLoginData');
     this.form = this.$form.createForm(this);
   },
   data() {
@@ -141,6 +140,5 @@ export default {
         margin: 0 5px;
       }
     }
-
   }
 </style>

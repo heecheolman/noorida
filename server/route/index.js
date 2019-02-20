@@ -3,6 +3,8 @@ const multer = require('multer');
 const joinService = require('../service/join');
 const loginService = require('../service/login');
 const postService = require('../service/post');
+const findService = require('../service/findId');
+
 
 const router = express.Router();
 
@@ -77,5 +79,27 @@ router.post('/post/news', async (req, res) => {
   res.json('ok');
 });
 
+router.get('/find-id', async (req, res) => {
+  const { realName, email } = req.param;
+  const result = await findService.findId({ realName, email })
+    .then(results => results)
+    .catch(err => err);
+  if (result) {
+    res.send(result[0]);
+  } else {
+    res.send(false);
+  }
+});
 
+router.get('/post/news-list/:localName', async (req, res) => {
+  const { localNo } = req.param;
+  let moreContents = 0
+  const result = await postService.previewNewsList({ localNo, moreContents })
+    .then(results => results)
+    .catch(err => err);
+  if (result.length > 15) { // 지역의 게시물의 개수가 15개 이상이면 더 불러오기
+    moreContents += 1;
+  }
+  res.json(result);
+});
 module.exports = router;

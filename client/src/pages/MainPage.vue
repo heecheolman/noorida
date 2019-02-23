@@ -61,6 +61,15 @@
                 @close="closeSidebar"
                 :visible="sidebarVisible">
         <!-- menu content -->
+        <div>
+          <router-link :to="{name : ' '}"
+                       tag= "p">프로필 페이지</router-link>
+          <router-link :to="{name : ' '}"
+                       tag= "p">설정</router-link>
+          <router-link :to="{name : ' '}"
+                       tag= "p">로그아웃</router-link>
+        </div>
+        <!-- menu content -->
         <div
           :style="{
           position: 'absolute',
@@ -83,10 +92,7 @@
 export default {
   name: 'MainPage',
   async created() {
-    await this.$store.dispatch('login/fetchUserLocation');
-    await this.$store.dispatch('login/fetchParsedLocalName');
-  },
-  computed: {
+    await this.$store.dispatch('user/updateLocation');
   },
   data() {
     return {

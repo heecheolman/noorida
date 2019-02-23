@@ -5,7 +5,6 @@
     {{ previewPost.content }}
     {{ previewPost.nickName }}
     {{ previewPost.updatedAt }}
-    민지 테스트
   </div>
 </template>
 

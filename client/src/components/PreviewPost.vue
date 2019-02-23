@@ -1,11 +1,14 @@
 <template>
   <div>
-    <li>local post</li>
+    preview post
   </div>
 </template>
 
 <script>
 export default {
-  name: 'LocalPost',
+  name: 'PreviewPost',
 };
 </script>
+
+<style lang="scss" scoped>
+</style>

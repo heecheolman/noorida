@@ -55,34 +55,28 @@ const actions = {
       commit(types.LOGIN, false);
     }
   },
+
   initLoginData: ({ commit }) => {
     commit(types.INIT_LOGIN_DATA);
   },
+
   fetchUserLocation: async ({ commit }) => {
     const data = await api.getLocation()
       .then(result => result.data)
       .catch(err => err);
-
-    // 임시 데이터
-    // console.log('login vuex location', data.location);
-    // const location = {
-    //   lat: 37.6689979,
-    //   lng: 127.05075719999999,
-    // };
     commit(types.FETCH_LOCATION, data.location);
   },
+
   fetchParsedLocalName: async ({ commit }) => {
     const location = state.location;
     const data = await api.getParsedLocalName(location.lat, location.lng)
       .then(result => result.data)
       .catch(err => err);
-
-    const localMeta = data.results.filter(local =>
-      local.types.indexOf('political') !== -1 &&
-      local.types.indexOf('sublocality_level_1') !== -1)[0];
-
-    commit(types.SET_ADDRESS, localMeta.formatted_address);
-    commit(types.SET_PLACE_ID, localMeta.place_id);
+    const localMeta = data.results.filter(local => local.types.indexOf('postal_code') !== -1);
+    if (localMeta.length) {
+      commit(types.SET_ADDRESS, localMeta[0].formatted_address);
+      commit(types.SET_PLACE_ID, localMeta[0].place_id);
+    }
   },
 };
 

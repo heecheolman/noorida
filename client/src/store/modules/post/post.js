@@ -7,9 +7,8 @@ const state = {
   location: {
     lng: 0,
     lat: 0,
-    name: '',
   },
-  imageCount: 0,
+  localPreviewPostList: [],
 };
 
 const mutations = {
@@ -26,9 +25,19 @@ const getters = {
 
 const actions = {
   uploadProcess: async ({ commit }, payload) => {
-    const result = await api.publishNews(payload.userNo, state.title, state.content, payload.address)
+    console.log('address', payload.address);
+    const result = await api.publishNews(payload.userId, state.title, state.content, payload.address)
       .then(results => results)
       .catch(err => err);
+  },
+
+  getLocalPreviewPostList: async ({ commit, state }, payload) => {
+    console.log('[store] getLocalPreviewPostList payload', payload);
+    const result = await api.getLocalPreviewPostList(payload)
+      .then(results => results.data)
+      .catch(err => err);
+
+    console.log('[store] getLocalPreviewPostList', result);
   },
 };
 

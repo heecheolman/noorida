@@ -2,24 +2,27 @@
   <div>Local
     {{ address }}
     {{ placeId }}
-    <local-post />
+    <preview-post />
   </div>
 </template>
 
 <script>
-import LocalPost from '@/components/LocalPost';
+import PreviewPost from '@/components/PreviewPost';
 import { mapState } from 'vuex';
 
 export default {
   name: 'LocalNewsTab',
   components: {
-    LocalPost,
+    PreviewPost,
   },
   computed: {
     ...mapState('login', [
       'address',
       'placeId',
     ]),
+  },
+  async created() {
+    await this.$store.dispatch('post/getLocalPreviewPostList', this.address);
   },
 };
 </script>

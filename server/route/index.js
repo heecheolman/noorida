@@ -71,8 +71,8 @@ router.post('/upload/image', upload.single('image'), (req, res) => {
 });
 
 router.post('/post/news', async (req, res) => {
-  const { userNo, title, content, address } = req.body;
-  const result = await postService.publishNews({ userNo, title, content, address })
+  const { userId, title, content, address } = req.body;
+  const result = await postService.publishNews({ userId, title, content, address })
     .then(results => results)
     .catch(err => err);
 
@@ -80,7 +80,7 @@ router.post('/post/news', async (req, res) => {
 });
 
 router.get('/find-id', async (req, res) => {
-  const { realName, email } = req.param;
+  const { realName, email } = req.params;
   const result = await findService.findId({ realName, email })
     .then(results => results)
     .catch(err => err);
@@ -91,15 +91,14 @@ router.get('/find-id', async (req, res) => {
   }
 });
 
-router.get('/post/news-list/:localName', async (req, res) => {
-  const { localNo } = req.param;
-  let moreContents = 0
-  const result = await postService.previewNewsList({ localNo, moreContents })
+router.get('/posts/local/:localName', async (req, res) => {
+  console.log(1);
+  const { localName } = req.params;
+  console.log(2, localName);
+  const result = await postService.previewNewsList({ localName })
     .then(results => results)
     .catch(err => err);
-  if (result.length > 15) { // 지역의 게시물의 개수가 15개 이상이면 더 불러오기
-    moreContents += 1;
-  }
+  console.log(3, result);
   res.json(result);
 });
 module.exports = router;

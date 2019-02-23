@@ -102,9 +102,21 @@ export default {
     return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
   },
 
-  publishNews(userNo, title, content, address) {
+  publishNews(userId, title, content, address) {
     return axios.post('/api/post/news', {
-      userNo, title, content, address,
+      userId,
+      title,
+      content,
+      address,
+    });
+  },
+
+  getLocalPreviewPostList(localName) {
+    console.log('localName', localName);
+    return axios.get('/api/posts/local', {
+      params: {
+        localName,
+      },
     });
   },
 };

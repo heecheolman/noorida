@@ -18,6 +18,9 @@ const mutations = {
   [types.SET_CONTENT](state, payload) {
     state.content = payload;
   },
+  [types.FETCH_PREVIEW_LOCAL_POST](state, payload) {
+    state.localPreviewPostList = payload;
+  },
 };
 
 const getters = {
@@ -25,19 +28,16 @@ const getters = {
 
 const actions = {
   uploadProcess: async ({ commit }, payload) => {
-    console.log('address', payload.address);
     const result = await api.publishNews(payload.userId, state.title, state.content, payload.address)
       .then(results => results)
       .catch(err => err);
   },
 
   getLocalPreviewPostList: async ({ commit, state }, payload) => {
-    console.log('[store] getLocalPreviewPostList payload', payload);
-    const result = await api.getLocalPreviewPostList(payload)
+    const localPreviewList = await api.getLocalPreviewPostList(payload)
       .then(results => results.data)
       .catch(err => err);
-
-    console.log('[store] getLocalPreviewPostList', result);
+    commit(types.FETCH_PREVIEW_LOCAL_POST, localPreviewList);
   },
 };
 

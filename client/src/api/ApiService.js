@@ -112,10 +112,9 @@ export default {
   },
 
   getLocalPreviewPostList(localName) {
-    console.log('localName', localName);
-    return axios.get('/api/posts/local', {
+    return axios.get(`/api/posts/local/${encodeURI(localName)}`, {
       params: {
-        localName,
+        localName: encodeURI(localName),
       },
     });
   },

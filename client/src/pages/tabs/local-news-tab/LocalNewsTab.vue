@@ -2,7 +2,9 @@
   <div>Local
     {{ address }}
     {{ placeId }}
-    <preview-post />
+    <preview-post v-for="(previewPost, index) in localPreviewPostList"
+                  :key="index"
+                  :preview-post="previewPost"/>
   </div>
 </template>
 
@@ -19,6 +21,9 @@ export default {
     ...mapState('login', [
       'address',
       'placeId',
+    ]),
+    ...mapState('post', [
+      'localPreviewPostList',
     ]),
   },
   async created() {

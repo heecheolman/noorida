@@ -92,13 +92,10 @@ router.get('/find-id', async (req, res) => {
 });
 
 router.get('/posts/local/:localName', async (req, res) => {
-  console.log(1);
   const { localName } = req.params;
-  console.log(2, localName);
   const result = await postService.previewNewsList({ localName })
     .then(results => results)
     .catch(err => err);
-  console.log(3, result);
   res.json(result);
 });
 module.exports = router;

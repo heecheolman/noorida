@@ -20,7 +20,7 @@ import store from './../store/store';
 Vue.use(Router);
 
 const requireAuth = () => (to, from, next) => {
-  if (store.getters['login/getLoginSuccess']) {
+  if (store.state.auth.loginStatus) {
     next();
   } else {
     next({ name: 'LoginPage' });

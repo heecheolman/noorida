@@ -43,17 +43,22 @@ const getters = {
 const actions = {
   loginProcess: async ({ commit }, payload) => {
     const { nickName, password } = payload;
-    const user = await api.login(nickName, password)
-      .then(result => result.data)
+    const loginResult = await api.login(nickName, password)
+      .then(results => results.data)
       .catch(err => err);
-
-    if (user && !(user instanceof Error)) {
-      commit(types.FETCH_USER_DATA, user);
-      commit(types.LOGIN, true);
+    if (loginResult.loginStatus) {
+      commit('user/FETCH_USER_DATA', loginResult.data, { root: true });
     } else {
-      commit(types.FETCH_USER_DATA, null);
-      commit(types.LOGIN, false);
+
     }
+
+    // if (user && !(user instanceof Error)) {
+    //   commit(types.FETCH_USER_DATA, user);
+    //   commit(types.LOGIN, true);
+    // } else {
+    //   commit(types.FETCH_USER_DATA, null);
+    //   commit(types.LOGIN, false);
+    // }
   },
 
   initLoginData: ({ commit }) => {

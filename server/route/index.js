@@ -50,9 +50,15 @@ router.post('/login', async (req, res) => {
     .catch(err => err);
 
   if (result.length === 1) {
-    res.json(result[0]);
+    res.json({
+      data: result[0],
+      loginStatus: true,
+    });
   } else {
-    res.send(false);
+    res.json({
+      data: null,
+      loginStatus: false,
+    });
   }
 });
 

@@ -53,7 +53,7 @@ export default {
               [{ list: 'ordered' }, { list: 'bullet' }],
               ['blockquote'],
               [{ align: [] }],
-              ['link', 'image', 'video'],
+              ['link', 'image'],
             ],
             handlers: {
               image: this.imageUploadHandler,
@@ -70,15 +70,7 @@ export default {
       setContent: 'SET_CONTENT',
     }),
     uploadPost() {
-      /**
-       * 1. userNo 과 address 를 가져옴
-       * 2. 'ㅇㅇ구' 를 뽑아냄
-       * 3. userNo 과 address 를 보내줌
-       */
-      const userNo = this.$store.state.login.user.userNo;
-      const fullAddress = this.$store.state.login.address;
-      const address = fullAddress.split(' ')[2];
-      this.$store.dispatch('post/uploadProcess', { userNo, address });
+      this.$store.dispatch('post/uploadProcess');
     },
     imageUploadHandler() {
       // TODO

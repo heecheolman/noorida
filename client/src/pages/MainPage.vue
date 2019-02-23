@@ -92,10 +92,7 @@
 export default {
   name: 'MainPage',
   async created() {
-    await this.$store.dispatch('login/fetchUserLocation');
-    await this.$store.dispatch('login/fetchParsedLocalName');
-  },
-  computed: {
+    await this.$store.dispatch('user/updateLocation');
   },
   data() {
     return {

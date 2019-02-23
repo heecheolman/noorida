@@ -1,2 +1,3 @@
 export const SET_TITLE = 'SET_TITLE';
 export const SET_CONTENT = 'SET_CONTENT';
+export const FETCH_PREVIEW_LOCAL_POST = 'FETCH_PREVIEW_LOCAL_POST';

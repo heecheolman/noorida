@@ -107,4 +107,5 @@ export default {
       userNo, title, content, address,
     });
   },
+
 };

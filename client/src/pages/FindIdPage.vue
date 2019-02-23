@@ -1,52 +1,56 @@
 <template>
   <div class="page flex-container flex-center-sort">
     <div class="find-box">
-      <div class="head-title text-center flex-container flex-center-sort">
+      <div class="title-head text-center flex-container flex-center-sort">
         <h1 class="title-color">아이디 찾기</h1>
       </div>
       <div>
-        <div class="components-input-demo-size flex-container flex-center-sort">
-          <a-input
-            v-decorator="[
-          'name',
-          {
-            rules: [{
-              required: true, message: 'Please input your Name',
-            }]
-          }
-        ]"
-            placeholder="이름"
-            v-model="name"
-          />
-        </div>
-        <div class="components-input-demo-size flex-container flex-center-sort ">
-          <a-input
-            v-decorator="[
-          'email',
-          {
-            rules: [{
-              type: 'email', message: 'The input is not valid E-mail!',
-            }, {
-              required: true, message: 'Please input your E-mail!',
-            }]
-          }
-        ]"
-            placeholder="이메일"
-            v-model="email"
-          />
-        </div>
+        <a-form
+          :form="form"
+          @submit="FindId">
+          <div class="components-input-demo-size flex-container flex-center-sort">
+            <a-input
+              v-decorator="[
+                'name',
+                {
+                  rules: [{
+                    required: true, message: 'Please input your Name',
+                  }]
+                }
+              ]"
+              placeholder="이름"
+              v-model="name"
+            />
+          </div>
+          <div class="components-input-demo-size flex-container flex-center-sort ">
+            <a-input
+              v-decorator="[
+                'email',
+                {
+                  rules: [{
+                    type: 'email', message: 'The input is not valid E-mail!',
+                    }, {
+                    required: true, message: 'Please input your E-mail!',
+                  }]
+                }
+              ]"
+              placeholder="이메일"
+              v-model="email"
+            />
+          </div>
+          <div class="flex-container flex-center-sort margin--top-30">
+            <a-button class="button-size" color="primary" type="primary"
+                      htmlType="submit">아이디 찾기</a-button>
+          </div>
+          <div class="flex-container flex-center-sort margin--10">
+            <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
+          </div>
+        </a-form>
       </div>
-      <div class="flex-container flex-center-sort margin--top-30">
-        <a-button class="button-size" color="primary" type="primary">아이디 찾기</a-button>
-      </div>
-      <div class="flex-container flex-center-sort margin--10">
-        <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
-      </div>
-
       <div class="link-move flex-container flex-center-sort margin--bottom-10">
-        <router-link tag="span" class="id-password-link" :to="{ name: 'LoginPage' }">로그인</router-link>
-        <br>
-        <router-link tag="span" class= "id-password-link" :to="{ name:'FindPasswordPage' }">
+        <router-link tag="span" class="find-link-design" :to="{ name: 'LoginPage' }">로그인</router-link>
+          <br>
+        <router-link tag="span" class= "find-link-design" :to="{ name:'FindPasswordPage' }">
           비밀번호 찾기</router-link>
       </div>
     </div>
@@ -56,11 +60,14 @@
 <script>
 export default {
   name: 'FindIdPage',
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
+  },
   data() {
     return {
       name: '',
       email: '',
-      id: '',
+      nickName: '',
 
     };
   },
@@ -68,8 +75,29 @@ export default {
     goToBack() {
       this.$router.push({ name: 'LoginPage' });
     },
+
+    FindId(e) {
+      e.preventDefault();
+      this.form.validateFields(async (err, values) => {
+        if (!err) {
+          await this.$store.dispatch('find/findIdProcess', {
+            name: values.name,
+            email: values.email,
+          });
+        }
+        if(this.$store.getters['find/getFindNickname']){
+          console.log(state.foundNickName);
+          this.$message.config(state.getFindNickname);
+          //this.$router.replace({name: 'LoginPage'});
+        }else{
+          this.$message.warning('일치하는 회원정보가 없습니다.');
+        }
+      });
+    },
   },
 };
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -80,7 +108,7 @@ export default {
     height: 90%;
     padding: 20px;
   }
-  .id-password-link{
+  .find-link-design{
     font-size: 12px;
     text-decoration: underline;
     margin: 10px;
@@ -96,7 +124,7 @@ export default {
     margin: 8px;
   }
 
-  .head-title{
+  .title-head{
     height: 100px;
     background: white;
   }

@@ -5,6 +5,7 @@
     {{ previewPost.content }}
     {{ previewPost.nickName }}
     {{ previewPost.updatedAt }}
+    테스트
   </div>
 </template>
 

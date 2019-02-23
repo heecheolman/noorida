@@ -4,10 +4,6 @@ import * as types from './mutation_types';
 const state = {
   title: '',
   content: '',
-  location: {
-    lng: 0,
-    lat: 0,
-  },
   localPreviewPostList: [],
 };
 
@@ -27,16 +23,22 @@ const getters = {
 };
 
 const actions = {
-  uploadProcess: async ({ commit }, payload) => {
-    const result = await api.publishNews(payload.userId, state.title, state.content, payload.address)
+  uploadProcess: async ({ rootState }) => {
+    await api.publishNews(
+      rootState.user.user.userId,
+      state.title,
+      state.content,
+      rootState.user.location.address,
+    )
       .then(results => results)
       .catch(err => err);
   },
 
-  getLocalPreviewPostList: async ({ commit, state }, payload) => {
-    const localPreviewList = await api.getLocalPreviewPostList(payload)
+  getLocalPreviewPostList: async ({ commit, rootState }) => {
+    const localPreviewList = await api.getLocalPreviewPostList(rootState.user.location.address)
       .then(results => results.data)
       .catch(err => err);
+
     commit(types.FETCH_PREVIEW_LOCAL_POST, localPreviewList);
   },
 };

@@ -56,7 +56,6 @@
 export default {
   name: 'LoginPage',
   beforeCreate() {
-    this.$store.dispatch('login/initLoginData');
     this.form = this.$form.createForm(this);
   },
   data() {

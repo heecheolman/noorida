@@ -70,14 +70,7 @@ export default {
       setContent: 'SET_CONTENT',
     }),
     uploadPost() {
-      /**
-       * 1. userId 과 address 를 가져옴
-       * 2. 'ㅇㅇ구' 를 뽑아냄
-       * 3. userId 과 address 를 보내줌
-       */
-      const userId = this.$store.state.login.user.userId;
-      const address = this.$store.state.login.address;
-      this.$store.dispatch('post/uploadProcess', { userId, address });
+      this.$store.dispatch('post/uploadProcess');
     },
     imageUploadHandler() {
       // TODO

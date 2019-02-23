@@ -1,7 +1,6 @@
 <template>
   <div>Local
     {{ address }}
-    {{ placeId }}
     <a-list
       itemLayout="horizontal"
       :dataSource="localPreviewPostList"
@@ -13,9 +12,6 @@
         </a-list-item-meta>
       </a-list-item>
     </a-list>
-    <!--<preview-post v-for="(previewPost, index) in localPreviewPostList"-->
-                  <!--:key="index"-->
-                  <!--:preview-post="previewPost"/>-->
   </div>
 </template>
 
@@ -29,16 +25,17 @@ export default {
     PreviewPost,
   },
   computed: {
-    ...mapState('login', [
-      'address',
-      'placeId',
-    ]),
     ...mapState('post', [
       'localPreviewPostList',
     ]),
   },
+  data() {
+    return {
+      address: this.$store.state.user.location.address,
+    };
+  },
   async created() {
-    await this.$store.dispatch('post/getLocalPreviewPostList', this.address);
+    await this.$store.dispatch('post/getLocalPreviewPostList');
   },
 };
 </script>

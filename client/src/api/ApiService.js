@@ -135,4 +135,9 @@ export default {
     });
   },
 
+  getPostContent(id) {
+    return axios.get(`/api/post/${id}`, {
+      params: { id },
+    });
+  },
 };

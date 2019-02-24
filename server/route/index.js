@@ -105,4 +105,16 @@ router.get('/posts/local', async (req, res) => {
 
   res.json(result);
 });
+
+router.get('/post/:id', async (req, res) => {
+  const { id } = req.params;
+  const result = await postService.getPost({ id })
+    .then(results => results)
+    .catch(err => err);
+  if (result.length) {
+    res.json(result[0]);
+  } else {
+    res.statusCode(500);
+  }
+});
 module.exports = router;

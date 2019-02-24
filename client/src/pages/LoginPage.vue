@@ -90,7 +90,7 @@ export default {
           });
           this.loginLoading = false;
           if (this.$store.state.auth.loginStatus) {
-            this.$router.replace({ name: 'LocalNewsTab' });
+            this.$router.push({ name: 'LocalNewsTab' });
           } else {
             this.$message.warning('아이디 또는 비밀번호가 일치하지 않습니다.');
           }

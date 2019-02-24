@@ -50,7 +50,10 @@ export default {
     }),
     routeDetailPage(contentId) {
       if (contentId) {
-        console.log('clicked', contentId);
+        this.$router.push({
+          name: 'PostDetailPage',
+          params: { contentId },
+        });
       }
     },
   },

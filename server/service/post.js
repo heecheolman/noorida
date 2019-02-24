@@ -79,4 +79,16 @@ module.exports = {
     }
     return {};
   },
+
+  getPost: async ({ id }) => {
+    /**
+     * localId 를 가져와야하는가 */
+    const result = await knex('contents')
+      .select('userId', 'createdAt', 'updatedAt', 'title', 'content')
+      .where('contentId', id)
+      .then(results => results)
+      .catch(err => err);
+
+    return JSON.parse(JSON.stringify(result));
+  },
 };

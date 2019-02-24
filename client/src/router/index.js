@@ -81,10 +81,11 @@ export default new Router({
       component: WritePage,
     },
     {
-      path: 'post/:id',
+      path: 'post/:contentId',
       name: 'PostDetailPage',
       component: PostDetailPage,
       beforeEnter: requireAuth(),
+      props: true,
     },
     {
       path: '*',

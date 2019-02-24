@@ -27,11 +27,15 @@ const mutations = {
   [types.UPDATE_LAST_ID](state, payload) {
     state.lastId = payload;
   },
-  [types.INIT_PREVIEWLIST](state) {
+  [types.INIT_PREVIEW_LIST](state) {
     state.localPreviewPostList = [];
     state.busy = false;
     state.lastId = -1;
     state.hasNextPost = true;
+  },
+  [types.INIT_TITLE_CONTENT](state) {
+    state.title = '';
+    state.content = '';
   },
 };
 
@@ -39,7 +43,7 @@ const getters = {
 };
 
 const actions = {
-  uploadProcess: async ({ rootState }) => {
+  async uploadProcess({ rootState }) {
     await api.publishNews(
       rootState.user.user.userId,
       state.title,
@@ -50,7 +54,7 @@ const actions = {
       .catch(err => err);
   },
 
-  loadLocalPreviewPostList: async ({ commit, state, rootState }) => {
+  async loadLocalPreviewPostList({ commit, state, rootState }) {
     if (state.hasNextPost) {
       state.loading = true;
       const resData = await api.loadLocalPreviewPostList(rootState.user.location.address, state.lastId)

@@ -8,15 +8,13 @@
                       :infinite-scroll-disabled="busy"
                       :infinite-scroll-distance="10">
 
-      <a-list-item slot-scope="{ item }">
+      <a-list-item slot-scope="{ item }" @click="routeDetailPage(item.contentId)">
 
         <a-list-item-meta :description="item.nickName">
           <a slot="title">{{ item.title }}</a>
           <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
         </a-list-item-meta>
-
         <span class="timeline">{{ item.updatedAt | timeline }}</span>
-
       </a-list-item>
 
     </virtual-scroller>
@@ -50,13 +48,17 @@ export default {
     ...mapActions('post', {
       loadMore: 'loadLocalPreviewPostList',
     }),
+    routeDetailPage(contentId) {
+      if (contentId) {
+        console.log('clicked', contentId);
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/typography';
-
   .scroller {
     /* 120px = header + footer */
     height: calc(100vh - 120px);
@@ -65,20 +67,23 @@ export default {
     .ant-list-item {
       padding: 12px 10px;
 
-      .ant-list-item-meta-title {
-        @include font-size-normal;
-      }
-      .ant-list-item-meta-description {
-        @include font-size-xx-small;
-        line-height: 22px;
+      .ant-list-item-meta {
+        flex: 4;
+        .ant-list-item-meta-content {
+          .ant-list-item-meta-title {
+            @include font-size-normal;
+          }
+          .ant-list-item-meta-description {
+            @include font-size-xx-small;
+            line-height: 22px;
+          }
+        }
       }
       .ant-list-item-content {
-        @include font-size-small
-      }
-
-      .timeline {
-        @include font-size-small;
-        color:rgba(0, 0, 0, 0.45);
+        .timeline {
+          @include font-size-small;
+          color:rgba(0, 0, 0, 0.45);
+        }
       }
     }
   }

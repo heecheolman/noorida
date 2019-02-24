@@ -111,10 +111,11 @@ export default {
     });
   },
 
-  getLocalPreviewPostList(localName) {
-    return axios.get(`/api/posts/local/${encodeURI(localName)}`, {
+  loadLocalPreviewPostList(localName, lastId) {
+    return axios.get('/api/posts/local', {
       params: {
-        localName: encodeURI(localName),
+        localName: decodeURI(localName),
+        lastId,
       },
     });
   },

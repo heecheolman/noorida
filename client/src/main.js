@@ -6,6 +6,8 @@ import Antd from 'ant-design-vue';
 import VeeValidate from 'vee-validate';
 import Vue from 'vue';
 import VueGeolocation from 'vue-browser-geolocation';
+import VueVirtualScroller from 'vue-virtual-scroller';
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css';
 
 import router from './router';
 import api from './api/ApiService';
@@ -19,6 +21,7 @@ Vue.prototype.$api = api;
 Vue.use(VeeValidate);
 Vue.use(Antd);
 Vue.use(VueGeolocation);
+Vue.use(VueVirtualScroller);
 
 /* eslint-disable no-new */
 new Vue({

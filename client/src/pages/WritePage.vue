@@ -43,6 +43,7 @@ export default {
   },
   data() {
     return {
+      address: this.$store.state.user.location.address,
       editorOption: {
         placeholder: '내용',
         modules: {
@@ -66,11 +67,29 @@ export default {
   },
   methods: {
     ...mapMutations('post', {
+      initTitleContent: 'INIT_TITLE_CONTENT',
       setTitle: 'SET_TITLE',
       setContent: 'SET_CONTENT',
     }),
     uploadPost() {
-      this.$store.dispatch('post/uploadProcess');
+      const vm = this;
+      const modalRef = this.$confirm({
+        title: '위치확인',
+        content: `작성하려는 위치가 ${this.address} 이(가) 맞나요?`,
+        okText: '작성',
+        cancelText: '취소',
+        confirmLoading: false,
+        iconType: 'environment',
+        onOk: async () => {
+          this.confirmLoading = true;
+          await this.$store.dispatch('post/uploadProcess');
+          this.confirmLoading = false;
+          vm.$message.success('기사가 작성되었습니다');
+          this.$router.replace({ name: 'LocalNewsTab' });
+          vm.initTitleContent();
+        },
+        afterClose: () => modalRef.destroy(),
+      });
     },
     imageUploadHandler() {
       // TODO

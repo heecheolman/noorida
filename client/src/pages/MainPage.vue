@@ -8,6 +8,7 @@
                           padding: 0,
                           height: '50px',
                           boxShadow: '0 1px 5px rgba(57, 63, 72, 0.3)',
+                          zIndex: 100,
                        }"
                        size="small">
         <div class="flex-container flex-between-sort flex-row">
@@ -91,9 +92,6 @@
 <script>
 export default {
   name: 'MainPage',
-  async created() {
-    await this.$store.dispatch('user/updateLocation');
-  },
   data() {
     return {
       sidebarVisible: false,
@@ -129,7 +127,7 @@ export default {
     width: 100%;
     height: calc(100vh - 70px);
     padding-top: $header-height;
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
   }
 
   .tab-pane {

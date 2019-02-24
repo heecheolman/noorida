@@ -97,11 +97,24 @@ router.get('/find-id', async (req, res) => {
   }
 });
 
-router.get('/posts/local/:localName', async (req, res) => {
-  const { localName } = req.params;
-  const result = await postService.previewNewsList({ localName })
+router.get('/posts/local', async (req, res) => {
+  const { localName, lastId } = req.query;
+  const result = await postService.loadPreviewLocalNewsList({ localName, lastId })
     .then(results => results)
     .catch(err => err);
+
   res.json(result);
+});
+
+router.get('/post/:id', async (req, res) => {
+  const { id } = req.params;
+  const result = await postService.getPost({ id })
+    .then(results => results)
+    .catch(err => err);
+  if (result.length) {
+    res.json(result[0]);
+  } else {
+    res.statusCode(500);
+  }
 });
 module.exports = router;

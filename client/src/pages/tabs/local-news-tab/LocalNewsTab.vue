@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!--<div class="local-info">-->
-      <!--{{ address }}-->
-    <!--</div>-->
     <div>
       <virtual-list :post-list="localPreviewPostList"/>
     </div>

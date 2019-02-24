@@ -14,6 +14,7 @@ import api from './api/ApiService';
 import App from './App';
 import store from './store/store';
 import './assets/scss/main.scss';
+import filters from './filters';
 
 Vue.config.productionTip = false;
 Vue.prototype.$api = api;
@@ -22,6 +23,7 @@ Vue.use(VeeValidate);
 Vue.use(Antd);
 Vue.use(VueGeolocation);
 Vue.use(VueVirtualScroller);
+Vue.use(filters);
 
 /* eslint-disable no-new */
 new Vue({

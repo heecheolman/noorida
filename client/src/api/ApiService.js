@@ -102,6 +102,15 @@ export default {
     return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
   },
 
+
+  /**
+   * 기사 작성 api
+   * @param userId
+   * @param title
+   * @param content
+   * @param address
+   * @returns {AxiosPromise<any>}
+   */
   publishNews(userId, title, content, address) {
     return axios.post('/api/post/news', {
       userId,
@@ -111,6 +120,12 @@ export default {
     });
   },
 
+  /**
+   * 지역이름과, 받아올 마지막 id 값을 넘겨주면 포스트를 가져옴
+   * @param localName
+   * @param lastId
+   * @returns {AxiosPromise<any>}
+   */
   loadLocalPreviewPostList(localName, lastId) {
     return axios.get('/api/posts/local', {
       params: {

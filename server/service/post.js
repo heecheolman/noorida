@@ -42,16 +42,10 @@ module.exports = {
       if (extLocalName === localName) {
         const extLocalId = extractedData[0].localId;
 
-
-        /* 처음일시 lastId 기준 처리 */
-        let opr = '';
-        if (lastId < 0) {
-          opr = '>';
-        } else {
-          opr = '<';
-        }
-
-        console.log('lastId', lastId);
+        /* 초기일시 lastId 기준 처리 */
+        const opr = lastId < 0
+          ? '>'
+          : '<';
 
         const result = await knex('contents')
           .select(
@@ -71,49 +65,18 @@ module.exports = {
           .then(results => results)
           .catch(err => err);
 
-        // 여기서 문제임
+        /* 초기일시 lastId 기준 처리 */
+        lastId = lastId === -1
+          ? 0
+          : lastId;
 
-        if (lastId === -1) {
-          lastId = 0;
-        }
-
-        console.log('result', result);
-
-        const resData = {
+        return {
           result,
           lastId: result.length ? result[result.length - 1].contentId : lastId,
           hasNextPost: result.length === LIMIT,
         };
-
-        return resData;
       }
     }
     return {};
   },
-
-  // previewNewsList: async ({ localName }) => {
-  //   const extractedData = await knex('local')
-  //     .where({ localName })
-  //     .then(rowData => JSON.parse(JSON.stringify(rowData)))
-  //     .catch(err => err);
-  //
-  //   if (extractedData.length) {
-  //     const extLocalName = extractedData[0].localName;
-  //
-  //     if (extLocalName === localName) {
-  //       const extLocalId = extractedData[0].localId;
-  //       const result = await knex('contents')
-  //         .select('users.nickName', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
-  //         .where('local.localId', extLocalId)
-  //         .join('users', 'users.userId', '=', 'contents.userId')
-  //         .join('local', 'local.localId', '=', 'contents.localId')
-  //         .limit(moreContents * 15)
-  //         .offset(15)
-  //         .then(results => results)
-  //         .catch(err => err);
-  //       return result;
-  //     }
-  //   }
-  //   return {};
-  // },
 };

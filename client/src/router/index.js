@@ -8,6 +8,7 @@ import MainPage from '../pages/MainPage';
 import FindIdPage from '../pages/FindIdPage';
 import FindPasswordPage from '../pages/FindPasswordPage';
 import WritePage from '../pages/WritePage';
+import PostDetailPage from '../pages/PostDetailPage';
 
 
 /*  Tabs  */
@@ -34,42 +35,56 @@ export default new Router({
       redirect: LoginPage,
     },
     {
-      path: '/login',
+      path: 'login',
       name: 'LoginPage',
       component: LoginPage,
     },
     {
-      path: '/join',
+      path: 'join',
       name: 'JoinPage',
       component: JoinPage,
     },
     {
-      path: '/find-id',
+      path: 'find-id',
       name: 'FindIdPage',
       component: FindIdPage,
     },
     {
-      path: '/find-password',
+      path: 'find-password',
       name: 'FindPasswordPage',
       component: FindPasswordPage,
     },
     {
-      path: '/main',
+      path: 'main',
       name: 'MainPage',
       component: MainPage,
       beforeEnter: requireAuth(),
       children: [
-        { path: '', redirect: 'local' },
-        { path: 'local', name: 'LocalNewsTab', component: LocalNewsTab },
+        { path: '', redirect: { name: 'LocalNewsTab' } },
+        {
+          path: 'local',
+          name: 'LocalNewsTab',
+          component: LocalNewsTab,
+          async beforeEnter(to, from, next) {
+            await store.dispatch('user/updateLocation');
+            next();
+          },
+        },
         { path: 'subscribe', name: 'SubscribeNewsTab', component: SubscribeNewsTab },
         { path: 'hot', name: 'HotNewsTab', component: HotNewsTab },
       ],
     },
     {
-      path: '/write',
+      path: 'write',
       name: 'WritePage',
       beforeEnter: requireAuth(),
       component: WritePage,
+    },
+    {
+      path: 'post/:id',
+      name: 'PostDetailPage',
+      component: PostDetailPage,
+      beforeEnter: requireAuth(),
     },
     {
       path: '*',

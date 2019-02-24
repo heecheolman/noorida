@@ -92,9 +92,6 @@
 <script>
 export default {
   name: 'MainPage',
-  async created() {
-    await this.$store.dispatch('user/updateLocation');
-  },
   data() {
     return {
       sidebarVisible: false,

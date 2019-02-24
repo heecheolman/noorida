@@ -107,5 +107,31 @@ export default {
       userNo, title, content, address,
     });
   },
+  /**
+   * 아이디 찾기
+   * @param realName
+   * @param email
+   * @returns {AxiosPromise<any>}
+   */
+  findId(realName, email) {
+    return axios.post('/api/find-id', {
+      realName,
+      email,
+    });
+  },
 
+  /**
+   * 비밀번호 찾기
+   * @param realName
+   * @param nickName
+   * @param email
+   * @returns {AxiosPromise<any>}
+   */
+  findPassword(realName, nickName, email){  //url 맘대로 둔것 나중에 고치기
+    return axios.post('/api/find-password',{
+      realName,
+      nickName,
+      email,
+    });
+  },
 };

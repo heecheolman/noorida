@@ -1,22 +1,25 @@
 <template>
   <div>
     <toolbar :title="'기사 작성중'"/>
-    <input class="input-title"
-           type="text"
-           :value="title"
-           @input="setTitle($event.target.value)"
-           placeholder="제목">
+    <div class="write-container">
+      <input class="input-title"
+              type="text"
+              :value="title"
+              @input="setTitle($event.target.value)"
+              placeholder="제목">
 
-    <quill-editor ref="editor"
-                  :value="content"
-                  @input="setContent($event)"
-                  :options="editorOption">
-    </quill-editor>
+      <quill-editor ref="editor"
+                    :value="content"
+                    @input="setContent($event)"
+                    :options="editorOption">
+      </quill-editor>
 
-    <div class="flex-container flex-center-sort">
-      <a-button type="primary"
-                :disabled="!title || !content"
-                @click="uploadPost()">기사작성</a-button>
+      <div class="flex-container flex-center-sort">
+        <a-button type="primary"
+                  :disabled="!title || !content"
+                  @click="uploadPost()">기사작성
+        </a-button>
+      </div>
     </div>
   </div>
 </template>
@@ -119,12 +122,16 @@ export default {
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/typography';
 
-  .input-title {
-    width: 100%;
-    height: 50px;
-    padding: 0 10px;
-    border: none;
-    outline: none;
-    @include font-size-large;
+  .write-container {
+    padding-top: 40px;
+
+    .input-title {
+      width: 100%;
+      height: 50px;
+      padding: 0 10px;
+      border: none;
+      outline: none;
+      @include font-size-large;
+    }
   }
 </style>

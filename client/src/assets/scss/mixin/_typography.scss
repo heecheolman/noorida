@@ -46,6 +46,33 @@
   color: #314659;
 }
 
+@mixin font-weight-1 {
+  font-weight: 100;
+}
+@mixin font-weight-2 {
+  font-weight: 200;
+}
+@mixin font-weight-3 {
+  font-weight: 300;
+}
+@mixin font-weight-4 {
+  font-weight: 400;     /* normal */
+}
+@mixin font-weight-5 {
+  font-weight: 500;
+}
+@mixin font-weight-6 {
+  font-weight: 600;
+}
+@mixin font-weight-7 {
+  font-weight: 700;     /* bold */
+}
+@mixin font-weight-8 {
+  font-weight: 800;
+}
+@mixin font-weight-9 {
+  font-weight: 900;
+}
 
 /* 수직정렬 */
 @mixin v-text-align ($height) {

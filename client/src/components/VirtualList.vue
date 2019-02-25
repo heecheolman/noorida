@@ -11,7 +11,7 @@
       <a-list-item slot-scope="{ item }" @click="routeDetailPage(item.contentId)">
 
         <a-list-item-meta :description="item.nickName">
-          <a slot="title">{{ item.title }}</a>
+          <a slot="title" style="word-break: break-all;">{{ item.title }}</a>
           <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
         </a-list-item-meta>
         <span class="timeline">{{ item.updatedAt | timeline }}</span>

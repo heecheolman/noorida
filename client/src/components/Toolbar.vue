@@ -33,6 +33,9 @@ export default {
 
 <style lang="scss" scoped>
   .toolbar {
+    position: fixed;
+    top: 0;
+    background-color: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;

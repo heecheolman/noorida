@@ -5,7 +5,6 @@ const loginService = require('../service/login');
 const postService = require('../service/post');
 const findService = require('../service/findId');
 
-
 const router = express.Router();
 
 const storage = multer.diskStorage({
@@ -81,19 +80,20 @@ router.post('/post/news', async (req, res) => {
   const result = await postService.publishNews({ userId, title, content, address })
     .then(results => results)
     .catch(err => err);
-
   res.json('ok');
 });
 
-router.get('/find-id', async (req, res) => {
-  const { realName, email } = req.params;
-  const result = await findService.findId({ realName, email })
-    .then(results => results)
-    .catch(err => err);
-  if (result) {
-    res.send(result[0]);
+router.post('/find-id', async (req, res) => {
+  const result = await findService.findId({
+    realName : req.body.realName,
+    email : req.body.email
+  })
+      .then(results => results)
+      .catch(err => err);
+  if (result.length !== 0) {
+    res.json(result[0]);
   } else {
-    res.send(false);
+    res.json(false);
   }
 });
 
@@ -105,6 +105,7 @@ router.get('/posts/local', async (req, res) => {
 
   res.json(result);
 });
+
 
 router.get('/post/:id', async (req, res) => {
   const { id } = req.params;

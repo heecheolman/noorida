@@ -9,52 +9,35 @@
           :form="form"
           @submit="FindPassword">
           <div class="components-input-demo-size flex-container flex-center-sort">
-            <a-input
-              v-decorator="[
-                'name',
-                {
-                  rules: [{
-                    required: true, message: 'Please input your Name',
-                  }]
-                }
-              ]"
-              placeholder="이름"
-              v-model="name"
-            />
+            <a-form-item>
+              <a-input
+                v-decorator="['realName', validateConfig.realName ]"
+                placeholder="이름"
+                v-model="realName"
+              />
+            </a-form-item>
           </div>
           <div class="components-input-demo-size flex-container flex-center-sort ">
-            <a-input
-              v-decorator="[
-                'id',
-                {
-                  rules: [{
-                    required: true, message: 'Please input your NickName!',
-                  }]
-                }
-              ]"
-              placeholder="NICKNAME"
-              v-model="nickName"
-            />
+            <a-form-item>
+              <a-input
+                v-decorator="[ 'nickName', validateConfig.nickName ]"
+                placeholder="닉네임"
+                v-model="nickName"
+              />
+            </a-form-item>
           </div>
           <div class="components-input-demo-size flex-container flex-center-sort ">
-            <a-input
-              v-decorator="[
-                'email',
-                 {
-                   rules: [{
-                     type: 'email', message: 'The input is not valid E-mail!',
-                     }, {
-                     required: true, message: 'Please input your E-mail!',
-                   }]
-                 }
-              ]"
-              placeholder="이메일"
-              v-model="email"
-            />
+            <a-form-item>
+              <a-input
+                v-decorator="[ 'email', validateConfig.email ]"
+                placeholder="이메일"
+                v-model="email"
+              />
+            </a-form-item>
           </div>
         </a-form>
       </div>
-      <div class="flex-container flex-center-sort margin--top-30">
+      <div class="flex-container flex-center-sort margin--top-10">
         <a-button class="button-size" color="primary"
                   type="primary" htmlType="submit">비밀번호 찾기</a-button>
         <router-link :to="{name :'LoginPage'}"></router-link>
@@ -63,9 +46,6 @@
         <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
       </div>
       <div class="flex-container flex-center-sort">
-        <router-link tag="span"
-                     class="find-link-design"
-                     :to="{ name: 'LoginPage' }">로그인</router-link>
         <router-link tag="span"
                      class="find-link-design"
                      :to="{ name: 'FindIdPage' }">
@@ -80,10 +60,28 @@ export default {
   name: 'FindPasswordPage',
   data() {
     return {
-      name: '',
-      id: '',
+      realName: '',
+      nickName: '',
       email: '',
-      password: '',
+      validateConfig: {
+        realName: {
+          rules: [{
+            required: true, message: '이름을 입력해주세요.',
+          }]
+        },
+        nickName: {
+          rules: [{
+            required: true, message: '닉네임을 입력해주세요.',
+          }]
+        },
+        email: {
+          rules: [{
+            type: 'email', message: '이메일형식이 아니에요.',
+          }, {
+            required: true, message: '이메일을 입력해주세요.',
+          }]
+        },
+      }
     };
   },
   beforeCreate() {
@@ -98,18 +96,17 @@ export default {
       this.form.validateFields(async (err, values) => {
         if (!err) {
           await this.$store.dispatch('find/findPasswordProcess', {
-            name: values.name,
+            realName: values.realName,
             nickName: values.nickName,
             email: values.email,
           });
-        }
-        if (this.$store.getters['find/getFindSuccess']) {
-          //this.password = state.newPassword; //아니지 이
-          //api.findpassword.password = state.newPassword; //??
-
-          this.$router.push({name: 'LoginPage'});
-        } else {
-          this.$message.warning('회원정보가 존재하지 않습니다. ');
+          if (this.$store.getters['find/getFindSuccess']) {
+            console.log(this.$store.getters['find/getFindPasswordSuccess']);
+            this.$message.warning('비밀번호찾기 성공');
+            this.$router.push({name: 'LoginPage'});
+          } else {
+            this.$message.warning('회원정보가 존재하지 않습니다. ');
+          }
         }
       });
     },
@@ -121,15 +118,13 @@ export default {
 <style lang="scss" scoped>
   .find-box{
     width: 100%;
-    height: 90%;
+    height: 80%;
     padding: 20px;
   }
   .find-link-design{
     font-size: 12px;
-    text-decoration: underline blue;
     margin: 10px;
-    color: blue;
-    align-text: right;
+    align-text: center;
   }
   .components-input-demo-size .ant-input {
     width: 200px;
@@ -147,8 +142,8 @@ export default {
   .margin--10{
     margin: 10px;
   }
-  .margin--top-30{
-    margin-top: 30px;
+  .margin--top-10{
+    margin-top: 10px;
   }
   .margin--top-30{
     margin-top: 30px;

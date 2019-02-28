@@ -67,21 +67,21 @@ export default {
         realName: {
           rules: [{
             required: true, message: '이름을 입력해주세요.',
-          }]
+          }],
         },
         nickName: {
           rules: [{
             required: true, message: '닉네임을 입력해주세요.',
-          }]
+          }],
         },
         email: {
           rules: [{
             type: 'email', message: '이메일형식이 아니에요.',
           }, {
             required: true, message: '이메일을 입력해주세요.',
-          }]
+          }],
         },
-      }
+      },
     };
   },
   beforeCreate() {
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     goToBack() {
-      this.$router.push({name: 'LoginPage'});
+      this.$router.push({ name: 'LoginPage' });
     },
     FindPassword(e) {
       e.preventDefault();
@@ -101,9 +101,8 @@ export default {
             email: values.email,
           });
           if (this.$store.getters['find/getFindSuccess']) {
-            console.log(this.$store.getters['find/getFindPasswordSuccess']);
             this.$message.warning('비밀번호찾기 성공');
-            this.$router.push({name: 'LoginPage'});
+            this.$router.push({ name: 'LoginPage' });
           } else {
             this.$message.warning('회원정보가 존재하지 않습니다. ');
           }
@@ -124,7 +123,7 @@ export default {
   .find-link-design{
     font-size: 12px;
     margin: 10px;
-    align-text: center;
+    text-align: center;
   }
   .components-input-demo-size .ant-input {
     width: 200px;

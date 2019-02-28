@@ -85,11 +85,12 @@ router.post('/post/news', async (req, res) => {
 
 router.post('/find-id', async (req, res) => {
   const result = await findService.findId({
-    realName : req.body.realName,
-    email : req.body.email
+    realName: req.body.realName,
+    email: req.body.email,
   })
-      .then(results => results)
-      .catch(err => err);
+    .then(results => results)
+    .catch(err => err);
+
   if (result.length !== 0) {
     res.json(result[0]);
   } else {

@@ -61,6 +61,10 @@ const actions = {
         .then(results => results.data)
         .catch(err => err);
 
+      if (!resData.result) {
+        resData.result = [];
+      }
+
       if (resData.result.length) {
         commit(types.FETCH_PREVIEW_LOCAL_POST, resData.result);
         commit(types.UPDATE_LAST_ID, resData.lastId);

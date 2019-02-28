@@ -102,9 +102,36 @@ export default {
     return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
   },
 
-  publishNews(userNo, title, content, address) {
+
+  /**
+   * 기사 작성 api
+   * @param userId
+   * @param title
+   * @param content
+   * @param address
+   * @returns {AxiosPromise<any>}
+   */
+  publishNews(userId, title, content, address) {
     return axios.post('/api/post/news', {
-      userNo, title, content, address,
+      userId,
+      title,
+      content,
+      address,
+    });
+  },
+
+  /**
+   * 지역이름과, 받아올 마지막 id 값을 넘겨주면 포스트를 가져옴
+   * @param localName
+   * @param lastId
+   * @returns {AxiosPromise<any>}
+   */
+  loadLocalPreviewPostList(localName, lastId) {
+    return axios.get('/api/posts/local', {
+      params: {
+        localName: decodeURI(localName),
+        lastId,
+      },
     });
   },
   /**
@@ -120,18 +147,10 @@ export default {
     });
   },
 
-  /**
-   * 비밀번호 찾기
-   * @param realName
-   * @param nickName
-   * @param email
-   * @returns {AxiosPromise<any>}
-   */
-  findPassword(realName, nickName, email){  //url 맘대로 둔것 나중에 고치기
-    return axios.post('/api/find-password',{
-      realName,
-      nickName,
-      email,
+
+  getPostContent(id) {
+    return axios.get(`/api/post/${id}`, {
+      params: { id },
     });
   },
 };

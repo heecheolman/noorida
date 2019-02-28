@@ -4,12 +4,11 @@ import * as types from './mutation_types';
 const state = {
   title: '',
   content: '',
-  location: {
-    lng: 0,
-    lat: 0,
-    name: '',
-  },
-  imageCount: 0,
+  localPreviewPostList: [],
+  lastId: -1,
+  hasNextPost: true,
+  loading: false,
+  busy: false,
 };
 
 const mutations = {
@@ -19,16 +18,58 @@ const mutations = {
   [types.SET_CONTENT](state, payload) {
     state.content = payload;
   },
+  [types.FETCH_PREVIEW_LOCAL_POST](state, payload) {
+    state.localPreviewPostList = state.localPreviewPostList.concat(payload);
+  },
+  [types.UPDATE_LIMIT_PIVOT](state, payload) {
+    state.offsetPivot = payload;
+  },
+  [types.UPDATE_LAST_ID](state, payload) {
+    state.lastId = payload;
+  },
+  [types.INIT_PREVIEW_LIST](state) {
+    state.localPreviewPostList = [];
+    state.busy = false;
+    state.lastId = -1;
+    state.hasNextPost = true;
+  },
+  [types.INIT_TITLE_CONTENT](state) {
+    state.title = '';
+    state.content = '';
+  },
 };
 
 const getters = {
 };
 
 const actions = {
-  uploadProcess: async ({ commit }, payload) => {
-    const result = await api.publishNews(payload.userNo, state.title, state.content, payload.address)
+  async uploadProcess({ rootState }) {
+    await api.publishNews(
+      rootState.user.user.userId,
+      state.title,
+      state.content,
+      rootState.user.location.address,
+    )
       .then(results => results)
       .catch(err => err);
+  },
+
+  async loadLocalPreviewPostList({ commit, state, rootState }) {
+    if (state.hasNextPost) {
+      state.loading = true;
+      const resData = await api.loadLocalPreviewPostList(rootState.user.location.address, state.lastId)
+        .then(results => results.data)
+        .catch(err => err);
+
+      if (resData.result.length) {
+        commit(types.FETCH_PREVIEW_LOCAL_POST, resData.result);
+        commit(types.UPDATE_LAST_ID, resData.lastId);
+        state.hasNextPost = resData.hasNextPost;
+      } else {
+        state.busy = true;
+      }
+      state.loading = false;
+    }
   },
 };
 

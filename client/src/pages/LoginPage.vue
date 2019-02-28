@@ -56,7 +56,6 @@
 export default {
   name: 'LoginPage',
   beforeCreate() {
-    this.$store.dispatch('login/initLoginData');
     this.form = this.$form.createForm(this);
   },
   data() {
@@ -85,15 +84,15 @@ export default {
       this.form.validateFields(async (err, values) => {
         if (!err) {
           this.loginLoading = true;
-          await this.$store.dispatch('login/loginProcess', {
+          await this.$store.dispatch('auth/loginProcess', {
             nickName: values.nickName,
             password: values.password,
           });
           this.loginLoading = false;
-          if (this.$store.getters['login/getLoginSuccess']) {
-            this.$router.replace({ name: 'MainPage' });
+          if (this.$store.state.auth.loginStatus) {
+            this.$router.push({ name: 'LocalNewsTab' });
           } else {
-            this.$message.warning('아이디 또는 비밀번호가 일치하지 않습니다');
+            this.$message.warning('아이디 또는 비밀번호가 일치하지 않습니다.');
           }
         }
       });
@@ -105,7 +104,7 @@ export default {
 
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/typography';
-  @import './../assets/scss/variables/colors';
+  @import './../assets/scss/theme/colors';
 
   .login-box {
     width: 100%;

@@ -134,6 +134,19 @@ export default {
       },
     });
   },
+  /**
+   * 아이디 찾기
+   * @param realName
+   * @param email
+   * @returns {AxiosPromise<any>}
+   */
+  findId(realName, email) {
+    return axios.post('/api/find-id', {
+      realName,
+      email,
+    });
+  },
+
 
   getPostContent(id) {
     return axios.get(`/api/post/${id}`, {

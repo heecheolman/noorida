@@ -9,36 +9,24 @@
           :form="form"
           @submit="FindId">
           <div class="components-input-demo-size flex-container flex-center-sort">
-            <a-input
-              v-decorator="[
-                'name',
-                {
-                  rules: [{
-                    required: true, message: 'Please input your Name',
-                  }]
-                }
-              ]"
-              placeholder="이름"
-              v-model="name"
-            />
+            <a-form-item >
+              <a-input
+                v-decorator="[ 'realName', validateConfig.realName ]"
+                placeholder="이름"
+                v-model="realName"
+              />
+            </a-form-item>
           </div>
           <div class="components-input-demo-size flex-container flex-center-sort ">
-            <a-input
-              v-decorator="[
-                'email',
-                {
-                  rules: [{
-                    type: 'email', message: 'The input is not valid E-mail!',
-                    }, {
-                    required: true, message: 'Please input your E-mail!',
-                  }]
-                }
-              ]"
-              placeholder="이메일"
-              v-model="email"
-            />
+            <a-form-item>
+              <a-input
+                v-decorator="[ 'email',validateConfig.email ]"
+                placeholder="이메일"
+                v-model="email"
+              />
+            </a-form-item>
           </div>
-          <div class="flex-container flex-center-sort margin--top-30">
+          <div class="flex-container flex-center-sort margin--top-10">
             <a-button class="button-size" color="primary" type="primary"
                       htmlType="submit">아이디 찾기</a-button>
           </div>
@@ -48,8 +36,6 @@
         </a-form>
       </div>
       <div class="link-move flex-container flex-center-sort margin--bottom-10">
-        <router-link tag="span" class="find-link-design" :to="{ name: 'LoginPage' }">로그인</router-link>
-          <br>
         <router-link tag="span" class= "find-link-design" :to="{ name:'FindPasswordPage' }">
           비밀번호 찾기</router-link>
       </div>
@@ -65,10 +51,22 @@ export default {
   },
   data() {
     return {
-      name: '',
-      email: '',
-      nickName: '',
-
+      realName : '',
+      email : '',
+      validateConfig: {
+        realName: {
+           rules: [{
+             required: true, message: '이름을 입력해주세요.',
+            }]
+        },
+        email: {
+          rules: [{
+            type: 'email', message: '이메일형식이 아니에요.',
+          }, {
+            required: true, message: '이메일을 입력해주세요.',
+          }]
+        },
+      }
     };
   },
   methods : {
@@ -81,16 +79,21 @@ export default {
       this.form.validateFields(async (err, values) => {
         if (!err) {
           await this.$store.dispatch('find/findIdProcess', {
-            name: values.name,
+            realName: values.realName,
             email: values.email,
           });
-        }
-        if(this.$store.getters['find/getFindNickname']){
-          console.log(state.foundNickName);
-          this.$message.config(state.getFindNickname);
-          //this.$router.replace({name: 'LoginPage'});
-        }else{
-          this.$message.warning('일치하는 회원정보가 없습니다.');
+          if(this.$store.getters['find/getFindNickname']){
+            this.$success({
+              title: '아이디 찾기',
+              content: [this.realName+'님의 닉네임은 '
+              +this.$store.getters['find/getFindNickname']+'입니다.'],
+              okText: '로그인',
+              centered: true,
+            });
+            this.$router.replace({ name: 'LoginPage' });
+          }else{
+            this.$message.warning('일치하는 회원정보가 없습니다.');
+          }
         }
       });
     },
@@ -105,15 +108,13 @@ export default {
 
   .find-box{
     width: 100%;
-    height: 90%;
+    height: 80%;
     padding: 20px;
   }
   .find-link-design{
     font-size: 12px;
-    text-decoration: underline;
     margin: 10px;
-    color: blue;
-    text-align: right;
+    text-align: center;
   }
   .title-color{
     color:#1f74ff;
@@ -131,8 +132,8 @@ export default {
   .margin--10{
     margin: 10px;
   }
-  .margin--top-30{
-    margin-top: 30px;
+  .margin--top-10{
+    margin-top: 10px;
   }
   .margin--top-30{
     margin-top: 30px;
@@ -141,4 +142,8 @@ export default {
     width: 200px;
     height: 32px;
   }
+  /*.has-error .ant-form-explain {*/
+    /*color: #f5222d;*/
+    /*padding-left: 10px;*/
+  /*}*/
 </style>

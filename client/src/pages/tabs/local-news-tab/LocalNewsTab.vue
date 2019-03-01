@@ -29,10 +29,14 @@ export default {
   },
   created() {
     this.initPreviewList();
+    this.initDetailPost();
+    this.initProfileCard();
   },
   methods: {
     ...mapMutations('post', {
       initPreviewList: 'INIT_PREVIEW_LIST',
+      initDetailPost: 'INIT_DETAIL_POST',
+      initProfileCard: 'INIT_PROFILE_CARD',
     }),
   },
 };

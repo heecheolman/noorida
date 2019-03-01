@@ -91,7 +91,7 @@ export default {
               okText: '로그인',
               centered: true,
             });
-            this.$router.replace({name: 'LoginPage'});
+            this.$router.replace({ name: 'LoginPage' });
           } else {
             this.$message.warning('일치하는 회원정보가 없습니다.');
           }

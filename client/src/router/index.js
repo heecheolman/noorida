@@ -9,6 +9,7 @@ import FindIdPage from '../pages/FindIdPage';
 import FindPasswordPage from '../pages/FindPasswordPage';
 import WritePage from '../pages/WritePage';
 import PostDetailPage from '../pages/PostDetailPage';
+import ProfilePage from '../pages/ProfilePage';
 
 
 /*  Tabs  */
@@ -79,6 +80,13 @@ export default new Router({
       name: 'WritePage',
       beforeEnter: requireAuth(),
       component: WritePage,
+    },
+    {
+      path: 'profile/:id',
+      name: 'ProfilePage',
+      component: ProfilePage,
+      beforeEnter: requireAuth(),
+      props: true,
     },
     {
       path: 'post/:contentId',

@@ -1,23 +1,22 @@
 <template>
   <div>
     <toolbar :title="'뉴스'" />
-    <a-skeleton active
-                :loading="loading">
-      <div v-if="contentData"
-           class="news-container">
-        <div class="news-title-wrap">
-          <span class="news-title">{{ contentData.title }}</span>
-        </div>
-        <div class="news-created-at-container">
-          <span class="created-at">{{ contentData.createdAt | absoluteDate }}</span>
-        </div>
-        <div class="news-content-wrap">
-          <div class="ql-editor">
-            <div v-html="contentData.content"></div>
+      <div class="news-container">
+        <a-spin :spinning="loading">
+          <div class="news-title-wrap">
+            <span class="news-title">{{ detailPost.title }}</span>
           </div>
-        </div>
+          <div class="news-created-at-container">
+            <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
+          </div>
+          <div class="news-content-wrap">
+            <div class="ql-editor">
+              <div v-html="detailPost.content"></div>
+            </div>
+          </div>
+          <profile-card />
+        </a-spin>
 
-        <profile-card />
 
         <a-divider />
 
@@ -84,7 +83,6 @@
           </a-comment>
         </div>
       </div>
-    </a-skeleton>
   </div>
 </template>
 
@@ -111,19 +109,20 @@ export default {
       'commentContent',
       'commentList',
     ]),
+    ...mapState('post', [
+      'detailPost',
+    ]),
   },
   async created() {
     this.loading = true;
-    this.contentData = await this.$api.getPostContent(this.contentId)
-      .then(result => result.data)
-      .catch(err => err);
+    await this.$store.dispatch('post/fetchDetailPost', this.contentId);
     this.loading = false;
     this.initComment();
   },
   data() {
     return {
       loading: true,
-      contentData: null,
+      contentData: {},
       marks: {
         '-5': '-5',
         '-4': '-4',
@@ -187,7 +186,7 @@ export default {
       display: block;
       position: relative;
       width: 100%;
-      height: 40px;
+      height: auto;
 
       .news-title {
         @include font-size-large;

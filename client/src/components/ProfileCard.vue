@@ -1,5 +1,6 @@
 <template>
-  <div class="profile-card-container flex-container flex-row">
+  <a-spin :spinning="loading">
+  <div class="profile-card-container flex-container flex-row" @click="routeUserProfile">
     <div class="user-icon-wrap">
       <div class="medal flex-container flex-center-sort">
         <i class="fas fa-medal"></i>
@@ -11,16 +12,17 @@
     </div>
     <div class="user-info-wrap flex-container flex-column">
       <div class="user-nickname">
-        {{ user.nickName }} <span class="reporter">리포터</span>
+        {{ profileCard.nickName }} <span class="reporter">리포터</span>
       </div>
       <div class="user-description">
-        {{ user.description }}
-        <span v-if="user.description">{{ user.description }}</span>
+        {{ profileCard.description }}
+        <span v-if="profileCard.description">{{ profileCard.description }}</span>
         <span v-else>설명 없음</span>
         <!--Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.-->
       </div>
     </div>
   </div>
+  </a-spin>
 </template>
 
 <script>
@@ -28,10 +30,34 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'ProfileCard',
+  props: {
+    // id: {
+    //   type: Number,
+    // },
+  },
+  async created() {
+    // this.loading = true;
+    // await this.$store.dispatch('post/fetchProfileCard');
+    // this.loading = false;
+    // this.user = await this.$api.getUser(this.id)
+    //   .then(result => result.data)
+    //   .catch(err => err);
+    // this.loading = false;
+  },
   computed: {
-    ...mapState('user', [
-      'user',
+    ...mapState('post', [
+      'profileCard',
     ]),
+  },
+  data() {
+    return {
+      user: {},
+      loading: false,
+    };
+  },
+  methods: {
+    routeUserProfile() {
+    },
   },
 };
 </script>

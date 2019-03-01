@@ -9,6 +9,8 @@ const state = {
   hasNextPost: true,
   loading: false,
   busy: false,
+  detailPost: {},
+  profileCard: {},
 };
 
 const mutations = {
@@ -36,6 +38,18 @@ const mutations = {
   [types.INIT_TITLE_CONTENT](state) {
     state.title = '';
     state.content = '';
+  },
+  [types.UPDATE_DETAIL_POST](state, payload) {
+    state.detailPost = payload;
+  },
+  [types.UPDATE_PROFILE_CARD](state, payload) {
+    state.profileCard = payload;
+  },
+  [types.INIT_DETAIL_POST](state) {
+    state.detailPost = {};
+  },
+  [types.INIT_PROFILE_CARD](state) {
+    state.profileCard = {};
   },
 };
 
@@ -74,6 +88,18 @@ const actions = {
       }
       state.loading = false;
     }
+  },
+
+  async fetchDetailPost({ commit }, payload) {
+    const contentData = await api.getPostContent(payload)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_DETAIL_POST, contentData);
+
+    const profileCard = await api.getUser(contentData.userId)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_PROFILE_CARD, profileCard);
   },
 };
 

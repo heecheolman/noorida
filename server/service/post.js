@@ -89,6 +89,8 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
-    return JSON.parse(JSON.stringify(result));
+    return result.length
+      ? JSON.parse(JSON.stringify(result))[0]
+      : null;
   },
 };

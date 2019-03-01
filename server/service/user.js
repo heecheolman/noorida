@@ -1,10 +1,10 @@
 const knex = require('./service.config');
 
 module.exports = {
-  login: async ({ nickName, password }) => {
+  getUser: async ({ id }) => {
     const result = await knex('users')
-      .select('userId', 'realName', 'nickName', 'email', 'avatar', 'description')
-      .where({ nickName, password })
+      .select('nickName', 'createdAt', 'avatar', 'description')
+      .where('userId', id)
       .then(results => results)
       .catch(err => err);
     return result.length ? JSON.parse(JSON.stringify(result))[0] : null;

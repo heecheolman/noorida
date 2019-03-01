@@ -24,6 +24,7 @@ const actions = {
       commit(types.SET_FOUND_ID, null);
     }
   },
+
   findPasswordProcess: async ({ commit }, payload) => {
     const { realName, nickName, email } = payload;
     const data = await api.findPassword(realName, nickName, email)
@@ -50,9 +51,8 @@ const mutations = {
   [types.SET_FOUND_ID](state, payload) {
     state.foundNickName = payload;
   },
-
-  [types.FETCH_PASSWORD](state, payload) {
-    state.findPassword_success = payload;
+  [types.FIND_PASSWORD_SUCCESS] (state, payload) {
+    state.findPasswordSuccess = payload;
   },
 };
 

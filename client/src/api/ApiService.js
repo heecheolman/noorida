@@ -147,6 +147,21 @@ export default {
     });
   },
 
+  /**
+   * 비밀번호 찾기
+   * @param realName
+   * @param nickName
+   * @param email
+   * @returns {AxiosPromise<any>}
+   */
+  findPassword(realName, nickName, email) {
+    return axios.post('/api/find-password', {
+      realName,
+      nickName,
+      email,
+    });
+  },
+
 
   getPostContent(id) {
     return axios.get(`/api/post/${id}`, {

@@ -4,6 +4,7 @@ const joinService = require('../service/join');
 const loginService = require('../service/login');
 const postService = require('../service/post');
 const findService = require('../service/findId');
+const findPwService = require('../service/findPassword');
 
 const router = express.Router();
 
@@ -97,6 +98,23 @@ router.post('/find-id', async (req, res) => {
     res.json(false);
   }
 });
+
+router.post('/find-password', async (req, res) => {
+  const result = await findPwService.findPassword({
+    realName: req.body.realName,
+    nickName: req.body.nickName,
+    email: req.body.email,
+  })
+    .then(results => results)
+    .catch(err => err);
+
+  if (result.length !== 0) {
+    res.json(result[0]);
+  } else {
+    res.json(false);
+  }
+});
+
 
 router.get('/posts/local', async (req, res) => {
   const { localName, lastId } = req.query;

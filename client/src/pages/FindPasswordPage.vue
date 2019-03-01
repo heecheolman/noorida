@@ -35,15 +35,15 @@
               />
             </a-form-item>
           </div>
+          <div class="flex-container flex-center-sort margin--top-10">
+            <a-button class="button-size" color="primary"
+                      type="primary" htmlType="submit">비밀번호 찾기</a-button>
+            <router-link :to="{name :'LoginPage'}"></router-link>
+          </div>
+          <div class="flex-container flex-center-sort margin--10">
+            <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
+          </div>
         </a-form>
-      </div>
-      <div class="flex-container flex-center-sort margin--top-10">
-        <a-button class="button-size" color="primary"
-                  type="primary" htmlType="submit">비밀번호 찾기</a-button>
-        <router-link :to="{name :'LoginPage'}"></router-link>
-      </div>
-      <div class="flex-container flex-center-sort margin--10">
-        <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
       </div>
       <div class="flex-container flex-center-sort">
         <router-link tag="span"
@@ -58,6 +58,9 @@
 <script>
 export default {
   name: 'FindPasswordPage',
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
+  },
   data() {
     return {
       realName: '',
@@ -84,9 +87,7 @@ export default {
       },
     };
   },
-  beforeCreate() {
-    this.form = this.$form.createForm(this);
-  },
+
   methods: {
     goToBack() {
       this.$router.push({ name: 'LoginPage' });
@@ -95,14 +96,20 @@ export default {
       e.preventDefault();
       this.form.validateFields(async (err, values) => {
         if (!err) {
+          console.log(22222);
           await this.$store.dispatch('find/findPasswordProcess', {
             realName: values.realName,
             nickName: values.nickName,
             email: values.email,
           });
-          if (this.$store.getters['find/getFindSuccess']) {
-            this.$message.warning('비밀번호찾기 성공');
-            this.$router.push({ name: 'LoginPage' });
+          if (this.$store.getters['find/getFindPasswordSuccess']) {
+            this.$success({
+              title: '비밀번호 찾기',
+              content: '(으)로 임시 비밀번호를 발송하였습니다.',
+              okText: '로그인',
+              centered: true,
+            });
+            this.$router.replace({name: 'LoginPage'});
           } else {
             this.$message.warning('회원정보가 존재하지 않습니다. ');
           }

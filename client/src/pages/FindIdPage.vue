@@ -117,6 +117,7 @@ export default {
     text-align: center;
   }
 
+
   .title-color {
     color: #1f74ff;
     font-size: 30px;

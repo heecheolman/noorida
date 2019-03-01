@@ -4,18 +4,35 @@ import api from '@/api/ApiService';
 const state = {
   foundNickName: '',
 
-  findPassword_success: false,
-  newPassword: null,
+  findPasswordSuccess: false,
+
 };
 
 const getters = {
   getFindNickname : state => state.foundNickName,
 
-  getFindPasswordSuccess : state => state.findPassword_success,
-  getNewPassword : state => state.newPassword,
+  getFindPasswordSuccess : state => state.findPasswordSuccess,
+  //getNewPassword : state => state.newPassword,
 };
 const actions = {
+
+  findPasswordProcess : async ({commit}, payload) => {
+    const { realName, nickName, email} = payload;
+    const data = await api.findPassword(realName, nickName, email)
+      .then(result => result.data)
+      .catch(err=>err);
+
+    if(data.success){
+      commit(types.FIND_PASSWORD_SUCCESS, true);
+      // commit(api.sendNewPassword,true);
+
+    }else{
+      commit(types.FIND_PASSWORD_SUCCESS, false);
+      // commit(api.sendNewPassword, false);
+    }
+  },
   findIdProcess : async ({ commit } , payload) => {
+    console.log(1);
     const { realName, email } = payload;
     const data =  await api.findId(realName , email)
       .then(result => result.data)
@@ -26,36 +43,15 @@ const actions = {
       commit(types.SET_FOUND_ID, null);
     }
   },
-
-  findPasswordProcess : async ({commit},payload) => {
-    const {realName, nickName, email} = payload;
-    const data = await api.findPassword(realName, nickName, email)
-      .then(result => result.data)
-      .catch(err=>err);
-
-    if(data.success){
-      //이메일을 전송하라고 서버에게 요청?!   패스워드는 다시 생각해볼것
-    }else{
-
-    }
-
-    // if(find_password && !(find_password instanceof Error)){
-    //  commit(types.FETCH_PASSWORD, true);
-    //  commit(types.PASSWORD_DATA, null)///////////////
-    // }else{
-    //   commit(types.FETCH_PASSWORD,false);
-    // }
-
-  },
 };
+
 
 const mutations = {
   [types.SET_FOUND_ID] (state, payload) {
     state.foundNickName = payload;
   },
-
-  [types.FETCH_PASSWORD] (state,payload) {
-    state.findPassword_success = payload;
+  [types.FIND_PASSWORD_SUCCESS] (state, payload) {
+    state.findPasswordSuccess = payload;
   },
 };
 

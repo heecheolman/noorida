@@ -12,7 +12,7 @@ const getters = {
   getFindNickname : state => state.foundNickName,
 
   getFindPasswordSuccess : state => state.findPasswordSuccess,
-  //getNewPassword : state => state.newPassword,
+
 };
 const actions = {
 
@@ -24,15 +24,14 @@ const actions = {
 
     if(data.success){
       commit(types.FIND_PASSWORD_SUCCESS, true);
-      // commit(api.sendNewPassword,true);
+
 
     }else{
       commit(types.FIND_PASSWORD_SUCCESS, false);
-      // commit(api.sendNewPassword, false);
+
     }
   },
   findIdProcess : async ({ commit } , payload) => {
-    console.log(1);
     const { realName, email } = payload;
     const data =  await api.findId(realName , email)
       .then(result => result.data)

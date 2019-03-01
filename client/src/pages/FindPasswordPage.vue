@@ -96,7 +96,6 @@ export default {
       e.preventDefault();
       this.form.validateFields(async (err, values) => {
         if (!err) {
-          console.log(22222);
           await this.$store.dispatch('find/findPasswordProcess', {
             realName: values.realName,
             nickName: values.nickName,
@@ -105,7 +104,7 @@ export default {
           if (this.$store.getters['find/getFindPasswordSuccess']) {
             this.$success({
               title: '비밀번호 찾기',
-              content: '(으)로 임시 비밀번호를 발송하였습니다.',
+              content: `${this.email} (으)로 임시 비밀번호를 발송하였습니다.`,
               okText: '로그인',
               centered: true,
             });

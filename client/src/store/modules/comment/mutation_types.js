@@ -1,0 +1,2 @@
+export const SET_COMMENT_CONTENT = 'SET_COMMENT_CONTENT';
+export const INIT_COMMENT = 'INIT_COMMENT';

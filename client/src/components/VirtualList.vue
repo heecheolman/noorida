@@ -11,7 +11,7 @@
       <a-list-item slot-scope="{ item }" @click="routeDetailPage(item.contentId)">
 
         <a-list-item-meta :description="item.nickName">
-          <a slot="title" style="word-break: break-all;">{{ item.title }}</a>
+          <a slot="title">{{ item.title }}</a>
           <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
         </a-list-item-meta>
         <span class="timeline">{{ item.updatedAt | timeline }}</span>
@@ -75,6 +75,11 @@ export default {
         .ant-list-item-meta-content {
           .ant-list-item-meta-title {
             @include font-size-normal;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            word-break: break-all;
+            width: 60vw;
           }
           .ant-list-item-meta-description {
             @include font-size-xx-small;

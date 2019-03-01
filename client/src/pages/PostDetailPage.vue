@@ -1,8 +1,10 @@
 <template>
   <div>
     <toolbar :title="'뉴스'" />
-    <a-skeleton active :loading="loading">
-      <div class="news-container" v-if="contentData">
+    <a-skeleton active
+                :loading="loading">
+      <div v-if="contentData"
+           class="news-container">
         <div class="news-title-wrap">
           <span class="news-title">{{ contentData.title }}</span>
         </div>
@@ -14,6 +16,11 @@
             <div v-html="contentData.content"></div>
           </div>
         </div>
+
+        <profile-card />
+
+        <a-divider />
+
         <div class="feedback-wrap">
 
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
@@ -83,6 +90,7 @@
 
 <script>
 import Toolbar from '@/components/Toolbar';
+import ProfileCard from '@/components/ProfileCard';
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import { mapState, mapMutations } from 'vuex';
@@ -91,6 +99,7 @@ export default {
   name: 'PostDetailPage',
   components: {
     Toolbar,
+    ProfileCard,
   },
   props: {
     contentId: {
@@ -193,12 +202,12 @@ export default {
       width: 100%;
       position: relative;
       height: 20px;
-      @include font-size-normal;
-      @include font-weight-3;
-      letter-spacing: 0.2px;
 
       .created-at {
-        color: $info;
+        @include font-size-normal;
+        @include font-weight-4;
+        letter-spacing: 0.2px;
+        color: $info-blur;
       }
     }
 

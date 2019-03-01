@@ -5,6 +5,9 @@ const certService = require('./../service/cert');
 
 const router = express.Router();
 
+/**
+ * 인증을 위한 이메일 전송
+ */
 router.post('/mail', async (req, res) => {
   const requestEmail = req.body.email;
   const token = tokenBuilder();
@@ -26,26 +29,33 @@ router.post('/mail', async (req, res) => {
   );
 });
 
-router.get('/user/valid/:email/:token', async (req, res) => {
-  const tmpEmail = req.params.email;
-  const tmpToken = req.params.token;
-
-  const isCertified = await certService.canCertified({ tmpEmail, tmpToken })
+/**
+ * 해당 이메일과 토큰정보가 일치하는지 여부
+ */
+router.get('/valid', async (req, res) => {
+  const { email, token } = req.query;
+  const isCertified = await certService.canCertified({ tmpEmail: email, tmpToken: token })
     .then(result => result)
     .catch(err => err);
   res.send(isCertified);
 });
 
-router.get('/user/nick-names/:nickName', async (req, res) => {
-  const nickName = req.params.nickName;
+/**
+ * 해당 닉네임이 사용할 수 있는지 여부
+ */
+router.get('/valid/nick-names', async (req, res) => {
+  const { nickName } = req.query;
   const isComparedNickname = await certService.compareNickname({ nickName })
     .then(result => result)
     .catch(err => err);
   res.send(isComparedNickname);
 });
 
-router.get('/user/emails/:email', async (req, res) => {
-  const email = req.params.email;
+/**
+ * 해당 이메일을 사용할 수 있는지 여부
+ */
+router.get('/valid/emails', async (req, res) => {
+  const { email } = req.query;
   const isComparedEmail = await certService.compareEmail({ email })
     .then(result => result)
     .catch(err => err);

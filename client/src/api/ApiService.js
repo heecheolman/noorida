@@ -15,7 +15,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   confirmToken(email, token) {
-    return axios.get(`/api/cert/user/valid/${email}/${token}`, {
+    return axios.get('/api/cert/valid', {
       params: { email, token },
     });
   },
@@ -38,7 +38,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   join(realName, nickName, password, email) {
-    return axios.post('/api/join', { realName, nickName, password, email });
+    return axios.post('/api/auth/join', { realName, nickName, password, email });
   },
 
   /**
@@ -47,7 +47,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   validateNickName(nickName) {
-    return axios.get(`/api/cert/user/nick-names/${nickName}`, {
+    return axios.get('/api/cert/valid/nick-names', {
       params: { nickName },
     });
   },
@@ -58,7 +58,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   validateEmail(email) {
-    return axios.get(`api/cert/user/emails/${email}`, {
+    return axios.get('api/cert/valid/emails', {
       params: { email },
     });
   },
@@ -70,7 +70,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   login(nickName, password) {
-    return axios.post('/api/login', {
+    return axios.post('/api/auth/login', {
       nickName,
       password,
     });
@@ -112,7 +112,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   publishNews(userId, title, content, address) {
-    return axios.post('/api/post/news', {
+    return axios.post('/api/posts', {
       userId,
       title,
       content,
@@ -141,15 +141,45 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   findId(realName, email) {
-    return axios.post('/api/find-id', {
+    return axios.post('/api/auth/find-id', {
       realName,
       email,
     });
   },
 
+  /**
+   * 비밀번호 찾기
+   * @param realName
+   * @param nickName
+   * @param email
+   * @returns {AxiosPromise<any>}
+   */
+  findPassword(realName, nickName, email) {
+    return axios.post('/api/auth/find-password', {
+      realName,
+      nickName,
+      email,
+    });
+  },
 
+  /**
+   * 콘텐츠 id 값으로 post 정보들을 가져옴
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
   getPostContent(id) {
-    return axios.get(`/api/post/${id}`, {
+    return axios.get(`/api/posts/${id}`, {
+      params: { id },
+    });
+  },
+
+  /**
+   * 유저의 id 값으로 user 정보들을 가져옴
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
+  getUser(id) {
+    return axios.get(`/api/users/${id}`, {
       params: { id },
     });
   },

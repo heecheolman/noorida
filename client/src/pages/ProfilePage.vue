@@ -5,6 +5,9 @@
       <div class="medal-wrap flex-container flex-center-sort">
         <i class="fas fa-medal medal"></i>
       </div>
+      <div class="score-wrap text-center">
+        <span class="score">475</span>
+      </div>
       <div class="avatar-wrap flex-container flex-center-sort">
         <img class="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png">
       </div>
@@ -16,6 +19,23 @@
         <span class="description">
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
         </span>
+      </div>
+      <div class="badge-wrap flex-container flex-between-sort flex-row">
+        <a-badge :count="1000"
+                 :overflow-count="999"
+                 :numberStyle="badgeStyle">
+          <div class="badge-box text-center">Readers</div>
+        </a-badge>
+        <a-badge :count="99"
+                 :overflow-count="999"
+                 :numberStyle="badgeStyle">
+          <div class="badge-box text-center">Reporter</div>
+        </a-badge>
+        <a-badge :count="9999"
+                 :overflow-count="999"
+                 :numberStyle="badgeStyle">
+          <div class="badge-box text-center">Locals</div>
+        </a-badge>
       </div>
     </div>
   </div>
@@ -41,6 +61,11 @@ export default {
       'info',
     ]),
   },
+  data() {
+    return {
+      badgeStyle: { backgroundColor: '#1F74FF' },
+    };
+  },
   async created() {
     await this.$store.dispatch('anotherUser/fetchAnotherUser', this.userId);
   },
@@ -59,9 +84,21 @@ export default {
     .user-header-section {
       @include box-shadow;
       width: 100%;
-      padding: 15px;
+      padding: 15px 25px;
 
       .medal-wrap {
+        .medal {
+          color: $medal-silver;
+        }
+      }
+
+      .score-wrap {
+        @include v-text-align(25px);
+        .score {
+          @include font-size-regular;
+          @include font-weight-5;
+          color: $info;
+        }
       }
 
       .avatar-wrap {
@@ -81,10 +118,29 @@ export default {
           color: $primary;
         }
       }
+
       .description-wrap {
         .description {
           @include font-size-small;
           color: $info;
+        }
+      }
+
+      .badge-wrap {
+        margin: 15px 0;
+        padding: 10px;
+
+        .badge-box {
+          @include v-text-align(40px);
+          width: 20vw;
+          height: 40px;
+          border: 1px solid #eee;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: 0.2s ease-in-out;
+        }
+        .badge-box:hover {
+          transform: translateY(-2px);
         }
       }
     }

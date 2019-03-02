@@ -42,6 +42,7 @@ export default {
     padding: 0 10px;
     width: 100%;
     height: 40px;
+    z-index: 100;
 
     .align-pivot-box {
       width: 50px;

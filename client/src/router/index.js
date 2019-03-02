@@ -4,7 +4,7 @@ import store from './../store/store';
 
 /*  Pages  */
 import LoginPage from '../pages/LoginPage';
-// const LoginPage = () => import('../pages/LoginPage');
+
 const JoinPage = () => import('../pages/JoinPage');
 const MainPage = () => import('../pages/MainPage');
 const FindIdPage = () => import('../pages/FindIdPage');
@@ -81,7 +81,7 @@ export default new Router({
       component: WritePage,
     },
     {
-      path: 'profile/:id',
+      path: 'profile/:userId',
       name: 'ProfilePage',
       component: ProfilePage,
       beforeEnter: requireAuth(),

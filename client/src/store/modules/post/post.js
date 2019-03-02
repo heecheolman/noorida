@@ -96,9 +96,10 @@ const actions = {
       .catch(err => err);
     commit(types.UPDATE_DETAIL_POST, contentData);
 
-    const profileCard = await api.getUser(contentData.userId)
+    const profileCard = await api.getUserProfileCard(contentData.userId)
       .then(result => result.data)
       .catch(err => err);
+    profileCard.userId = contentData.userId;
     commit(types.UPDATE_PROFILE_CARD, profileCard);
   },
 };

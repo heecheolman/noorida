@@ -173,7 +173,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  @import './../assets/scss/mixin/typography';
+  @import './../assets/scss/mixin/mixin';
   @import './../assets/scss/theme/colors';
 
   .news-container {
@@ -218,10 +218,9 @@ export default {
     }
 
     .feedback-wrap {
+      @include box-shadow;
       width: 100%;
       padding: 10px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-      border-radius: 7px;
       margin-bottom: 20px;
 
       .feedback-title {
@@ -235,16 +234,14 @@ export default {
       }
     }
     .loadmore {
+      @include box-shadow;
       width: 100%;
       height: 40px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-      border-radius: 7px;
     }
 
     .comment-write-wrap {
+      @include box-shadow;
       margin-top: 20px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-      border-radius: 7px;
       padding: 10px;
     }
   }

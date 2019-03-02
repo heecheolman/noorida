@@ -178,6 +178,17 @@ export default {
    * @param id
    * @returns {AxiosPromise<any>}
    */
+  getUserProfileCard(id) {
+    return axios.get(`/api/users/${id}/profile-card`, {
+      params: { id },
+    });
+  },
+
+  /**
+   * 유저의 Id 값으로 유저정보 조회
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
   getUser(id) {
     return axios.get(`/api/users/${id}`, {
       params: { id },

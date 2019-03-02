@@ -87,11 +87,12 @@
 </template>
 
 <script>
-import Toolbar from '@/components/Toolbar';
-import ProfileCard from '@/components/ProfileCard';
 import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 import { mapState, mapMutations } from 'vuex';
+
+const Toolbar = () => import('@/components/Toolbar');
+const ProfileCard = () => import('@/components/ProfileCard');
 
 export default {
   name: 'PostDetailPage',

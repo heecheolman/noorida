@@ -29,8 +29,9 @@ import 'quill/dist/quill.core.css';
 import 'quill/dist/quill.snow.css';
 
 import { quillEditor } from 'vue-quill-editor';
-import Toolbar from '@/components/Toolbar';
 import { mapState, mapMutations } from 'vuex';
+
+const Toolbar = () => import('@/components/Toolbar');
 
 export default {
   name: 'WritePage',

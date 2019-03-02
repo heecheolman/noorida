@@ -7,9 +7,10 @@
 </template>
 
 <script>
-import PreviewPost from '@/components/PreviewPost';
-import VirtualList from '@/components/VirtualList';
 import { mapState, mapMutations } from 'vuex';
+
+const PreviewPost = () => import('@/components/PreviewPost');
+const VirtualList = () => import('@/components/VirtualList');
 
 export default {
   name: 'LocalNewsTab',

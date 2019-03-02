@@ -11,7 +11,7 @@ module.exports = {
   },
   getUserInfo: async ({ id }) => {
     const result = await knex('users')
-      .select('nickName', 'createdAt', 'avatar', 'description', 'email')
+      .select('userId', 'nickName', 'createdAt', 'avatar', 'description', 'email')
       .where('userId', id)
       .then(results => results)
       .catch(err => err);

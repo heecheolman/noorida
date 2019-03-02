@@ -1,7 +1,8 @@
 <template>
   <div>
     <div>
-      <virtual-list :post-list="localPreviewPostList"/>
+      <virtual-list :post-list="previewPostList"
+                    :load-type="'local'"/>
     </div>
   </div>
 </template>
@@ -20,7 +21,7 @@ export default {
   },
   computed: {
     ...mapState('post', [
-      'localPreviewPostList',
+      'previewPostList',
     ]),
   },
   data() {

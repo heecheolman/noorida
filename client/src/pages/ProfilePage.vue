@@ -38,18 +38,24 @@
         </a-badge>
       </div>
     </div>
+    <div class="post-list-section">
+      <virtual-list :postList="previewPostList"
+                    :load-type="'user'" />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 
 const Toolbar = () => import('@/components/Toolbar');
+const VirtualList = () => import('@/components/VirtualList');
 
 export default {
   name: 'ProfilePage',
   components: {
     Toolbar,
+    VirtualList,
   },
   props: {
     userId: {
@@ -60,14 +66,22 @@ export default {
     ...mapState('anotherUser', [
       'info',
     ]),
+    ...mapState('post', [
+      'previewPostList',
+    ]),
   },
   data() {
     return {
       badgeStyle: { backgroundColor: '#1F74FF' },
     };
   },
+  methods: {
+    ...mapMutations('post', {
+      initPreviewList: 'INIT_PREVIEW_LIST',
+    }),
+  },
   async created() {
-    await this.$store.dispatch('anotherUser/fetchAnotherUser', this.userId);
+    this.initPreviewList();
   },
 };
 </script>
@@ -78,8 +92,7 @@ export default {
   .profile-container {
     width: 100%;
     height: 100%;
-    padding: 50px 10px 20px;/* toolbar height */
-    overflow-y: scroll;
+    padding: 50px 10px 20px; /* toolbar height */
 
     .user-header-section {
       @include box-shadow;

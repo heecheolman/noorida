@@ -179,9 +179,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getUserProfileCard(id) {
-    return axios.get(`/api/users/${id}/profile-card`, {
-      params: { id },
-    });
+    return axios.get(`/api/users/${id}/profile-card`);
   },
 
   /**
@@ -190,8 +188,18 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getUser(id) {
-    return axios.get(`/api/users/${id}`, {
-      params: { id },
+    return axios.get(`/api/users/${id}`);
+  },
+
+  /**
+   * user Id 값으로 해당 유저가 작성한 포스트리스트 조회
+   * @param userId
+   * @param lastId
+   * @returns {AxiosPromise<any>}
+   */
+  loadUserPostList(userId, lastId) {
+    return axios.get(`/api/posts/users/${userId}`, {
+      params: { lastId },
     });
   },
 };

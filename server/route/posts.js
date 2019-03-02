@@ -40,4 +40,17 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+/**
+ * userId 가 갖는 포스트리스트들 조회
+ */
+router.get('/users/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const { lastId } = req.query;
+  const result = await postService.loadUserPostList({ userId, lastId })
+    .then(results => results)
+    .catch(err => err);
+
+  res.json(result);
+});
+
 module.exports = router;

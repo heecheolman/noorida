@@ -66,9 +66,7 @@ module.exports = {
           .catch(err => err);
 
         /* 초기일시 lastId 기준 처리 */
-        lastId = lastId === -1
-          ? 0
-          : lastId;
+        lastId = lastId === -1 ? 0 : lastId;
 
         return {
           result,
@@ -78,6 +76,30 @@ module.exports = {
       }
     }
     return {};
+  },
+
+  loadUserPostList: async ({ userId, lastId }) => {
+    const LIMIT = 15;
+    const opr = lastId < 0
+      ? '>'
+      : '<';
+
+    const result = await knex('contents')
+      .select('*')
+      .where('userId', userId)
+      .where('contentId', opr, lastId)
+      .orderBy('createdAt', 'desc')
+      .limit(LIMIT)
+      .then(results => results)
+      .catch(err => err);
+
+    lastId = lastId === -1 ? 0 : lastId;
+
+    return {
+      result,
+      lastId: result.length ? result[result.length - 1].contentId : lastId,
+      hasNextPost: result.length === LIMIT,
+    };
   },
 
   getPost: async ({ id }) => {

@@ -77,21 +77,22 @@ export default new Router({
     {
       path: 'write',
       name: 'WritePage',
-      beforeEnter: requireAuth(),
       component: WritePage,
     },
     {
       path: 'profile/:userId',
       name: 'ProfilePage',
       component: ProfilePage,
-      beforeEnter: requireAuth(),
+      async beforeEnter(to, from, next) {
+        await store.dispatch('anotherUser/fetchAnotherUser', to.params.userId);
+        next();
+      },
       props: true,
     },
     {
       path: 'post/:contentId',
       name: 'PostDetailPage',
       component: PostDetailPage,
-      beforeEnter: requireAuth(),
       props: true,
     },
     {

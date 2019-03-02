@@ -4,13 +4,13 @@
     <virtual-scroller :items="postList"
                       :item-height="73"
                       class="scroller"
-                      v-infinite-scroll="loadMore"
+                      v-infinite-scroll="loadCallbackPicker"
                       :infinite-scroll-disabled="busy"
                       :infinite-scroll-distance="10">
 
       <a-list-item slot-scope="{ item }" @click="routeDetailPage(item.contentId)">
 
-        <a-list-item-meta :description="item.nickName">
+        <a-list-item-meta :description="item.nickName || '지역이름'">
           <a slot="title">{{ item.title }}</a>
           <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
         </a-list-item-meta>
@@ -30,13 +30,29 @@ export default {
   name: 'VirtualList',
   directives: { infiniteScroll },
   props: {
-    postList: Array,
+    postList: {
+      type: Array,
+    },
+    loadType: {
+      type: String,
+    },
   },
   computed: {
     ...mapState('post', [
       'loading',
       'busy',
     ]),
+    /**
+     * loadType 에 따라 스크롤링 콜백 결정
+     * @returns {*}
+     */
+    loadCallbackPicker() {
+      switch (this.loadType) {
+        case 'local': return this.loadMoreLocal;
+        case 'user': return this.loadMoreUser;
+        default: return () => {};
+      }
+    },
   },
   data() {
     return {
@@ -46,7 +62,8 @@ export default {
   },
   methods: {
     ...mapActions('post', {
-      loadMore: 'loadLocalPreviewPostList',
+      loadMoreLocal: 'loadLocalPreviewPostList',
+      loadMoreUser: 'loadUserPostList',
     }),
     routeDetailPage(contentId) {
       if (contentId) {
@@ -79,7 +96,7 @@ export default {
             text-overflow: ellipsis;
             white-space: nowrap;
             word-break: break-all;
-            width: 60vw;
+            width: 55vw;
           }
           .ant-list-item-meta-description {
             @include font-size-xx-small;

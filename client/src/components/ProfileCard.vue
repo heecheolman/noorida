@@ -34,10 +34,10 @@ export default {
     ]),
   },
   methods: {
-    routeUserProfile() {
+    async routeUserProfile() {
       this.$router.push({
         name: 'ProfilePage',
-        params: { userId: this.profileCard.userId }
+        params: { userId: this.profileCard.userId },
       });
     },
   },

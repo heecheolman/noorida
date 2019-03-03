@@ -14,6 +14,9 @@
       <div class="nickname-wrap text-center">
         <span class="nickname">{{ info.nickName }}</span>
       </div>
+      <div class="subscript-button-wrap flex-container flex-center-sort">
+        <a-button type="primary" size="small" v-if="!isMe">구독하기</a-button>
+      </div>
       <div class="description-wrap text-justify">
         <!--<span class="description">{{ info.description }}</span>-->
         <span class="description">
@@ -69,6 +72,9 @@ export default {
     ...mapState('post', [
       'previewPostList',
     ]),
+    isMe() {
+      return this.info.userId === this.$store.state.user.user.userId;
+    },
   },
   data() {
     return {
@@ -130,6 +136,11 @@ export default {
           @include font-weight-5;
           color: $primary;
         }
+      }
+
+      .subscript-button-wrap {
+        width: 100%;
+        height: 30px;
       }
 
       .description-wrap {

@@ -1,5 +1,4 @@
 <template>
-  <a-spin :spinning="loading">
   <div class="profile-card-container flex-container flex-row" @click="routeUserProfile">
     <div class="user-icon-wrap">
       <div class="medal flex-container flex-center-sort">
@@ -22,7 +21,6 @@
       </div>
     </div>
   </div>
-  </a-spin>
 </template>
 
 <script>
@@ -30,49 +28,32 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'ProfileCard',
-  props: {
-    // id: {
-    //   type: Number,
-    // },
-  },
-  async created() {
-    // this.loading = true;
-    // await this.$store.dispatch('post/fetchProfileCard');
-    // this.loading = false;
-    // this.user = await this.$api.getUser(this.id)
-    //   .then(result => result.data)
-    //   .catch(err => err);
-    // this.loading = false;
-  },
   computed: {
     ...mapState('post', [
       'profileCard',
     ]),
   },
-  data() {
-    return {
-      user: {},
-      loading: false,
-    };
-  },
   methods: {
-    routeUserProfile() {
+    async routeUserProfile() {
+      this.$router.push({
+        name: 'ProfilePage',
+        params: { userId: this.profileCard.userId },
+      });
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-  @import './../assets/scss/mixin/typography';
+  @import './../assets/scss/mixin/mixin';
   @import './../assets/scss/theme/colors';
 
   .profile-card-container {
+    @include box-shadow;
     margin: 10px 0;
     padding: 10px;
     width: 100%;
     height: auto;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-    border-radius: 7px;
 
     .user-icon-wrap {
       margin: 0 10px;

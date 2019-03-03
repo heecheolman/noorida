@@ -76,6 +76,10 @@ export default {
     });
   },
 
+  sessionLogin() {
+    return axios.get('/api/auth/login');
+  },
+
   /**
    * 이미지 업로드
    * @returns {AxiosPromise<any>}
@@ -178,9 +182,28 @@ export default {
    * @param id
    * @returns {AxiosPromise<any>}
    */
+  getUserProfileCard(id) {
+    return axios.get(`/api/users/${id}/profile-card`);
+  },
+
+  /**
+   * 유저의 Id 값으로 유저정보 조회
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
   getUser(id) {
-    return axios.get(`/api/users/${id}`, {
-      params: { id },
+    return axios.get(`/api/users/${id}`);
+  },
+
+  /**
+   * user Id 값으로 해당 유저가 작성한 포스트리스트 조회
+   * @param userId
+   * @param lastId
+   * @returns {AxiosPromise<any>}
+   */
+  loadUserPostList(userId, lastId) {
+    return axios.get(`/api/posts/users/${userId}`, {
+      params: { lastId },
     });
   },
 };

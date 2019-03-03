@@ -4,7 +4,7 @@ import * as types from './mutation_types';
 const state = {
   title: '',
   content: '',
-  localPreviewPostList: [],
+  previewPostList: [],
   lastId: -1,
   hasNextPost: true,
   loading: false,
@@ -20,8 +20,8 @@ const mutations = {
   [types.SET_CONTENT](state, payload) {
     state.content = payload;
   },
-  [types.FETCH_PREVIEW_LOCAL_POST](state, payload) {
-    state.localPreviewPostList = state.localPreviewPostList.concat(payload);
+  [types.FETCH_POST_LIST](state, payload) {
+    state.previewPostList = state.previewPostList.concat(payload);
   },
   [types.UPDATE_LIMIT_PIVOT](state, payload) {
     state.offsetPivot = payload;
@@ -30,7 +30,7 @@ const mutations = {
     state.lastId = payload;
   },
   [types.INIT_PREVIEW_LIST](state) {
-    state.localPreviewPostList = [];
+    state.previewPostList = [];
     state.busy = false;
     state.lastId = -1;
     state.hasNextPost = true;
@@ -80,7 +80,29 @@ const actions = {
       }
 
       if (resData.result.length) {
-        commit(types.FETCH_PREVIEW_LOCAL_POST, resData.result);
+        commit(types.FETCH_POST_LIST, resData.result);
+        commit(types.UPDATE_LAST_ID, resData.lastId);
+        state.hasNextPost = resData.hasNextPost;
+      } else {
+        state.busy = true;
+      }
+      state.loading = false;
+    }
+  },
+
+  async loadUserPostList({ commit, state, rootState }) {
+    if (state.hasNextPost) {
+      state.loading = true;
+      const resData = await api.loadUserPostList(rootState.anotherUser.info.userId, state.lastId)
+        .then(results => results.data)
+        .catch(err => err);
+
+      if (!resData.result) {
+        resData.result = [];
+      }
+
+      if (resData.result.length) {
+        commit(types.FETCH_POST_LIST, resData.result);
         commit(types.UPDATE_LAST_ID, resData.lastId);
         state.hasNextPost = resData.hasNextPost;
       } else {
@@ -96,9 +118,10 @@ const actions = {
       .catch(err => err);
     commit(types.UPDATE_DETAIL_POST, contentData);
 
-    const profileCard = await api.getUser(contentData.userId)
+    const profileCard = await api.getUserProfileCard(contentData.userId)
       .then(result => result.data)
       .catch(err => err);
+    profileCard.userId = contentData.userId;
     commit(types.UPDATE_PROFILE_CARD, profileCard);
   },
 };

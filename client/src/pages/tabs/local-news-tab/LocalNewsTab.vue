@@ -1,15 +1,17 @@
 <template>
   <div>
     <div>
-      <virtual-list :post-list="localPreviewPostList"/>
+      <virtual-list :post-list="previewPostList"
+                    :load-type="'local'"/>
     </div>
   </div>
 </template>
 
 <script>
-import PreviewPost from '@/components/PreviewPost';
-import VirtualList from '@/components/VirtualList';
 import { mapState, mapMutations } from 'vuex';
+
+const PreviewPost = () => import('@/components/PreviewPost');
+const VirtualList = () => import('@/components/VirtualList');
 
 export default {
   name: 'LocalNewsTab',
@@ -19,7 +21,7 @@ export default {
   },
   computed: {
     ...mapState('post', [
-      'localPreviewPostList',
+      'previewPostList',
     ]),
   },
   data() {

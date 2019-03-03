@@ -1,23 +1,22 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import store from './../store/store';
 
 /*  Pages  */
 import LoginPage from '../pages/LoginPage';
-import JoinPage from '../pages/JoinPage';
-import MainPage from '../pages/MainPage';
-import FindIdPage from '../pages/FindIdPage';
-import FindPasswordPage from '../pages/FindPasswordPage';
-import WritePage from '../pages/WritePage';
-import PostDetailPage from '../pages/PostDetailPage';
-import ProfilePage from '../pages/ProfilePage';
 
+const JoinPage = () => import('../pages/JoinPage');
+const MainPage = () => import('../pages/MainPage');
+const FindIdPage = () => import('../pages/FindIdPage');
+const FindPasswordPage = () => import('../pages/FindPasswordPage');
+const WritePage = () => import('../pages/WritePage');
+const PostDetailPage = () => import('../pages/PostDetailPage');
+const ProfilePage = () => import('../pages/ProfilePage');
 
 /*  Tabs  */
-import LocalNewsTab from './../pages/tabs/local-news-tab/LocalNewsTab';
-import SubscribeNewsTab from './../pages/tabs/subscribe-news-tab/SubscribeNewsTab';
-import HotNewsTab from './../pages/tabs/hot-news-tab/HotNewsTab';
-
-import store from './../store/store';
+const LocalNewsTab = () => import('../pages/tabs/local-news-tab/LocalNewsTab');
+const SubscribeNewsTab = () => import('../pages/tabs/subscribe-news-tab/SubscribeNewsTab');
+const HotNewsTab = () => import('../pages/tabs/hot-news-tab/HotNewsTab');
 
 Vue.use(Router);
 
@@ -39,6 +38,14 @@ export default new Router({
       path: 'login',
       name: 'LoginPage',
       component: LoginPage,
+      async beforeEnter(from, to, next) {
+        await store.dispatch('auth/sessionLoginProcess');
+        if (store.state.auth.loginStatus) {
+          next({ name: 'LocalNewsTab' });
+        } else {
+          next();
+        }
+      },
     },
     {
       path: 'join',
@@ -78,21 +85,22 @@ export default new Router({
     {
       path: 'write',
       name: 'WritePage',
-      beforeEnter: requireAuth(),
       component: WritePage,
     },
     {
-      path: 'profile/:id',
+      path: 'profile/:userId',
       name: 'ProfilePage',
       component: ProfilePage,
-      beforeEnter: requireAuth(),
+      async beforeEnter(to, from, next) {
+        await store.dispatch('anotherUser/fetchAnotherUser', to.params.userId);
+        next();
+      },
       props: true,
     },
     {
       path: 'post/:contentId',
       name: 'PostDetailPage',
       component: PostDetailPage,
-      beforeEnter: requireAuth(),
       props: true,
     },
     {

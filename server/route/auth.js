@@ -3,6 +3,10 @@ const joinService = require('../service/join');
 const loginService = require('../service/login');
 const findService = require('../service/findId');
 const findPwService = require('../service/findPassword');
+const uuid = require('uuid/v4');
+
+let mapper = {
+};
 
 const router = express.Router();
 
@@ -25,11 +29,33 @@ router.post('/join', async (req, res) => {
 /**
  * 로그인
  */
+
+router.get('/login', async (req, res) => {
+  const { session } = req;
+  if (mapper[session.key]) {
+    res.json({
+      data: mapper[session.key],
+      loginStatus: true,
+    });
+  } else {
+    res.json({
+      data: {},
+      loginStatus: false,
+    });
+  }
+});
+
 router.post('/login', async (req, res) => {
   const { nickName, password } = req.body;
   const result = await loginService.login({ nickName, password })
     .then(results => results)
     .catch(err => err);
+
+  if (result) {
+    const key = uuid();
+    req.session.key = key;
+    mapper[key] = result;
+  }
 
   res.json({
     data: result,

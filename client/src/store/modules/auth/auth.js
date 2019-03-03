@@ -23,6 +23,16 @@ const actions = {
 
     commit(types.SET_LOGIN_STATUS, loginResult.loginStatus);
   },
+  sessionLoginProcess: async ({ commit }) => {
+    const sessionResult = await api.sessionLogin()
+      .then(results => results.data)
+      .catch(err => err);
+
+    if (sessionResult.loginStatus) {
+      commit('user/FETCH_USER_DATA', sessionResult.data, { root: true });
+    }
+    commit(types.SET_LOGIN_STATUS, sessionResult.loginStatus);
+  },
 };
 
 export default {

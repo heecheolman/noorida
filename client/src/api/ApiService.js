@@ -76,6 +76,10 @@ export default {
     });
   },
 
+  sessionLogin() {
+    return axios.get('/api/auth/login');
+  },
+
   /**
    * 이미지 업로드
    * @returns {AxiosPromise<any>}

@@ -38,6 +38,14 @@ export default new Router({
       path: 'login',
       name: 'LoginPage',
       component: LoginPage,
+      async beforeEnter(from, to, next) {
+        await store.dispatch('auth/sessionLoginProcess');
+        if (store.state.auth.loginStatus) {
+          next({ name: 'LocalNewsTab' });
+        } else {
+          next();
+        }
+      },
     },
     {
       path: 'join',

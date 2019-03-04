@@ -10,6 +10,16 @@ const getters = {
 };
 
 const actions = {
+  loadCommentList: async ({ commit }) => {
+    await api.getCommentList(-1)
+      .then(results => results)
+      .catch(err => err);
+  },
+
+  writeComment: async ({ commit }, payload) => {
+    console.log('payload',payload);
+    await api.writeComment();
+  },
 };
 
 const mutations = {

@@ -43,7 +43,6 @@
           </div>
         </div>
         <div class="comment-wrap">
-
           <a-list v-if="commentList.length"
                   :dataSource="commentList"
                   :header="`${commentList.length} ${commentList.length > 1 ? 'replies' : 'reply'}`"
@@ -157,7 +156,13 @@ export default {
 
       console.log(this.commentContent);
       console.log('contentId', this.contentId);
-      console.log('userId', this.contentData.userId);
+      console.log('userId', this.detailPost.userId);
+      const payload = {
+        contentId: this.contentId,
+        userId: this.detailPost.userId,
+        commentContent: this.commentContent,
+      }
+      this.$store.dispatch('comment/writeComment', payload);
     },
     updateEmoji(e) {
       console.log('이모지 수정', e.target.value);

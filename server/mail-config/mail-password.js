@@ -1,8 +1,8 @@
 const mailpassword = require('nodemailer');
 
-const htmlBuilder = tokenPw => `
+const htmlBuilder = tmpPassword => `
   <p>안녕하세요 누리다입니다. 비밀번호 변경은 다음과 같습니다.</p>
-  <p>${tokenPw}</p>
+  <p>${tmpPassword}</p>
 `;
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
             pass: 'gmlcjf12',
         },
     }),
-    mailOptionBuilder: (to, token) => ({
+    mailOptionBuilder: (to, changePw) => ({
         from: {
             name: '누리다',
             address: 'heecheol.bot@gmail.com',
@@ -22,6 +22,6 @@ module.exports = {
             address: to,
         },
         subject: '안녕하세요 누리다입니다. 비밀번호를 확인해주세요',
-        html: htmlBuilder(token),
+        html: htmlBuilder(tmpPassword),
     }),
 };

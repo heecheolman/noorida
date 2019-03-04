@@ -1,19 +1,19 @@
 const express = require('express');
 const tokenBuilder = require('uuid/v4');
 const PostOffice = require('./../mail-config/mail-password');
-const findPasswordService = require('./../service/findPassword');
+const changePasswordService = require('./../service/changePassword');
 
 const router = express.Router();
 
-router.post('/mail', async (req, res) => {
+router.post('/', async (req, res) => {
   const requestEmail = req.body.email;
-  const tokenPw = tokenBuilder();
-  await findPasswordService.findPassword({ email: requestEmail, password: tokenPw })
+  const changePw = tokenBuilder();
+  await changePasswordService.changePassword({ email: requestEmail, password : changePw })
     .then(results => results)
     .catch(error => error);
 
   PostOffice.transporter.sendMail(
-    PostOffice.mailOptionBuilder(requestEmail, tokenPw), (err, info) => {
+    PostOffice.mailOptionBuilder(requestEmail, changePw), (err, info) => {
       if (err) {
         console.error(err);
         res.sendStatus(500);

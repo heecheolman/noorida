@@ -166,6 +166,12 @@ export default {
     });
   },
 
+  insertTmpPassword(email){
+    return axios.put('api/auth/find-password',{
+      email,
+    });
+  },
+
   /**
    * 콘텐츠 id 값으로 post 정보들을 가져옴
    * @param id

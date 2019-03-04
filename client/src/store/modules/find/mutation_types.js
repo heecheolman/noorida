@@ -1,0 +1,2 @@
+export const SET_FOUND_ID = 'SET_FOUND_ID';
+export const FIND_PASSWORD_SUCCESS = 'FIND_PASSWORD_SUCCESS';

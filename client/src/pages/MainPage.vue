@@ -8,6 +8,7 @@
                           padding: 0,
                           height: '50px',
                           boxShadow: '0 1px 5px rgba(57, 63, 72, 0.3)',
+                          zIndex: 100,
                        }"
                        size="small">
         <div class="flex-container flex-between-sort flex-row">
@@ -61,6 +62,15 @@
                 @close="closeSidebar"
                 :visible="sidebarVisible">
         <!-- menu content -->
+        <div>
+          <router-link :to="{name : ' '}"
+                       tag= "p">프로필 페이지</router-link>
+          <router-link :to="{name : ' '}"
+                       tag= "p">설정</router-link>
+          <router-link :to="{name : ' '}"
+                       tag= "p">로그아웃</router-link>
+        </div>
+        <!-- menu content -->
         <div
           :style="{
           position: 'absolute',
@@ -82,12 +92,6 @@
 <script>
 export default {
   name: 'MainPage',
-  async created() {
-    await this.$store.dispatch('login/fetchUserLocation');
-    await this.$store.dispatch('login/fetchParsedLocalName');
-  },
-  computed: {
-  },
   data() {
     return {
       sidebarVisible: false,
@@ -123,7 +127,7 @@ export default {
     width: 100%;
     height: calc(100vh - 70px);
     padding-top: $header-height;
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
   }
 
   .tab-pane {

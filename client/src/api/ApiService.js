@@ -15,7 +15,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   confirmToken(email, token) {
-    return axios.get(`/api/cert/user/valid/${email}/${token}`, {
+    return axios.get('/api/cert/valid', {
       params: { email, token },
     });
   },
@@ -38,7 +38,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   join(realName, nickName, password, email) {
-    return axios.post('/api/join', { realName, nickName, password, email });
+    return axios.post('/api/auth/join', { realName, nickName, password, email });
   },
 
   /**
@@ -47,7 +47,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   validateNickName(nickName) {
-    return axios.get(`/api/cert/user/nick-names/${nickName}`, {
+    return axios.get('/api/cert/valid/nick-names', {
       params: { nickName },
     });
   },
@@ -58,7 +58,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   validateEmail(email) {
-    return axios.get(`api/cert/user/emails/${email}`, {
+    return axios.get('api/cert/valid/emails', {
       params: { email },
     });
   },
@@ -70,7 +70,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   login(nickName, password) {
-    return axios.post('/api/login', {
+    return axios.post('/api/auth/login', {
       nickName,
       password,
     });
@@ -102,9 +102,110 @@ export default {
     return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
   },
 
-  publishNews(userNo, title, content, address) {
-    return axios.post('/api/post/news', {
-      userNo, title, content, address,
+
+  /**
+   * 기사 작성 api
+   * @param userId
+   * @param title
+   * @param content
+   * @param address
+   * @returns {AxiosPromise<any>}
+   */
+  publishNews(userId, title, content, address) {
+    return axios.post('/api/posts', {
+      userId,
+      title,
+      content,
+      address,
+    });
+  },
+
+  /**
+   * 지역이름과, 받아올 마지막 id 값을 넘겨주면 포스트를 가져옴
+   * @param localName
+   * @param lastId
+   * @returns {AxiosPromise<any>}
+   */
+  loadLocalPreviewPostList(localName, lastId) {
+    return axios.get('/api/posts/local', {
+      params: {
+        localName: decodeURI(localName),
+        lastId,
+      },
+    });
+  },
+  /**
+   * 아이디 찾기
+   * @param realName
+   * @param email
+   * @returns {AxiosPromise<any>}
+   */
+  findId(realName, email) {
+    return axios.post('/api/auth/find-id', {
+      realName,
+      email,
+    });
+  },
+
+  /**
+   * 비밀번호 찾기
+   * @param realName
+   * @param nickName
+   * @param email
+   * @returns {AxiosPromise<any>}
+   */
+  findPassword(realName, nickName, email) {
+    return axios.post('/api/auth/find-password', {
+      realName,
+      nickName,
+      email,
+    });
+  },
+
+  insertTmpPassword(email){
+    return axios.put('api/auth/find-password',{
+      email,
+    });
+  },
+
+  /**
+   * 콘텐츠 id 값으로 post 정보들을 가져옴
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
+  getPostContent(id) {
+    return axios.get(`/api/posts/${id}`, {
+      params: { id },
+    });
+  },
+
+  /**
+   * 유저의 id 값으로 user 정보들을 가져옴
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
+  getUserProfileCard(id) {
+    return axios.get(`/api/users/${id}/profile-card`);
+  },
+
+  /**
+   * 유저의 Id 값으로 유저정보 조회
+   * @param id
+   * @returns {AxiosPromise<any>}
+   */
+  getUser(id) {
+    return axios.get(`/api/users/${id}`);
+  },
+
+  /**
+   * user Id 값으로 해당 유저가 작성한 포스트리스트 조회
+   * @param userId
+   * @param lastId
+   * @returns {AxiosPromise<any>}
+   */
+  loadUserPostList(userId, lastId) {
+    return axios.get(`/api/posts/users/${userId}`, {
+      params: { lastId },
     });
   },
 };

@@ -33,12 +33,16 @@ export default {
 
 <style lang="scss" scoped>
   .toolbar {
+    position: fixed;
+    top: 0;
+    background-color: #fff;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 10px;
     width: 100%;
     height: 40px;
+    z-index: 100;
 
     .align-pivot-box {
       width: 50px;

@@ -313,7 +313,7 @@ export default {
 
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/typography';
-  @import './../assets/scss/variables/colors';
+  @import './../assets/scss/theme/colors';
 
   input {
     @include font-size-small;

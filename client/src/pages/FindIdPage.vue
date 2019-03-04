@@ -1,53 +1,45 @@
 <template>
   <div class="page flex-container flex-center-sort">
     <div class="find-box">
-      <div class="head-title text-center flex-container flex-center-sort">
+      <div class="title-head text-center flex-container flex-center-sort">
         <h1 class="title-color">아이디 찾기</h1>
       </div>
       <div>
-        <div class="components-input-demo-size flex-container flex-center-sort">
-          <a-input
-            v-decorator="[
-          'name',
-          {
-            rules: [{
-              required: true, message: 'Please input your Name',
-            }]
-          }
-        ]"
-            placeholder="이름"
-            v-model="name"
-          />
-        </div>
-        <div class="components-input-demo-size flex-container flex-center-sort ">
-          <a-input
-            v-decorator="[
-          'email',
-          {
-            rules: [{
-              type: 'email', message: 'The input is not valid E-mail!',
-            }, {
-              required: true, message: 'Please input your E-mail!',
-            }]
-          }
-        ]"
-            placeholder="이메일"
-            v-model="email"
-          />
-        </div>
+        <a-form
+          :form="form"
+          @submit="FindId">
+          <div class="components-input-demo-size flex-container flex-center-sort">
+            <a-form-item>
+              <a-input
+                v-decorator="[ 'realName', validateConfig.realName ]"
+                placeholder="이름"
+                v-model="realName"
+              />
+            </a-form-item>
+          </div>
+          <div class="components-input-demo-size flex-container flex-center-sort ">
+            <a-form-item>
+              <a-input
+                v-decorator="[ 'email',validateConfig.email ]"
+                placeholder="이메일"
+                v-model="email"
+              />
+            </a-form-item>
+          </div>
+          <div class="flex-container flex-center-sort margin--top-10">
+            <a-button class="button-size" color="primary" type="primary"
+                      htmlType="submit">아이디 찾기
+            </a-button>
+          </div>
+          <div class="flex-container flex-center-sort margin--10">
+            <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
+          </div>
+        </a-form>
       </div>
-      <div class="flex-container flex-center-sort margin--top-30">
-        <a-button class="button-size" color="primary" type="primary" @click="FindId()">아이디 찾기</a-button>
-      </div>
-      <div class="flex-container flex-center-sort margin--10">
-        <a-button class="button-size" type="dashed" @click="goToBack()">뒤로가기</a-button>
-      </div>
-
       <div class="link-move flex-container flex-center-sort margin--bottom-10">
-        <router-link tag="span" class="id-password-link" :to="{ name: 'LoginPage' }">로그인</router-link>
-        <br>
-        <router-link tag="span" class= "id-password-link" :to="{ name:'FindPasswordPage' }">
-          비밀번호 찾기</router-link>
+        <router-link tag="span" class="find-link-design" :to="{ name:'FindPasswordPage' }">
+          비밀번호 찾기
+        </router-link>
       </div>
     </div>
   </div>
@@ -56,27 +48,55 @@
 <script>
 export default {
   name: 'FindIdPage',
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
+  },
   data() {
     return {
-      name: '',
+      realName: '',
       email: '',
-      id: '',
-
+      validateConfig: {
+        realName: {
+          rules: [{
+            required: true, message: '이름을 입력해주세요.',
+          }],
+        },
+        email: {
+          rules: [{
+            type: 'email', message: '이메일형식이 아니에요.',
+          }, {
+            required: true, message: '이메일을 입력해주세요.',
+          }],
+        },
+      },
     };
   },
-  methods : {
+  methods: {
     goToBack() {
-      window.history.go(-1);
+      this.$router.push({ name: 'LoginPage' });
     },
-    FindId() {
-      /*아이디 찾기 버튼 클릭시!! */
-      var check =confirm(this.name+'님 의 ID는 '+this.id + '입니다. \n 비밀번호찾기 창으로 이동하시겠습니까?');
-      if(check == true){
-        location.href = '#/find-password' ;
-      }else{
-        location.href = '#/login' ;
-      }
 
+    FindId(e) {
+      e.preventDefault();
+      this.form.validateFields(async (err, values) => {
+        if (!err) {
+          await this.$store.dispatch('find/findIdProcess', {
+            realName: values.realName,
+            email: values.email,
+          });
+          if (this.$store.getters['find/getFindNickname']) {
+            this.$success({
+              title: '아이디 찾기',
+              content: `${this.realName} 님의 닉네임은 ${this.$store.getters['find/getFindNickname']} 입니다.`,
+              okText: '로그인',
+              centered: true,
+            });
+            this.$router.replace({ name: 'LoginPage' });
+          } else {
+            this.$message.warning('일치하는 회원정보가 없습니다.');
+          }
+        }
+      });
     },
   },
 };
@@ -85,42 +105,53 @@ export default {
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/typography';
 
-  .find-box{
+  .find-box {
     width: 100%;
-    height: 90%;
+    height: 80%;
     padding: 20px;
   }
-  .id-password-link{
+
+  .find-link-design {
     font-size: 12px;
-    text-decoration: underline;
     margin: 10px;
-    color: blue;
-    text-align: right;
+    text-align: center;
   }
-  .title-color{
-    color:#1f74ff;
+
+
+  .title-color {
+    color: #1f74ff;
     font-size: 30px;
   }
+
   .components-input-demo-size .ant-input {
     width: 200px;
     margin: 8px;
   }
 
-  .head-title{
+  .title-head {
     height: 100px;
     background: white;
   }
-  .margin--10{
+
+  .margin--10 {
     margin: 10px;
   }
-  .margin--top-30{
+
+  .margin--top-10 {
+    margin-top: 10px;
+  }
+
+  .margin--top-30 {
     margin-top: 30px;
   }
-  .margin--top-30{
-    margin-top: 30px;
-  }
-  .button-size{
+
+  .button-size {
     width: 200px;
     height: 32px;
   }
+
+  /*.has-error .ant-form-explain {*/
+  /*color: #f5222d;*/
+  /*padding-left: 10px;*/
+  /*}*/
 </style>

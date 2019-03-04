@@ -1,26 +1,27 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+import store from './../store/store';
 
 /*  Pages  */
 import LoginPage from '../pages/LoginPage';
-import JoinPage from '../pages/JoinPage';
-import MainPage from '../pages/MainPage';
-import FindIdPage from '../pages/FindIdPage';
-import FindPasswordPage from '../pages/FindPasswordPage';
-import WritePage from '../pages/WritePage';
 
+const JoinPage = () => import('../pages/JoinPage');
+const MainPage = () => import('../pages/MainPage');
+const FindIdPage = () => import('../pages/FindIdPage');
+const FindPasswordPage = () => import('../pages/FindPasswordPage');
+const WritePage = () => import('../pages/WritePage');
+const PostDetailPage = () => import('../pages/PostDetailPage');
+const ProfilePage = () => import('../pages/ProfilePage');
 
 /*  Tabs  */
-import LocalNewsTab from './../pages/tabs/local-news-tab/LocalNewsTab';
-import SubscribeNewsTab from './../pages/tabs/subscribe-news-tab/SubscribeNewsTab';
-import HotNewsTab from './../pages/tabs/hot-news-tab/HotNewsTab';
-
-import store from './../store/store';
+const LocalNewsTab = () => import('../pages/tabs/local-news-tab/LocalNewsTab');
+const SubscribeNewsTab = () => import('../pages/tabs/subscribe-news-tab/SubscribeNewsTab');
+const HotNewsTab = () => import('../pages/tabs/hot-news-tab/HotNewsTab');
 
 Vue.use(Router);
 
 const requireAuth = () => (to, from, next) => {
-  if (store.getters['login/getLoginSuccess']) {
+  if (store.state.auth.loginStatus) {
     next();
   } else {
     next({ name: 'LoginPage' });
@@ -34,42 +35,65 @@ export default new Router({
       redirect: LoginPage,
     },
     {
-      path: '/login',
+      path: 'login',
       name: 'LoginPage',
       component: LoginPage,
     },
     {
-      path: '/join',
+      path: 'join',
       name: 'JoinPage',
       component: JoinPage,
     },
     {
-      path: '/find-id',
+      path: 'find-id',
       name: 'FindIdPage',
       component: FindIdPage,
     },
     {
-      path: '/find-password',
+      path: 'find-password',
       name: 'FindPasswordPage',
       component: FindPasswordPage,
     },
     {
-      path: '/main',
+      path: 'main',
       name: 'MainPage',
       component: MainPage,
       beforeEnter: requireAuth(),
       children: [
-        { path: '', redirect: 'local' },
-        { path: 'local', name: 'LocalNewsTab', component: LocalNewsTab },
+        { path: '', redirect: { name: 'LocalNewsTab' } },
+        {
+          path: 'local',
+          name: 'LocalNewsTab',
+          component: LocalNewsTab,
+          async beforeEnter(to, from, next) {
+            await store.dispatch('user/updateLocation');
+            next();
+          },
+        },
         { path: 'subscribe', name: 'SubscribeNewsTab', component: SubscribeNewsTab },
         { path: 'hot', name: 'HotNewsTab', component: HotNewsTab },
       ],
     },
     {
-      path: '/write',
+      path: 'write',
       name: 'WritePage',
-      beforeEnter: requireAuth(),
       component: WritePage,
+    },
+    {
+      path: 'profile/:userId',
+      name: 'ProfilePage',
+      component: ProfilePage,
+      async beforeEnter(to, from, next) {
+        await store.dispatch('anotherUser/fetchAnotherUser', to.params.userId);
+        next();
+      },
+      props: true,
+    },
+    {
+      path: 'post/:contentId',
+      name: 'PostDetailPage',
+      component: PostDetailPage,
+      props: true,
     },
     {
       path: '*',

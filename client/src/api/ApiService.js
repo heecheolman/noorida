@@ -212,4 +212,18 @@ export default {
       params: { lastId },
     });
   },
+
+  writeComment(contentId, userId, commentContent) {
+    return axios.post('/api/comments', {
+      contentId,
+      userId,
+      commentContent,
+    });
+  },
+
+  commentList(contentId, lastId) {
+    return axios.get('/api/comments',{
+      params: { contentId, lastId },
+    });
+  },
 };

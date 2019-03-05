@@ -221,8 +221,8 @@ export default {
     });
   },
 
-  commentList(contentId, lastId) {
-    return axios.get('/api/comments',{
+  getCommentList(contentId, lastId) {
+    return axios.get('/api/comments', {
       params: { contentId, lastId },
     });
   },

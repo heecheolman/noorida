@@ -1,7 +1,6 @@
 const knex = require('./service.config');
 
 module.exports = {
-
   comment: async ({ contentId, userId, commentContent }) => {
     const result = await knex('comments')
       .insert({ contentId, userId, commentContent })
@@ -17,21 +16,22 @@ module.exports = {
       ? '>'
       : '<';
 
-    const result = await knex('comment')
-      .select('users.userId',
+    const result = await knex('comments')
+      .select('comments.commentId',
+        'users.userId',
         'users.nickName',
         'users.avatar',
-        'comment.commentContent',
-        'comment.updatedAt',
+        'comments.commentContent',
+        'comments.updatedAt',
       )
       .where('comments.contentId', contentId)
       .where('comments.commentId', opr, lastId)
       .where('comments.active', 'Y')
-      .join('users', 'users.userId', '=', 'comment.userId')
-      .join('contents', 'contents.contentId', '=', 'comment.contentId')
+      .join('users', 'users.userId', '=', 'comments.userId')
+      .join('contents', 'contents.contentId', '=', 'comments.contentId')
       .orderBy('comments.createdAt', 'desc')
       .limit(LIMIT)
-      .then(results => results)
+      .then(results => JSON.parse(JSON.stringify(results)))
       .catch(err => err);
 
     lastId = lastId === -1 ? 0 : lastId;
@@ -39,7 +39,7 @@ module.exports = {
     return {
       result,
       lastId: result.length ? result[result.length - 1].commentId : lastId,
-      hasNextPost: result.length === LIMIT,
+      hasNextComment: result.length === LIMIT,
     };
   },
   /* editComment: async ({ commentId, userId, commentContent }) =>{

@@ -71,7 +71,8 @@ const actions = {
   async loadLocalPreviewPostList({ commit, state, rootState }) {
     if (state.hasNextPost) {
       state.loading = true;
-      const resData = await api.loadLocalPreviewPostList(rootState.user.location.address, state.lastId)
+      // const resData = await api.loadLocalPreviewPostList(rootState.user.location.address, state.lastId)
+      const resData = await api.loadLocalPreviewPostList('대한민국 서울특별시 노원구 상계8동', state.lastId)
         .then(results => results.data)
         .catch(err => err);
 

@@ -15,13 +15,12 @@ router.post('', async (req, res) => {
 /**
  * 댓글 보기 */
 router.get('', async (req, res) => {
-  const { contentId } = req.params;
-  const { lastId } = req.query;
+  const { lastId, contentId } = req.query;
   const result = await commentService.commentList({ contentId, lastId })
     .then(results => results)
     .catch(err => err);
   res.json(result);
-})
+});
 /*
 router.put('/${commentId}', async(req, res) =>{
   const { commentId, userId, commentContent } = req.body;

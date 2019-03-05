@@ -13,7 +13,7 @@ module.exports = {
             pass: 'gmlcjf12',
         },
     }),
-    mailOptionBuilder: (to, changePw) => ({
+    mailOptionBuilder: (to, tmpPassword) => ({
         from: {
             name: '누리다',
             address: 'heecheol.bot@gmail.com',

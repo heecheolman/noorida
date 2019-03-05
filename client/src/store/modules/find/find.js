@@ -11,7 +11,6 @@ const getters = {
 };
 const actions = {
   findPasswordProcess: async ({commit}, payload) => {
-    console.log('payload',payload);
     const { realName, nickName, email} = payload;
     const data = await api.findPassword(realName, nickName, email)
       .then(result => result.data)

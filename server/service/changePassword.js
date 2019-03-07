@@ -1,21 +1,21 @@
 const knex = require('./service.config');
 
 module.exports = {
-  checkPassword: async ({userId, oldPassword}) => {
+  checkPassword: async ({ userId, oldPassword }) => {
     const result = await knex('users')
       .select('password')
       .where('password', oldPassword)
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
 
-  insertNewPassword: async ({userId, newPassword}) => {
+  insertNewPassword: async ({ userId, newPassword }) => {
     const result = await knex('users')
-      .where({userId})
-      .update({password: newPassword})
+      .where({ userId })
+      .update({ password: newPassword })
       .then(results => results)
-      .ctch(err => err)
+      .catch(err => err);
     return result;
   },
 };

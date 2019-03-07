@@ -43,5 +43,4 @@ router.put('disabledComments/:commentsId', async (req, res) => {
   res.json('ok');
 });
 
-
 module.exports = router;

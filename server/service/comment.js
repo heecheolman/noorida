@@ -43,7 +43,7 @@ module.exports = {
     };
   },
 
-   editComment: async ({ commentId, userId, commentContent }) =>{
+  editComment: async ({ commentId, userId, commentContent }) =>{
     const result = await knex('comments')
       .update({ commentContent })
       .where({ commentId, userId })

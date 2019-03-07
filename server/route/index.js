@@ -21,18 +21,3 @@ router.use('/change-Password', changePasswordRouter);
 
 
 module.exports = router;
-
-// api/comment
-// api/commentList/${contentId}
-//
-// 브라우저 주소:  localhost:8080/post/:contentId
-//
-//
-
-//
-// api 설계: rest api
-//
-// 생성 : post api/comments
-// 조회 : get api/comments
-// 수정 : put api/comments/${id}}
-// 삭제 : delete api/comments/${id}}

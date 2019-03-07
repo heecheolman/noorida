@@ -63,13 +63,13 @@
                 :visible="sidebarVisible">
         <!-- menu content -->
         <div>
-          <router-link :to="{name : ' '}"
+          <router-link :to="{ name : '' }"
                        tag= "p">프로필 페이지</router-link>
-          <router-link :to="{name : ' '}"
+          <router-link :to="{ name : '' }"
                        tag= "p">설정</router-link>
-          <router-link :to="{name : 'ChangePasswordPage'}"
+          <router-link :to="{ name : 'ChangePasswordPage' }"
                        tag= "p">비밀번호 변경</router-link>
-          <router-link :to="{name : ''}"
+          <router-link :to="{ name : '' }"
                        tag= "p">로그아웃</router-link>
         </div>
         <!-- menu content -->
@@ -92,32 +92,32 @@
 </template>
 
 <script>
-  export default {
-    name: 'MainPage',
-    data() {
-      return {
-        sidebarVisible: false,
-        tab: {
-          pane1: '지역소식',
-          pane2: '구독게시물',
-          pane3: '지역핫토픽',
-        },
-      };
+export default {
+  name: 'MainPage',
+  data() {
+    return {
+      sidebarVisible: false,
+      tab: {
+        pane1: '지역소식',
+        pane2: '구독게시물',
+        pane3: '지역핫토픽',
+      },
+    };
+  },
+  methods: {
+    callback() {
     },
-    methods: {
-      callback() {
-      },
-      openSidebar() {
-        this.sidebarVisible = true;
-      },
-      closeSidebar() {
-        this.sidebarVisible = false;
-      },
-      routeWritePage() {
-        this.$router.replace({ name: 'WritePage' });
-      },
+    openSidebar() {
+      this.sidebarVisible = true;
     },
-  };
+    closeSidebar() {
+      this.sidebarVisible = false;
+    },
+    routeWritePage() {
+      this.$router.replace({ name: 'WritePage' });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

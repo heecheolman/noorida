@@ -13,11 +13,11 @@ const getters = {
   getChangePasswordSuccess: state => state.changePasswordSuccess,
 };
 const actions = {
-  findPasswordProcess: async ({commit}, payload) => {
-    const { realName, nickName, email} = payload;
+  findPasswordProcess: async ({ commit }, payload) => {
+    const { realName, nickName, email } = payload;
     const data = await api.findPassword(realName, nickName, email)
       .then(result => result.data)
-      .catch(err=>err);
+      .catch(err => err);
 
     if (data && !(data instanceof Error)) {
       commit(types.FIND_PASSWORD_SUCCESS, true);
@@ -39,7 +39,6 @@ const actions = {
   },
   changePasswordProcess: async ({ commit }, payload) => {
     const { userId, oldPassword, newPassword } = payload;
-    console.log(payload);
     const data = await api.checkPassword(userId, oldPassword)
       .then(result => result.data)
       .catch(err => err);
@@ -52,13 +51,13 @@ const actions = {
   },
 };
 const mutations = {
-  [types.SET_FOUND_ID] (state, payload) {
+  [types.SET_FOUND_ID](state, payload) {
     state.foundNickName = payload;
   },
-  [types.FIND_PASSWORD_SUCCESS] (state, payload) {
+  [types.FIND_PASSWORD_SUCCESS](state, payload) {
     state.findPasswordSuccess = payload;
   },
-  [types.CHANGE_PASSWORD_SUCCESS] (state, payload) {
+  [types.CHANGE_PASSWORD_SUCCESS](state, payload) {
     state.changePasswordSuccess = payload;
   },
   [types.UPDATE_DETAIL_POST](state, payload) {

@@ -9,6 +9,7 @@ const JoinPage = () => import('../pages/JoinPage');
 const MainPage = () => import('../pages/MainPage');
 const FindIdPage = () => import('../pages/FindIdPage');
 const FindPasswordPage = () => import('../pages/FindPasswordPage');
+const ChangePasswordPage = () => import('../pages/ChangePasswordPage');
 const WritePage = () => import('../pages/WritePage');
 const PostDetailPage = () => import('../pages/PostDetailPage');
 const ProfilePage = () => import('../pages/ProfilePage');
@@ -61,6 +62,11 @@ export default new Router({
       path: 'find-password',
       name: 'FindPasswordPage',
       component: FindPasswordPage,
+    },
+    {
+      path: 'change-password',
+      name: 'ChangePasswordPage',
+      component: ChangePasswordPage,
     },
     {
       path: 'main',

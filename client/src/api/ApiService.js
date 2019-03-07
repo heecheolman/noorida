@@ -166,6 +166,12 @@ export default {
     });
   },
 
+  insertTmpPassword(email){
+    return axios.put('api/auth/find-password',{
+      email,
+    });
+  },
+
   /**
    * 콘텐츠 id 값으로 post 정보들을 가져옴
    * @param id
@@ -204,6 +210,32 @@ export default {
   loadUserPostList(userId, lastId) {
     return axios.get(`/api/posts/users/${userId}`, {
       params: { lastId },
+    });
+  },
+
+  writeComment(contentId, userId, commentContent) {
+    return axios.post('/api/comments', {
+      contentId,
+      userId,
+      commentContent,
+    });
+  },
+
+  getCommentList(contentId, lastId) {
+    return axios.get('/api/comments', {
+      params: { contentId, lastId },
+    });
+  },
+  checkPassword(userId, oldPassword) {
+    return axios.post('/api/change-Password', {
+      userId,
+      oldPassword,
+    });
+  },
+  insertNewPassword(userId, newPassword) {
+    return axios.put('/api/change-Password', {
+      userId,
+      newPassword,
     });
   },
 };

@@ -43,24 +43,24 @@
           </div>
         </div>
         <div class="comment-wrap">
-
           <a-list v-if="commentList.length"
                   :dataSource="commentList"
                   :header="`${commentList.length} ${commentList.length > 1 ? 'replies' : 'reply'}`"
                   itemLayout="horizontal">
 
             <a-list-item slot="renderItem" slot-scope="item, index">
-              <a-comment :author="item.author"
+              <a-comment :author="item.nickName"
                          :avatar="item.avatar"
-                         :content="item.content"
-                         :datetime="item.datetime">
+                         :content="item.commentContent"
+                         :datetime="item.updatedAt | timeline">
               </a-comment>
             </a-list-item>
 
           </a-list>
-          <div class="loadmore flex-container flex-center-sort">
-            댓글 더보기
+          <div class="loadmore flex-container flex-center-sort" >
+            <a-button :loading="commentLoading" @click="loadCommentList">댓글 더보기</a-button>
           </div>
+
           <a-comment class="comment-write-wrap">
             <a-avatar slot="avatar"
                       src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
@@ -109,6 +109,7 @@ export default {
     ...mapState('comment', [
       'commentContent',
       'commentList',
+      'commentLoading',
     ]),
     ...mapState('post', [
       'detailPost',
@@ -118,7 +119,8 @@ export default {
     this.loading = true;
     await this.$store.dispatch('post/fetchDetailPost', this.contentId);
     this.loading = false;
-    this.initComment();
+    this.initCommentData();
+    this.loadCommentList();
   },
   data() {
     return {
@@ -145,8 +147,12 @@ export default {
   methods: {
     ...mapMutations('comment', {
       setCommentContent: 'SET_COMMENT_CONTENT',
-      initComment: 'INIT_COMMENT',
+      initCommentData: 'INIT_COMMENT_DATA',
+      initCommentContent: 'INIT_COMMENT_CONTENT',
     }),
+    async loadCommentList() {
+      await this.$store.dispatch('comment/loadCommentList', this.contentId);
+    },
     handleSubmit() {
       /**
        * 1. 댓글리스트를 불러옴 (최신순 15개 단위)
@@ -155,9 +161,18 @@ export default {
        * 3. db 에 저장되고
        * 4. 현재 작성된것은 맨 위로 붙임 this.commentList.unshift({ data }); */
 
-      console.log(this.commentContent);
-      console.log('contentId', this.contentId);
-      console.log('userId', this.contentData.userId);
+      const payload = {
+        contentId: this.contentId,
+        userId: this.detailPost.userId,
+        commentContent: this.commentContent,
+      };
+      /**
+       * 댓글 작성 후의 보여지는 뷰와 로직에대해서 고민해봐야함
+       */
+      this.$store.dispatch('comment/writeComment', payload);
+      this.initCommentContent();
+      this.initCommentData();
+      this.loadCommentList();
     },
     updateEmoji(e) {
       console.log('이모지 수정', e.target.value);
@@ -234,7 +249,7 @@ export default {
       }
     }
     .loadmore {
-      @include box-shadow;
+      //@include box-shadow;
       width: 100%;
       height: 40px;
     }

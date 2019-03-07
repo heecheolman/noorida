@@ -108,9 +108,9 @@ export default {
               okText: '로그인',
               centered: true,
             });
-            this.$router.replace({name: 'LoginPage'});
+            this.$router.replace({ name: 'LoginPage' });
           } else {
-            this.$message.warning('회원정보가 존재하지 않습니다. ');
+            this.$message.warning('회원정보가 존재하지 않습니다.');
           }
         }
       });

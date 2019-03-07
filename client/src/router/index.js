@@ -13,6 +13,8 @@ const ChangePasswordPage = () => import('../pages/ChangePasswordPage');
 const WritePage = () => import('../pages/WritePage');
 const PostDetailPage = () => import('../pages/PostDetailPage');
 const ProfilePage = () => import('../pages/ProfilePage');
+const ShowFoundIdPage = () => import('../pages/ShowFoundIdPage');
+
 
 /*  Tabs  */
 const LocalNewsTab = () => import('../pages/tabs/local-news-tab/LocalNewsTab');
@@ -57,6 +59,11 @@ export default new Router({
       path: 'find-id',
       name: 'FindIdPage',
       component: FindIdPage,
+    },
+    {
+      path: 'show-found',
+      name: 'ShowFoundIdPage',
+      component: ShowFoundIdPage,
     },
     {
       path: 'find-password',

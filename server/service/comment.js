@@ -42,7 +42,8 @@ module.exports = {
       hasNextComment: result.length === LIMIT,
     };
   },
-  /* editComment: async ({ commentId, userId, commentContent }) =>{
+
+   editComment: async ({ commentId, userId, commentContent }) =>{
     const result = await knex('comments')
       .update({ commentContent })
       .where({ commentId, userId })
@@ -51,13 +52,13 @@ module.exports = {
     return result;
   },
 
-  deleteComment: async ({ commentId, userId }) => {
+  disabledComment: async ({ commentId, userId }) => {
     const result = await knex('comments')
       .update('active', 'F')
       .where({ commentId, userId })
       .then(results => results)
       .catch(err => err)
     return result;
-  }, */
+  },
 };
 

@@ -21,15 +21,27 @@ router.get('', async (req, res) => {
     .catch(err => err);
   res.json(result);
 });
-/*
-router.put('/${commentId}', async(req, res) =>{
+
+/**
+ * 댓글 수정 */
+
+router.put('comments/:commentsId', async (req, res) => {
   const { commentId, userId, commentContent } = req.body;
   const result = await commentService.editComment({ commentId, userId, commentContent })
     .then(results => results)
-    .catch(err => err)
-  res.json(result);
-}
+    .catch(err => err);
+  res.json('ok');
+});
 
-router.put('/') */
+/**
+ * 댓글 삭제 */
+router.put('disabledComments/:commentsId', async (req, res) => {
+  const { commentId, userId } = req.body;
+  const result = await commentService.disabledComment({ commentId, userId })
+    .then(results => results)
+    .catch(err => err);
+  res.json('ok');
+});
+
 
 module.exports = router;

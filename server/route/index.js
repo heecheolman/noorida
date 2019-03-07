@@ -8,6 +8,7 @@ const certRouter = require('./cert');
 const uploadRouter = require('./upload');
 const usersRouter = require('./users');
 const commentsRouter = require('./comment');
+const changePasswordRouter = require('./changePassword');
 
 
 router.use('/posts', postsRouter); // ok
@@ -16,6 +17,7 @@ router.use('/upload', uploadRouter); // ok
 router.use('/auth', authRouter); // not ok (find id, password)
 router.use('/users', usersRouter); // ok
 router.use('/comments', commentsRouter);
+router.use('/change-Password', changePasswordRouter);
 
 
 module.exports = router;
@@ -26,6 +28,7 @@ module.exports = router;
 // 브라우저 주소:  localhost:8080/post/:contentId
 //
 //
+
 //
 // api 설계: rest api
 //

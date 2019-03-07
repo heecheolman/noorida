@@ -226,4 +226,16 @@ export default {
       params: { contentId, lastId },
     });
   },
+  checkPassword(userId, oldPassword) {
+    return axios.post('/api/change-Password', {
+      userId,
+      oldPassword,
+    });
+  },
+  insertNewPassword(userId, newPassword) {
+    return axios.put('/api/change-Password', {
+      userId,
+      newPassword,
+    });
+  },
 };

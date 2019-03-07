@@ -1,8 +1,7 @@
 const express = require('express');
 const joinService = require('../service/join');
 const loginService = require('../service/login');
-const findService = require('../service/findId');
-const findPwService = require('../service/findPassword');
+const findService = require('../service/find');
 const PostOffice = require('./../mail-config/mail-password');
 const tokenBuilder = require('uuid/v4');
 
@@ -82,7 +81,7 @@ router.post('/find-id', async (req, res) => {
 
 router.post('/find-password', async (req, res) => {
   const {realName, nickName, email} = req.body;
-  const result = await findPwService.findPassword({realName, nickName, email})
+  const result = await findService.findPassword({realName, nickName, email})
     .then(results => results)
     .catch(err => err);
 
@@ -97,7 +96,7 @@ router.put('/find-password', async (req, res) => {
   const email = req.body.email;
   const tmpPassword = tokenBuilder();
 
-  const result = await findPwService.changePassword({ email, tmpPassword })
+  const result = await findService.insertTmpPassword({ email, tmpPassword })
     .then(results => results)
     .catch(err => err);
 

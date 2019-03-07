@@ -15,7 +15,7 @@ router.post('', async (req, res) => {
 
 /**
  * 지역 뉴스리스트 조회
- */
+ * */
 router.get('/local', async (req, res) => {
   const { localName, lastId } = req.query;
   const result = await postService.loadPreviewLocalNewsList({ localName, lastId })

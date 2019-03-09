@@ -63,8 +63,8 @@
                 :visible="sidebarVisible">
         <!-- menu content -->
         <div>
-          <router-link :to="{ name : '' }"
-                       tag= "p">프로필 페이지</router-link>
+          <router-link :to="{ name : 'ProfilePage', params: { userId }}"
+                       tag= "p">내 프로필</router-link>
           <router-link :to="{ name : '' }"
                        tag= "p">설정</router-link>
           <router-link :to="{ name : 'ChangePasswordPage' }"
@@ -92,8 +92,15 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'MainPage',
+  computed: {
+    ...mapGetters('user', [
+      'userId',
+    ]),
+  },
   data() {
     return {
       sidebarVisible: false,

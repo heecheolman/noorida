@@ -19,13 +19,14 @@
       </div>
       <div class="description-wrap" :class="noDescript">
         <div class="description" v-if="!editMode">
-          <span v-if="info.description">{{ info.description }}</span>
+          <span v-if="description">{{ description }}</span>
           <span v-else class="no-description">등록된 자기소개가 없습니다.</span>
         </div>
         <a-textarea v-else-if="editMode"
                     class="edit-description-area"
                     placeholder="자기소개를 작성해주세요"
                     :autosize="{ minRows: 2, maxRows: 4 }"
+                    maxlength="60"
                     v-model="copiedDescription"></a-textarea>
         <span v-if="isMe">
           <a-button type="default"
@@ -89,6 +90,9 @@ export default {
     ...mapState('anotherUser', [
       'info',
     ]),
+    ...mapState('user', [
+      'user',
+    ]),
     ...mapState('post', [
       'previewPostList',
     ]),
@@ -97,8 +101,8 @@ export default {
     },
     noDescript() {
       return {
-        'text-justify': this.info.description,
-        'text-center': !this.info.description,
+        'text-justify': this.description,
+        'text-center': !this.description,
       };
     },
   },
@@ -106,8 +110,7 @@ export default {
     return {
       badgeStyle: { backgroundColor: '#1F74FF' },
       editMode: false,
-      // 원본데이터
-      description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+      description: '',
       copiedDescription: '',
       descriptionLoading: false,
     };
@@ -124,14 +127,22 @@ export default {
     },
     async updateDescription() {
       this.descriptionLoading = true;
-      // flow
-      console.log('update description', this.copiedDescription);
+      await this.$store.dispatch('user/updateDescription', this.copiedDescription);
+      if (this.$store.state.user.committed) {
+        this.description = this.$store.state.user.user.description;
+        this.$message.success('자기소개가 변경되었습니다');
+      } else {
+        this.$message.warning('다시 시도해주세요');
+      }
       this.descriptionLoading = false;
       this.editMode = false;
     },
   },
   async created() {
     this.initPreviewList();
+    this.description = this.isMe
+      ? this.$store.state.user.user.description
+      : this.$store.state.anotherUser.info.description;
   },
 };
 </script>
@@ -191,7 +202,7 @@ export default {
         .description {
           margin: 10px 0;
           @include font-size-small;
-          color: $info;
+          color: $info-blur;
 
           .no-description {
             @include font-size-small;

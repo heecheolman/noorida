@@ -238,4 +238,19 @@ export default {
       newPassword,
     });
   },
+
+  /**
+   * 유저의 자기소개 수정
+   * @param userId
+   * @param description
+   * @returns {AxiosPromise<any>}
+   */
+  updateDescription(userId, description) {
+    return axios.put(`/api/users/${userId}/description`, {
+      params: {
+        userId,
+      },
+      description,
+    });
+  },
 };

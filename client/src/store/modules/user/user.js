@@ -3,6 +3,7 @@ import api from './../../../api/ApiService';
 
 const state = {
   user: {},
+  committed: false,
   location: {
     lat: 0,
     lng: 0,
@@ -28,6 +29,9 @@ const mutations = {
   [types.UPDATE_PLACE_ID](state, payload) {
     state.location.placeId = payload;
   },
+  [types.UPDATE_USER_DESCRIPTION](state, payload) {
+    state.user.description = payload;
+  },
 };
 
 const actions = {
@@ -47,6 +51,17 @@ const actions = {
     if (filteredLocal.length) {
       commit(types.UPDATE_ADDRESS, filteredLocal[0].formatted_address);
       commit(types.UPDATE_PLACE_ID, filteredLocal[0].place_id);
+    }
+  },
+
+  async updateDescription({ commit, state }, payload) {
+    state.committed = false;
+    const result = await api.updateDescription(state.user.userId, payload)
+      .then(results => results.data)
+      .catch(err => err);
+    if (result === 'ok') {
+      commit(types.UPDATE_USER_DESCRIPTION, payload);
+      state.committed = true;
     }
   },
 };

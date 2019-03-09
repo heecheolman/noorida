@@ -43,24 +43,6 @@
           </div>
         </div>
         <div class="comment-wrap">
-          <a-list v-if="commentList.length"
-                  :dataSource="commentList"
-                  :header="`${commentList.length} ${commentList.length > 1 ? 'replies' : 'reply'}`"
-                  itemLayout="horizontal">
-
-            <a-list-item slot="renderItem" slot-scope="item, index">
-              <a-comment :author="item.nickName"
-                         :avatar="item.avatar"
-                         :content="item.commentContent"
-                         :datetime="item.updatedAt | timeline">
-              </a-comment>
-            </a-list-item>
-
-          </a-list>
-          <div class="loadmore flex-container flex-center-sort" >
-            <a-button :loading="commentLoading" @click="loadCommentList">댓글 더보기</a-button>
-          </div>
-
           <a-comment class="comment-write-wrap">
             <a-avatar slot="avatar"
                       src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
@@ -81,6 +63,29 @@
               </a-form-item>
             </div>
           </a-comment>
+
+          <a-list v-if="commentList.length"
+                  :dataSource="commentList"
+                  :header="`${commentList.length} ${commentList.length > 1 ? '개 댓글들 (최신순)' : '개 댓글 (최신순)'}`"
+                  itemLayout="horizontal">
+
+            <a-list-item slot="renderItem" slot-scope="item, index">
+              <a-comment :author="item.nickName"
+                         :avatar="item.avatar"
+                         :content="item.commentContent"
+                         :datetime="item.updatedAt | timeline">
+              </a-comment>
+            </a-list-item>
+
+          </a-list>
+          <div class="loadmore flex-container flex-center-sort">
+            <a-button v-if="hasNextComment"
+                      :loading="commentLoading"
+                      @click="loadCommentList">댓글 더보기</a-button>
+            <span v-else class="no-more-comment">
+              댓글이 없습니다.
+            </span>
+          </div>
         </div>
       </div>
   </div>
@@ -110,6 +115,7 @@ export default {
       'commentContent',
       'commentList',
       'commentLoading',
+      'hasNextComment',
     ]),
     ...mapState('post', [
       'detailPost',
@@ -252,6 +258,11 @@ export default {
       //@include box-shadow;
       width: 100%;
       height: 40px;
+
+      .no-more-comment {
+        @include font-size-normal;
+        color: $info-blur;
+      }
     }
 
     .comment-write-wrap {

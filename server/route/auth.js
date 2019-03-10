@@ -32,20 +32,24 @@ router.post('/join', async (req, res) => {
  * 로그인
  */
 
-// router.get('/login', async (req, res) => {
-//   const { session } = req;
-//   if (mapper[session.key]) {
-//     res.json({
-//       data: mapper[session.key],
-//       loginStatus: true,
-//     });
-//   } else {
-//     res.json({
-//       data: {},
-//       loginStatus: false,
-//     });
-//   }
-// });
+router.get('/login', async (req, res) => {
+  const { session } = req;
+  if (mapper[session.key]) {
+    const { nickName, password } = mapper[session.key];
+    const result = await loginService.login({ nickName, password })
+      .then(results => results)
+      .catch(err => err);
+    res.json({
+      data: result,
+      loginStatus: true,
+    });
+  } else {
+    res.json({
+      data: {},
+      loginStatus: false,
+    });
+  }
+});
 
 router.post('/login', async (req, res) => {
   const { nickName, password } = req.body;
@@ -53,11 +57,11 @@ router.post('/login', async (req, res) => {
     .then(results => results)
     .catch(err => err);
 
-  // if (result) {
-  //   const key = uuid();
-  //   req.session.key = key;
-  //   mapper[key] = result;
-  // }
+  if (result) {
+    const key = uuid();
+    req.session.key = key;
+    mapper[key] = { nickName, password };
+  }
 
   res.json({
     data: result,
@@ -67,8 +71,8 @@ router.post('/login', async (req, res) => {
 
 
 router.post('/find-id', async (req, res) => {
-  const {realName, email} = req.body;
-  const result = await findService.findId({realName, email})
+  const { realName, email } = req.body;
+  const result = await findService.findId({ realName, email })
     .then(results => results)
     .catch(err => err);
 
@@ -80,8 +84,8 @@ router.post('/find-id', async (req, res) => {
 });
 
 router.post('/find-password', async (req, res) => {
-  const {realName, nickName, email} = req.body;
-  const result = await findService.findPassword({realName, nickName, email})
+  const { realName, nickName, email } = req.body;
+  const result = await findService.findPassword({ realName, nickName, email })
     .then(results => results)
     .catch(err => err);
 

@@ -31,6 +31,7 @@ module.exports = {
       vue: 'never'
     }],
     'linebreak-style': 0,
+    'object-curly-spacing': ["error", "always"],
     // disallow reassignment of function parameters
     // disallow parameter object manipulation except for specific exclusions
     'no-param-reassign': ['error', {

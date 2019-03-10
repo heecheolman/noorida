@@ -42,13 +42,12 @@ export default new Router({
       name: 'LoginPage',
       component: LoginPage,
       async beforeEnter(from, to, next) {
-        next();
-        // await store.dispatch('auth/sessionLoginProcess');
-        // if (store.state.auth.loginStatus) {
-        //   next({ name: 'LocalNewsTab' });
-        // } else {
-        //   next();
-        // }
+        await store.dispatch('auth/sessionLoginProcess');
+        if (store.state.auth.loginStatus) {
+          next({ name: 'LocalNewsTab' });
+        } else {
+          next();
+        }
       },
     },
     {

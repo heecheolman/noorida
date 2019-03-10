@@ -17,7 +17,6 @@
           <profile-card />
         </a-spin>
 
-
         <a-divider />
 
         <div class="feedback-wrap">

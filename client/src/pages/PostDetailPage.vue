@@ -169,7 +169,7 @@ export default {
 
       const payload = {
         contentId: this.contentId,
-        userId: this.detailPost.userId,
+        userId: this.$store.state.user.user.userId,
         commentContent: this.commentContent,
       };
       /**

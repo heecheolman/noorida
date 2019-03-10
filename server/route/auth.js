@@ -48,16 +48,16 @@ router.post('/join', async (req, res) => {
 // });
 
 router.post('/login', async (req, res) => {
-  const {nickName, password} = req.body;
-  const result = await loginService.login({nickName, password})
+  const { nickName, password } = req.body;
+  const result = await loginService.login({ nickName, password })
     .then(results => results)
     .catch(err => err);
 
-  if (result) {
-    const key = uuid();
-    req.session.key = key;
-    mapper[key] = result;
-  }
+  // if (result) {
+  //   const key = uuid();
+  //   req.session.key = key;
+  //   mapper[key] = result;
+  // }
 
   res.json({
     data: result,

@@ -90,10 +90,10 @@ const actions = {
     }
   },
 
-  async loadUserPostList({ commit, state, rootState }) {
+  async loadUserPostList({ commit, state }, payload) {
     if (state.hasNextPost) {
       state.loading = true;
-      const resData = await api.loadUserPostList(rootState.anotherUser.info.userId, state.lastId)
+      const resData = await api.loadUserPostList(payload, state.lastId)
         .then(results => results.data)
         .catch(err => err);
 

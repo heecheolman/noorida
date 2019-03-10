@@ -31,5 +31,17 @@ router.get('/:id', async (req, res) => {
     res.sendStatus(500);
   }
 });
+router.put('/:userId/description', async (req, res) => {
+  const { userId } = req.params;
+  const { description } = req.body;
+  const result = await userService.updateUserDescription({ userId, description })
+    .then(results => results)
+    .catch(err => err);
+  if (result) {
+    res.send('ok');
+  } else {
+    res.sendStatus(500);
+  }
+});
 
 module.exports = router;

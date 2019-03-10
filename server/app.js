@@ -3,7 +3,6 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const expressSession = require('express-session');
 const path = require('path');
-const uuid = require('uuid/v4');
 
 const app = express();
 const index = require('./route/index');

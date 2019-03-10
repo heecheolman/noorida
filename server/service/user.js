@@ -17,4 +17,12 @@ module.exports = {
       .catch(err => err);
     return result.length ? JSON.parse(JSON.stringify(result))[0] : null;
   },
+  updateUserDescription: async ({ userId, description }) => {
+    const result = await knex('users')
+      .update({ description })
+      .where({ userId })
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
 };

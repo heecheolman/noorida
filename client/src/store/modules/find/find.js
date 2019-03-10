@@ -3,14 +3,15 @@ import api from '@/api/ApiService';
 
 const state = {
   foundNickName: '',
+  realName: '',
   findPasswordSuccess: false,
   changePasswordSuccess: false,
-  test: {},
 };
 const getters = {
   getFindNickname: state => state.foundNickName,
   getFindPasswordSuccess: state => state.findPasswordSuccess,
   getChangePasswordSuccess: state => state.changePasswordSuccess,
+  getRealName: state => state.realName,
 };
 const actions = {
   findPasswordProcess: async ({ commit }, payload) => {
@@ -33,6 +34,7 @@ const actions = {
       .catch(err => err);
     if (data && !(data instanceof Error)) {
       commit(types.SET_FOUND_ID, data.nickName);
+      commit(types.GET_REAL_NAME, realName);
     } else {
       commit(types.SET_FOUND_ID, null);
     }
@@ -60,8 +62,8 @@ const mutations = {
   [types.CHANGE_PASSWORD_SUCCESS](state, payload) {
     state.changePasswordSuccess = payload;
   },
-  [types.UPDATE_DETAIL_POST](state, payload) {
-    state.detailPost = payload;
+  [types.GET_REAL_NAME](state, payload) {
+    state.realName = payload;
   },
 };
 export default {
@@ -71,3 +73,4 @@ export default {
   actions,
   mutations,
 };
+

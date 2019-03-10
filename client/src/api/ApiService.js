@@ -238,4 +238,82 @@ export default {
       newPassword,
     });
   },
+
+  /**
+   * 유저의 자기소개 수정
+   * @param userId
+   * @param description
+   * @returns {AxiosPromise<any>}
+   */
+  updateDescription(userId, description) {
+    return axios.put(`/api/users/${userId}/description`, {
+      params: {
+        userId,
+      },
+      description,
+    });
+  },
+
+  /**
+   * 유저의 리포터 구독
+   * reader : 유저 고유 Id
+   * reporter : 유저가 구독한 다른 유저의 고유 Id
+   */
+
+  isSubscribe(reader, reporter) {
+    return axios.get('api/subscription/is-subscribed', {
+      params: {
+        reader,
+        reporter,
+      },
+    });
+  },
+
+  subscriptionReporter(reader, reporter) {
+    return axios.post('api/subscription/reporter', {
+      reader,
+      reporter,
+    });
+  },
+
+  subscriptionLocal(reader, localId) {
+    return axios.post('api/subscription/local', {
+      reader,
+      localId,
+    });
+  },
+
+  readerList(userId) {
+    return axios.get('api/subscription/reader', {
+      params: { userId },
+    });
+  },
+
+  reporterList(userId) {
+    return axios.get('api/subscription/reporter', {
+      params: { userId },
+    });
+  },
+
+  localList(userId) {
+    return axios.get('api/subscription/local', {
+      params: { userId },
+    });
+  },
+  cancelSubscriptionReporter(reader, reporter) {
+    return axios.delete('api/subscription/reporter', {
+      params: { reader, reporter },
+    });
+  },
+
+  cancelSubscriptionLocal(reader, localId) {
+    return axios.delete('api/subscription/reporter', {
+      params: { reader, localId },
+    });
+  },
+  countSubscription(userId) {
+    return axios.get('api/subscription/countSubscription', {
+      params: { userId },
+    });
+  },
 };

@@ -24,7 +24,7 @@
 
 <script>
 import infiniteScroll from 'vue-infinite-scroll';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 
 export default {
   name: 'VirtualList',
@@ -35,6 +35,19 @@ export default {
     },
     loadType: {
       type: String,
+    },
+    userId: {
+      type: Number,
+    },
+  },
+  watch: {
+    async $route(from) {
+      const { userId } = from.params;
+      if (userId) {
+        this.initPostList();
+        this.id = userId;
+        await this.loadMoreUser();
+      }
     },
   },
   computed: {
@@ -56,15 +69,23 @@ export default {
   },
   data() {
     return {
-      data: [],
-      limit: 4,
+      id: null,
     };
+  },
+  created() {
+    this.id = this.userId;
   },
   methods: {
     ...mapActions('post', {
       loadMoreLocal: 'loadLocalPreviewPostList',
       loadMoreUser: 'loadUserPostList',
     }),
+    ...mapMutations('post', {
+      initPostList: 'INIT_PREVIEW_LIST',
+    }),
+    loadMoreUser() {
+      this.$store.dispatch('post/loadUserPostList', this.id);
+    },
     routeDetailPage(contentId) {
       if (contentId) {
         this.$router.push({

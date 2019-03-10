@@ -1,3 +1,4 @@
+
 <template>
   <div class="page flex-container flex-center-sort">
     <div class="find-box">
@@ -13,7 +14,6 @@
               <a-input
                 v-decorator="[ 'realName', validateConfig.realName ]"
                 placeholder="이름"
-                v-model="realName"
               />
             </a-form-item>
           </div>
@@ -22,7 +22,6 @@
               <a-input
                 v-decorator="[ 'email',validateConfig.email ]"
                 placeholder="이메일"
-                v-model="email"
               />
             </a-form-item>
           </div>
@@ -46,60 +45,51 @@
 </template>
 
 <script>
-export default {
-  name: 'FindIdPage',
-  beforeCreate() {
-    this.form = this.$form.createForm(this);
-  },
-  data() {
-    return {
-      realName: '',
-      email: '',
-      validateConfig: {
-        realName: {
-          rules: [{
-            required: true, message: '이름을 입력해주세요.',
-          }],
+  export default {
+    name: 'FindIdPage',
+    beforeCreate() {
+      this.form = this.$form.createForm(this);
+    },
+    data() {
+      return {
+        validateConfig: {
+          realName: {
+            rules: [{
+              required: true, message: '이름을 입력해주세요.',
+            }],
+          },
+          email: {
+            rules: [{
+              type: 'email', message: '이메일형식이 아니에요.',
+            }, {
+              required: true, message: '이메일을 입력해주세요.',
+            }],
+          },
         },
-        email: {
-          rules: [{
-            type: 'email', message: '이메일형식이 아니에요.',
-          }, {
-            required: true, message: '이메일을 입력해주세요.',
-          }],
-        },
+      };
+    },
+    methods: {
+      goToBack() {
+        this.$router.push({ name: 'LoginPage' });
       },
-    };
-  },
-  methods: {
-    goToBack() {
-      this.$router.push({ name: 'LoginPage' });
-    },
-
-    FindId(e) {
-      e.preventDefault();
-      this.form.validateFields(async (err, values) => {
-        if (!err) {
-          await this.$store.dispatch('find/findIdProcess', {
-            realName: values.realName,
-            email: values.email,
-          });
-          if (this.$store.getters['find/getFindNickname']) {
-            this.$success({
-              title: '아이디 찾기',
-              content: `${this.realName} 님의 닉네임은 ${this.$store.getters['find/getFindNickname']} 입니다.`,
-              okText: '로그인',
-              centered: true,
+      FindId(e) {
+        e.preventDefault();
+        this.form.validateFields(async (err, values) => {
+          if (!err) {
+            await this.$store.dispatch('find/findIdProcess', {
+              realName: values.realName,
+              email: values.email,
             });
-            this.$router.replace({ name: 'LoginPage' });
-          } else {
-            this.$message.warning('일치하는 회원정보가 없습니다.');
+            if (this.$store.getters['find/getFindNickname']) {
+              this.$router.replace({ name: 'ShowFoundIdPage' });
+            } else {
+              this.$message.warning('일치하는 회원정보가 없습니다.');
+            }
           }
-        }
-      });
+        });
+      },
     },
-  },
-};
+  };
 </script>
 
 <style lang="scss" scoped>
@@ -112,11 +102,10 @@ export default {
   }
 
   .find-link-design {
-    font-size: 12px;
+    font-size: 13px;
     margin: 10px;
     text-align: center;
   }
-
 
   .title-color {
     color: #1f74ff;
@@ -150,8 +139,4 @@ export default {
     height: 32px;
   }
 
-  /*.has-error .ant-form-explain {*/
-  /*color: #f5222d;*/
-  /*padding-left: 10px;*/
-  /*}*/
 </style>

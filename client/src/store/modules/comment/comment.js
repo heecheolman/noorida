@@ -49,8 +49,8 @@ const actions = {
       if (resData.result.length) {
         commit(types.FETCH_POST_LIST, resData.result);
         commit(types.UPDATE_LAST_ID, resData.lastId);
-        state.hasNextComment = resData.hasNextComment;
       }
+      state.hasNextComment = resData.hasNextComment;
       state.commentLoading = false;
     }
   },

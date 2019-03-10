@@ -14,36 +14,79 @@
       <div class="nickname-wrap text-center">
         <span class="nickname">{{ info.nickName }}</span>
       </div>
-      <div class="subscript-button-wrap flex-container flex-center-sort">
-        <a-button type="primary" size="small" v-if="!isMe">구독하기</a-button>
+      <div class="subscript-button-wrap flex-container flex-center-sort" v-if="!isMe">
+        <a-button v-show="!isSubscribe"
+                  type="primary"
+                  size="small"
+                  @click="subscribeReporter">구독하기</a-button>
+        <a-button v-show="isSubscribe"
+                  size="small"
+                  @click="cancelSubscribeReporter">구독중</a-button>
       </div>
-      <div class="description-wrap text-justify">
-        <!--<span class="description">{{ info.description }}</span>-->
-        <span class="description">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+      <div class="description-wrap" :class="noDescript">
+        <div class="description" v-if="!editMode">
+          <span v-if="description">{{ description }}</span>
+          <span v-else class="no-description">등록된 자기소개가 없습니다.</span>
+        </div>
+        <a-textarea v-else-if="editMode"
+                    class="edit-description-area"
+                    placeholder="자기소개를 작성해주세요"
+                    :autosize="{ minRows: 2, maxRows: 4 }"
+                    maxlength="60"
+                    v-model="copiedDescription"></a-textarea>
+        <span v-if="isMe">
+          <a-button type="default"
+                    size="small"
+                    v-if="!editMode"
+                    @click="toggleEditMode()">수정</a-button>
+          <div v-else-if="editMode" style="float: right;">
+            <a-button type="default"
+                      size="small"
+                      @click="toggleEditMode()">취소</a-button>
+          <a-button type="primary"
+                    size="small"
+                    :loading="descriptionLoading"
+                    @click="updateDescription()">저장</a-button>
+          </div>
         </span>
       </div>
       <div class="badge-wrap flex-container flex-between-sort flex-row">
-        <a-badge :count="1000"
+        <a-badge @click="showSubListModal('readers')"
+                 :count="readerList.length"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Readers</div>
         </a-badge>
-        <a-badge :count="99"
+        <a-badge @click="showSubListModal('reporters')"
+                 :count="reporterList.length"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Reporter</div>
         </a-badge>
-        <a-badge :count="9999"
+        <a-badge @click="showSubListModal('locals')"
+                 :count="localList.length"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Locals</div>
         </a-badge>
+        <a-modal :title="modalTitle"
+                 v-model="modalVisible"
+                 @ok="modalVisible = false">
+          <ul class="subscribe-wrap">
+            <li v-for="(user, index) in modalSubscribeList"
+                :key="index"
+                class="sub-item text-center"
+                @click="routeProfilePage(user.userId)">
+              <span class="sub-item-text">{{ user.nickName }}</span>
+            </li>
+          </ul>
+        </a-modal>
       </div>
     </div>
     <div class="post-list-section">
       <virtual-list :postList="previewPostList"
-                    :load-type="'user'" />
+                    :load-type="'user'"
+                    :userId="isMe ? user.userId : info.userId "/>
     </div>
   </div>
 </template>
@@ -65,9 +108,23 @@ export default {
       type: Number,
     },
   },
+  watch: {
+    async $route(to) {
+      const { userId } = to.params;
+      await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
+      this.dataUpdate();
+    },
+  },
   computed: {
     ...mapState('anotherUser', [
       'info',
+      'readerList',
+      'reporterList',
+      'localList',
+      'isSubscribe',
+    ]),
+    ...mapState('user', [
+      'user',
     ]),
     ...mapState('post', [
       'previewPostList',
@@ -75,19 +132,109 @@ export default {
     isMe() {
       return this.info.userId === this.$store.state.user.user.userId;
     },
+    noDescript() {
+      return {
+        'text-justify': this.description,
+        'text-center': !this.description,
+      };
+    },
   },
   data() {
     return {
       badgeStyle: { backgroundColor: '#1F74FF' },
+      editMode: false,
+      description: '',
+      copiedDescription: '',
+      descriptionLoading: false,
+      modalTitle: '',
+      modalVisible: false,
+      modalSubscribeList: [],
     };
   },
   methods: {
     ...mapMutations('post', {
       initPreviewList: 'INIT_PREVIEW_LIST',
     }),
+    toggleEditMode() {
+      this.editMode = !this.editMode;
+      if (this.editMode) {
+        this.copiedDescription = this.description;
+      }
+    },
+    async updateDescription() {
+      this.descriptionLoading = true;
+      await this.$store.dispatch('user/updateDescription', this.copiedDescription);
+      if (this.$store.state.user.committed) {
+        this.description = this.$store.state.user.user.description;
+        this.$message.success('자기소개가 변경되었습니다');
+      } else {
+        this.$message.warning('다시 시도해주세요');
+      }
+      this.descriptionLoading = false;
+      this.editMode = false;
+    },
+
+    async showSubListModal(dataType) {
+      /**
+       * fetchType 에 따라 보여주는 리스트가 달라야함
+       * readers : 구독자들
+       * reporters : 리포터들
+       * locals : 지역들
+       */
+      const subDataMap = {
+        readers: {
+          title: '구독자들',
+          data: this.readerList,
+        },
+        reporters: {
+          title: '리포터들',
+          data: this.reporterList,
+        },
+        locals: {
+          title: '지역들',
+          data: this.localList,
+        },
+      };
+      this.modalTitle = subDataMap[dataType].title;
+      this.modalSubscribeList = subDataMap[dataType].data;
+      this.modalVisible = true;
+    },
+    routeProfilePage(userId) {
+      this.$router.replace({ name: 'ProfilePage', params: { userId } });
+      this.modalVisible = false;
+    },
+    async dataUpdate() {
+      this.description = this.isMe
+        ? this.$store.state.user.user.description
+        : this.$store.state.anotherUser.info.description;
+      const userId = this.isMe ? this.user.userId : this.info.userId;
+      await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
+    },
+    async subscribeReporter() {
+      const payload = {
+        me: this.$store.state.user.user.userId,
+        another: this.info.userId,
+      };
+      await this.$store.dispatch('anotherUser/subscribeReporter', payload);
+      const userId = this.isMe ? this.user.userId : this.info.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+    },
+    async cancelSubscribeReporter() {
+      const payload = {
+        me: this.$store.state.user.user.userId,
+        another: this.info.userId,
+      };
+      await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
+      const userId = this.isMe ? this.user.userId : this.info.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+    },
   },
   async created() {
-    this.initPreviewList();
+    await this.initPreviewList();
+    await this.dataUpdate();
   },
 };
 </script>
@@ -145,8 +292,18 @@ export default {
 
       .description-wrap {
         .description {
+          margin: 10px 0;
           @include font-size-small;
-          color: $info;
+          color: $info-blur;
+
+          .no-description {
+            @include font-size-small;
+            color: $info-blur;
+          }
+        }
+
+        .edit-description-area {
+          margin: 10px 0;
         }
       }
 
@@ -165,6 +322,28 @@ export default {
         }
         .badge-box:hover {
           transform: translateY(-2px);
+        }
+      }
+    }
+  }
+  .ant-modal-body {
+    .subscribe-wrap {
+      display: block;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 40vh;
+      overflow-y: scroll;
+
+      .sub-item {
+        @include v-text-align(40px);
+        width: 100%;
+        border-bottom: 1px solid #e2e2e2;
+
+        .sub-item-text {
+          @include font-size-normal;
+          color: $info;
         }
       }
     }

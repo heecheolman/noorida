@@ -5,7 +5,7 @@ module.exports = {
     const result = await knex('subscriptionReporter')
       .insert({ reader, reporter })
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
 
@@ -13,7 +13,7 @@ module.exports = {
     const result = await knex('subscriptionLocal')
       .insert({ reader, localId })
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
 
@@ -23,7 +23,7 @@ module.exports = {
       .where('subscriptionReporter.reporter', userId)
       .join('users', 'users.userId', '=', 'subscriptionReporter.reader')
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
 
@@ -33,7 +33,7 @@ module.exports = {
       .where('subscriptionReporter.reader', userId)
       .join('users', 'users.userId', '=', 'subscriptionReporter.reporter')
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
 
@@ -43,7 +43,7 @@ module.exports = {
       .where('subscriptionLocal.reader', userId)
       .join('local', 'local.localName', '=', 'subscriptionLocal.localId')
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
   cancelSubscriptionReporter: async ({ reader, reporter }) => {
@@ -82,10 +82,15 @@ module.exports = {
       .where('reader', userId)
       .then(results => results)
       .catch(err => err)
-
     const result = { countReader, countReporter, countLocal };
-
     return result;
-
   },
-}
+
+  isSubscribed: async ({ reader, reporter }) => {
+    const result = await knex('subscriptionReporter')
+      .where({ reader, reporter })
+      .then(results => results)
+      .catch(err => err);
+    return result.length !== 0;
+  },
+};

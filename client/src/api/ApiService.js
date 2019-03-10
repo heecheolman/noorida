@@ -259,6 +259,16 @@ export default {
    * reader : 유저 고유 Id
    * reporter : 유저가 구독한 다른 유저의 고유 Id
    */
+
+  isSubscribe(reader, reporter) {
+    return axios.get('api/subscription/is-subscribed', {
+      params: {
+        reader,
+        reporter,
+      },
+    });
+  },
+
   subscriptionReporter(reader, reporter) {
     return axios.post('api/subscription/reporter', {
       reader,

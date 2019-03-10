@@ -15,7 +15,13 @@
         <span class="nickname">{{ info.nickName }}</span>
       </div>
       <div class="subscript-button-wrap flex-container flex-center-sort" v-if="!isMe">
-        <a-button type="primary" size="small">구독하기</a-button>
+        <a-button v-show="!isSubscribe"
+                  type="primary"
+                  size="small"
+                  @click="subscribeReporter">구독하기</a-button>
+        <a-button v-show="isSubscribe"
+                  size="small"
+                  @click="cancelSubscribeReporter">구독중</a-button>
       </div>
       <div class="description-wrap" :class="noDescript">
         <div class="description" v-if="!editMode">
@@ -46,19 +52,19 @@
       </div>
       <div class="badge-wrap flex-container flex-between-sort flex-row">
         <a-badge @click="showSubListModal('readers')"
-                 :count="1000"
+                 :count="readerList.length"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Readers</div>
         </a-badge>
         <a-badge @click="showSubListModal('reporters')"
-                 :count="99"
+                 :count="reporterList.length"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Reporter</div>
         </a-badge>
         <a-badge @click="showSubListModal('locals')"
-                 :count="9999"
+                 :count="localList.length"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Locals</div>
@@ -67,7 +73,7 @@
                  v-model="modalVisible"
                  @ok="modalVisible = false">
           <ul class="subscribe-wrap">
-            <li v-for="(user, index) in mockData"
+            <li v-for="(user, index) in modalSubscribeList"
                 :key="index"
                 class="sub-item text-center"
                 @click="routeProfilePage(user.userId)">
@@ -103,7 +109,7 @@ export default {
     },
   },
   watch: {
-    async $route(to, from) {
+    async $route(to) {
       const { userId } = to.params;
       await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
       this.dataUpdate();
@@ -112,6 +118,10 @@ export default {
   computed: {
     ...mapState('anotherUser', [
       'info',
+      'readerList',
+      'reporterList',
+      'localList',
+      'isSubscribe',
     ]),
     ...mapState('user', [
       'user',
@@ -138,10 +148,7 @@ export default {
       descriptionLoading: false,
       modalTitle: '',
       modalVisible: false,
-      mockData: [
-        { nickName: 'test1', userId: 1 },
-        { nickName: 'test2', userId: 2 },
-      ],
+      modalSubscribeList: [],
     };
   },
   methods: {
@@ -167,39 +174,67 @@ export default {
       this.editMode = false;
     },
 
-    async showSubListModal(fetchType) {
+    async showSubListModal(dataType) {
       /**
        * fetchType 에 따라 보여주는 리스트가 달라야함
        * readers : 구독자들
        * reporters : 리포터들
        * locals : 지역들
        */
-      const titleMapper = {
-        readers: '구독자들',
-        reporters: '리포터들',
-        locals: '지역들',
+      const subDataMap = {
+        readers: {
+          title: '구독자들',
+          data: this.readerList,
+        },
+        reporters: {
+          title: '리포터들',
+          data: this.reporterList,
+        },
+        locals: {
+          title: '지역들',
+          data: this.localList,
+        },
       };
-      const payload = {
-        fetchType,
-        userId: this.isMe ? this.user.userId : this.info.userId,
-      };
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', payload);
-      this.modalTitle = titleMapper[fetchType];
+      this.modalTitle = subDataMap[dataType].title;
+      this.modalSubscribeList = subDataMap[dataType].data;
       this.modalVisible = true;
     },
     routeProfilePage(userId) {
       this.$router.replace({ name: 'ProfilePage', params: { userId } });
       this.modalVisible = false;
     },
-    dataUpdate() {
+    async dataUpdate() {
       this.description = this.isMe
         ? this.$store.state.user.user.description
         : this.$store.state.anotherUser.info.description;
+      const userId = this.isMe ? this.user.userId : this.info.userId;
+      await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
+    },
+    async subscribeReporter() {
+      const payload = {
+        me: this.$store.state.user.user.userId,
+        another: this.info.userId,
+      };
+      await this.$store.dispatch('anotherUser/subscribeReporter', payload);
+      const userId = this.isMe ? this.user.userId : this.info.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+    },
+    async cancelSubscribeReporter() {
+      const payload = {
+        me: this.$store.state.user.user.userId,
+        another: this.info.userId,
+      };
+      await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
+      const userId = this.isMe ? this.user.userId : this.info.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
     },
   },
-  created() {
-    this.initPreviewList();
-    this.dataUpdate();
+  async created() {
+    await this.initPreviewList();
+    await this.dataUpdate();
   },
 };
 </script>

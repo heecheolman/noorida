@@ -45,26 +45,42 @@
         </span>
       </div>
       <div class="badge-wrap flex-container flex-between-sort flex-row">
-        <a-badge :count="1000"
+        <a-badge @click="showSubListModal('readers')"
+                 :count="1000"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Readers</div>
         </a-badge>
-        <a-badge :count="99"
+        <a-badge @click="showSubListModal('reporters')"
+                 :count="99"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Reporter</div>
         </a-badge>
-        <a-badge :count="9999"
+        <a-badge @click="showSubListModal('locals')"
+                 :count="9999"
                  :overflow-count="999"
                  :numberStyle="badgeStyle">
           <div class="badge-box text-center">Locals</div>
         </a-badge>
+        <a-modal :title="modalTitle"
+                 v-model="modalVisible"
+                 @ok="modalVisible = false">
+          <ul class="subscribe-wrap">
+            <li v-for="(user, index) in mockData"
+                :key="index"
+                class="sub-item text-center"
+                @click="routeProfilePage(user.userId)">
+              <span class="sub-item-text">{{ user.nickName }}</span>
+            </li>
+          </ul>
+        </a-modal>
       </div>
     </div>
     <div class="post-list-section">
       <virtual-list :postList="previewPostList"
-                    :load-type="'user'" />
+                    :load-type="'user'"
+                    :userId="isMe ? user.userId : info.userId "/>
     </div>
   </div>
 </template>
@@ -84,6 +100,13 @@ export default {
   props: {
     userId: {
       type: Number,
+    },
+  },
+  watch: {
+    async $route(to, from) {
+      const { userId } = to.params;
+      await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
+      this.dataUpdate();
     },
   },
   computed: {
@@ -113,6 +136,12 @@ export default {
       description: '',
       copiedDescription: '',
       descriptionLoading: false,
+      modalTitle: '',
+      modalVisible: false,
+      mockData: [
+        { nickName: 'test1', userId: 1 },
+        { nickName: 'test2', userId: 2 },
+      ],
     };
   },
   methods: {
@@ -137,12 +166,40 @@ export default {
       this.descriptionLoading = false;
       this.editMode = false;
     },
+
+    async showSubListModal(fetchType) {
+      /**
+       * fetchType 에 따라 보여주는 리스트가 달라야함
+       * readers : 구독자들
+       * reporters : 리포터들
+       * locals : 지역들
+       */
+      const titleMapper = {
+        readers: '구독자들',
+        reporters: '리포터들',
+        locals: '지역들',
+      };
+      const payload = {
+        fetchType,
+        userId: this.isMe ? this.user.userId : this.info.userId,
+      };
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', payload);
+      this.modalTitle = titleMapper[fetchType];
+      this.modalVisible = true;
+    },
+    routeProfilePage(userId) {
+      this.$router.replace({ name: 'ProfilePage', params: { userId } });
+      this.modalVisible = false;
+    },
+    dataUpdate() {
+      this.description = this.isMe
+        ? this.$store.state.user.user.description
+        : this.$store.state.anotherUser.info.description;
+    },
   },
-  async created() {
+  created() {
     this.initPreviewList();
-    this.description = this.isMe
-      ? this.$store.state.user.user.description
-      : this.$store.state.anotherUser.info.description;
+    this.dataUpdate();
   },
 };
 </script>
@@ -230,6 +287,28 @@ export default {
         }
         .badge-box:hover {
           transform: translateY(-2px);
+        }
+      }
+    }
+  }
+  .ant-modal-body {
+    .subscribe-wrap {
+      display: block;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 40vh;
+      overflow-y: scroll;
+
+      .sub-item {
+        @include v-text-align(40px);
+        width: 100%;
+        border-bottom: 1px solid #e2e2e2;
+
+        .sub-item-text {
+          @include font-size-normal;
+          color: $info;
         }
       }
     }

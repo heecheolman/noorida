@@ -16,8 +16,8 @@ const router = express.Router();
  * 회원가입
  */
 router.post('/join', async (req, res) => {
-  const {realName, nickName, password, email} = req.body;
-  const result = await joinService.insertUser({realName, nickName, password, email})
+  const { realName, nickName, password, email } = req.body;
+  const result = await joinService.insertUser({ realName, nickName, password, email })
     .then(results => results)
     .catch(error => error);
 
@@ -33,7 +33,7 @@ router.post('/join', async (req, res) => {
  */
 
 router.get('/login', async (req, res) => {
-  const {session} = req;
+  const { session } = req;
   if (mapper[session.key]) {
     res.json({
       data: mapper[session.key],

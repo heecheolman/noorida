@@ -32,20 +32,20 @@ router.post('/join', async (req, res) => {
  * 로그인
  */
 
-router.get('/login', async (req, res) => {
-  const { session } = req;
-  if (mapper[session.key]) {
-    res.json({
-      data: mapper[session.key],
-      loginStatus: true,
-    });
-  } else {
-    res.json({
-      data: {},
-      loginStatus: false,
-    });
-  }
-});
+// router.get('/login', async (req, res) => {
+//   const { session } = req;
+//   if (mapper[session.key]) {
+//     res.json({
+//       data: mapper[session.key],
+//       loginStatus: true,
+//     });
+//   } else {
+//     res.json({
+//       data: {},
+//       loginStatus: false,
+//     });
+//   }
+// });
 
 router.post('/login', async (req, res) => {
   const {nickName, password} = req.body;

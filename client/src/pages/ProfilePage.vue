@@ -33,13 +33,15 @@
                     placeholder="자기소개를 작성해주세요"
                     :autosize="{ minRows: 2, maxRows: 4 }"
                     maxlength="60"
-                    v-model="copiedDescription"></a-textarea>
+                    @input="copiedDescriptionChange($event.target.value)"
+                    :value="copiedDescription"></a-textarea>
         <span v-if="isMe">
           <a-button type="default"
                     size="small"
                     v-if="!editMode"
                     @click="toggleEditMode()">수정</a-button>
           <div v-else-if="editMode" style="float: right;">
+            <span class="description-length">({{ descriptionLength || 0 }}/60)</span>
             <a-button type="default"
                       size="small"
                       @click="toggleEditMode()">취소</a-button>
@@ -138,6 +140,11 @@ export default {
         'text-center': !this.description,
       };
     },
+    descriptionLength() {
+      if (this.copiedDescription) {
+        return this.copiedDescription.length;
+      }
+    },
   },
   data() {
     return {
@@ -231,6 +238,9 @@ export default {
       const userId = this.isMe ? this.user.userId : this.info.userId;
       await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
     },
+    copiedDescriptionChange(e) {
+      this.copiedDescription = e;
+    },
   },
   async created() {
     await this.initPreviewList();
@@ -304,6 +314,12 @@ export default {
 
         .edit-description-area {
           margin: 10px 0;
+        }
+
+        .description-length {
+          @include font-size-small;
+          color: $info-blur;
+          margin-right: 5px;
         }
       }
 

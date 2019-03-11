@@ -16,9 +16,6 @@
           </div>
           <profile-card />
         </a-spin>
-
-        <a-divider />
-
         <div class="feedback-wrap">
 
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>

@@ -7,6 +7,7 @@ import post from './modules/post/post';
 import find from './modules/find/find';
 import comment from './modules/comment/comment';
 import anotherUser from './modules/another-user/another-user';
+import subscribe from './modules/subscribe/subscribe';
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     auth,
     comment,
     anotherUser,
+    subscribe,
   },
   state: {},
   getters: {},

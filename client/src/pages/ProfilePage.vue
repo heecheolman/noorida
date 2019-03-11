@@ -1,351 +1,259 @@
 <template>
-  <div class="profile-container">
-    <toolbar :title="'프로필'" />
-    <div class="user-header-section flex-container flex-column">
-      <div class="medal-wrap flex-container flex-center-sort">
-        <i class="fas fa-medal medal"></i>
-      </div>
-      <div class="score-wrap text-center">
-        <span class="score">475</span>
-      </div>
-      <div class="avatar-wrap flex-container flex-center-sort">
-        <img class="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png">
-      </div>
-      <div class="nickname-wrap text-center">
-        <span class="nickname">{{ info.nickName }}</span>
-      </div>
-      <div class="subscript-button-wrap flex-container flex-center-sort" v-if="!isMe">
-        <a-button v-show="!isSubscribe"
-                  type="primary"
-                  size="small"
-                  @click="subscribeReporter">구독하기</a-button>
-        <a-button v-show="isSubscribe"
-                  size="small"
-                  @click="cancelSubscribeReporter">구독중</a-button>
-      </div>
-      <div class="description-wrap" :class="noDescript">
-        <div class="description" v-if="!editMode">
-          <span v-if="description">{{ description }}</span>
-          <span v-else class="no-description">등록된 자기소개가 없습니다.</span>
+  <div>
+    <toolbar :title="'뉴스'" />
+    <div class="news-container">
+      <a-spin :spinning="loading">
+        <div class="news-title-wrap">
+          <span class="news-title">{{ detailPost.title }}</span>
         </div>
-        <a-textarea v-else-if="editMode"
-                    class="edit-description-area"
-                    placeholder="자기소개를 작성해주세요"
-                    :autosize="{ minRows: 2, maxRows: 4 }"
-                    maxlength="60"
-                    v-model="copiedDescription"></a-textarea>
-        <span v-if="isMe">
-          <a-button type="default"
-                    size="small"
-                    v-if="!editMode"
-                    @click="toggleEditMode()">수정</a-button>
-          <div v-else-if="editMode" style="float: right;">
-            <a-button type="default"
-                      size="small"
-                      @click="toggleEditMode()">취소</a-button>
-          <a-button type="primary"
-                    size="small"
-                    :loading="descriptionLoading"
-                    @click="updateDescription()">저장</a-button>
+        <div class="news-created-at-container">
+          <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
+        </div>
+        <div class="news-content-wrap">
+          <div class="ql-editor">
+            <div v-html="detailPost.content"></div>
           </div>
-        </span>
+        </div>
+        <profile-card />
+      </a-spin>
+
+      <a-divider />
+
+      <div class="feedback-wrap">
+
+        <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
+        <div class="emoji-area flex-container flex-center-sort">
+          <a-radio-group defaultValue="" size="large" @change="updateEmoji">
+            <a-radio-button value="like"><i class="far fa-thumbs-up"></i></a-radio-button>
+            <a-radio-button value="smile"><i class="far fa-smile"></i></a-radio-button>
+            <a-radio-button value="angry"><i class="far fa-angry"></i></a-radio-button>
+            <a-radio-button value="sad"><i class="far fa-sad-tear"></i></a-radio-button>
+          </a-radio-group>
+        </div>
+
+        <h4 class="feedback-title text-center">이 기사의 신뢰도는?</h4>
+        <div class="reliability-area">
+          <a-slider :marks="marks"
+                    :min="-5"
+                    :max="5"
+                    :included="false"
+                    :step="1"
+                    @afterChange="updateReliability"/>
+        </div>
       </div>
-      <div class="badge-wrap flex-container flex-between-sort flex-row">
-        <a-badge @click="showSubListModal('readers')"
-                 :count="readerList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Readers</div>
-        </a-badge>
-        <a-badge @click="showSubListModal('reporters')"
-                 :count="reporterList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Reporter</div>
-        </a-badge>
-        <a-badge @click="showSubListModal('locals')"
-                 :count="localList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Locals</div>
-        </a-badge>
-        <a-modal :title="modalTitle"
-                 v-model="modalVisible"
-                 @ok="modalVisible = false">
-          <ul class="subscribe-wrap">
-            <li v-for="(user, index) in modalSubscribeList"
-                :key="index"
-                class="sub-item text-center"
-                @click="routeProfilePage(user.userId)">
-              <span class="sub-item-text">{{ user.nickName }}</span>
-            </li>
-          </ul>
-        </a-modal>
+      <div class="comment-wrap">
+        <a-comment class="comment-write-wrap">
+          <a-avatar slot="avatar"
+                    src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                    alt="Han Solo"/>
+          <div slot="content">
+
+            <a-form-item>
+              <a-textarea :rows="1"
+                          @change="setCommentContent($event.target.value)"
+                          :value="commentContent" ></a-textarea>
+            </a-form-item>
+            <a-form-item>
+              <a-button htmlType="submit"
+                        :loading="submitting"
+                        @click="handleSubmit"
+                        size="small"
+                        type="primary">댓글 작성</a-button>
+            </a-form-item>
+          </div>
+        </a-comment>
+
+        <a-list v-if="commentList.length"
+                :dataSource="commentList"
+                :header="`${commentList.length} ${commentList.length > 1 ? '개 댓글들 (최신순)' : '개 댓글 (최신순)'}`"
+                itemLayout="horizontal">
+
+          <a-list-item slot="renderItem" slot-scope="item, index">
+            <a-comment :author="item.nickName"
+                       :avatar="item.avatar"
+                       :content="item.commentContent"
+                       :datetime="item.updatedAt | timeline">
+            </a-comment>
+          </a-list-item>
+
+        </a-list>
+        <div class="loadmore flex-container flex-center-sort">
+          <a-button v-if="hasNextComment"
+                    :loading="commentLoading"
+                    @click="loadCommentList">댓글 더보기</a-button>
+          <span v-else class="no-more-comment">
+              댓글이 없습니다.
+            </span>
+        </div>
       </div>
-    </div>
-    <div class="post-list-section">
-      <virtual-list :postList="previewPostList"
-                    :load-type="'user'"
-                    :userId="isMe ? user.userId : info.userId "/>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
-
-const Toolbar = () => import('@/components/Toolbar');
-const VirtualList = () => import('@/components/VirtualList');
-
-export default {
-  name: 'ProfilePage',
-  components: {
-    Toolbar,
-    VirtualList,
-  },
-  props: {
-    userId: {
-      type: Number,
+  import 'quill/dist/quill.core.css';
+  import 'quill/dist/quill.snow.css';
+  import { mapState, mapMutations } from 'vuex';
+  const Toolbar = () => import('@/components/Toolbar');
+  const ProfileCard = () => import('@/components/ProfileCard');
+  export default {
+    name: 'PostDetailPage',
+    components: {
+      Toolbar,
+      ProfileCard,
     },
-  },
-  watch: {
-    async $route(to) {
-      const { userId } = to.params;
-      await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
-      this.dataUpdate();
+    props: {
+      contentId: {
+        type: Number,
+      },
     },
-  },
-  computed: {
-    ...mapState('anotherUser', [
-      'info',
-      'readerList',
-      'reporterList',
-      'localList',
-      'isSubscribe',
-    ]),
-    ...mapState('user', [
-      'user',
-    ]),
-    ...mapState('post', [
-      'previewPostList',
-    ]),
-    isMe() {
-      return this.info.userId === this.$store.state.user.user.userId;
+    computed: {
+      ...mapState('comment', [
+        'commentContent',
+        'commentList',
+        'commentLoading',
+        'hasNextComment',
+      ]),
+      ...mapState('post', [
+        'detailPost',
+      ]),
     },
-    noDescript() {
+    async created() {
+      this.loading = true;
+      await this.$store.dispatch('post/fetchDetailPost', this.contentId);
+      this.loading = false;
+      this.initCommentData();
+      this.loadCommentList();
+    },
+    data() {
       return {
-        'text-justify': this.description,
-        'text-center': !this.description,
-      };
-    },
-  },
-  data() {
-    return {
-      badgeStyle: { backgroundColor: '#1F74FF' },
-      editMode: false,
-      description: '',
-      copiedDescription: '',
-      descriptionLoading: false,
-      modalTitle: '',
-      modalVisible: false,
-      modalSubscribeList: [],
-    };
-  },
-  methods: {
-    ...mapMutations('post', {
-      initPreviewList: 'INIT_PREVIEW_LIST',
-    }),
-    toggleEditMode() {
-      this.editMode = !this.editMode;
-      if (this.editMode) {
-        this.copiedDescription = this.description;
-      }
-    },
-    async updateDescription() {
-      this.descriptionLoading = true;
-      await this.$store.dispatch('user/updateDescription', this.copiedDescription);
-      if (this.$store.state.user.committed) {
-        this.description = this.$store.state.user.user.description;
-        this.$message.success('자기소개가 변경되었습니다');
-      } else {
-        this.$message.warning('다시 시도해주세요');
-      }
-      this.descriptionLoading = false;
-      this.editMode = false;
-    },
-
-    async showSubListModal(dataType) {
-      /**
-       * fetchType 에 따라 보여주는 리스트가 달라야함
-       * readers : 구독자들
-       * reporters : 리포터들
-       * locals : 지역들
-       */
-      const subDataMap = {
-        readers: {
-          title: '구독자들',
-          data: this.readerList,
+        loading: true,
+        contentData: {},
+        marks: {
+          '-5': '-5',
+          '-4': '-4',
+          '-3': '-3',
+          '-2': '-2',
+          '-1': '-1',
+          0: '0',
+          1: '1',
+          2: '2',
+          3: '3',
+          4: '4',
+          5: '5',
         },
-        reporters: {
-          title: '리포터들',
-          data: this.reporterList,
-        },
-        locals: {
-          title: '지역들',
-          data: this.localList,
-        },
+        submitting: false,
+        value: '',
+        reliabilityOldValue: '',
       };
-      this.modalTitle = subDataMap[dataType].title;
-      this.modalSubscribeList = subDataMap[dataType].data;
-      this.modalVisible = true;
     },
-    routeProfilePage(userId) {
-      this.$router.replace({ name: 'ProfilePage', params: { userId } });
-      this.modalVisible = false;
+    methods: {
+      ...mapMutations('comment', {
+        setCommentContent: 'SET_COMMENT_CONTENT',
+        initCommentData: 'INIT_COMMENT_DATA',
+        initCommentContent: 'INIT_COMMENT_CONTENT',
+      }),
+      async loadCommentList() {
+        await this.$store.dispatch('comment/loadCommentList', this.contentId);
+      },
+      handleSubmit() {
+        /**
+         * 1. 댓글리스트를 불러옴 (최신순 15개 단위)
+         *   1-1. 만약 더보기를 누르면 15개씩 쌓임
+         * 2. 댓글을 작성 ( 작성중이라면 submitting 로딩걸어야함 )
+         * 3. db 에 저장되고
+         * 4. 현재 작성된것은 맨 위로 붙임 this.commentList.unshift({ data }); */
+        const payload = {
+          contentId: this.contentId,
+          userId: this.$store.state.user.user.userId,
+          commentContent: this.commentContent,
+        };
+        /**
+         * 댓글 작성 후의 보여지는 뷰와 로직에대해서 고민해봐야함
+         */
+        this.$store.dispatch('comment/writeComment', payload);
+        this.initCommentContent();
+        this.initCommentData();
+        this.loadCommentList();
+      },
+      updateEmoji(e) {
+        console.log('이모지 수정', e.target.value);
+      },
+      updateReliability(value) {
+        if (this.reliabilityOldValue !== value) {
+          this.reliabilityOldValue = value;
+          console.log('신뢰도 수정', value);
+        }
+      },
     },
-    async dataUpdate() {
-      this.description = this.isMe
-        ? this.$store.state.user.user.description
-        : this.$store.state.anotherUser.info.description;
-      const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
-    },
-    async subscribeReporter() {
-      const payload = {
-        me: this.$store.state.user.user.userId,
-        another: this.info.userId,
-      };
-      await this.$store.dispatch('anotherUser/subscribeReporter', payload);
-      const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
-    },
-    async cancelSubscribeReporter() {
-      const payload = {
-        me: this.$store.state.user.user.userId,
-        another: this.info.userId,
-      };
-      await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
-      const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
-    },
-  },
-  async created() {
-    await this.initPreviewList();
-    await this.dataUpdate();
-  },
-};
+  };
 </script>
 
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/mixin';
   @import './../assets/scss/theme/colors';
-  .profile-container {
+  .news-container {
     width: 100%;
     height: 100%;
-    padding: 50px 10px 20px; /* toolbar height */
-
-    .user-header-section {
-      @include box-shadow;
+    padding: 40px 10px 20px;
+    word-break: break-all;
+    overflow-y: scroll;
+    .news-title-wrap {
+      display: block;
+      position: relative;
       width: 100%;
-      padding: 15px 25px;
-
-      .medal-wrap {
-        .medal {
-          color: $medal-silver;
-        }
-      }
-
-      .score-wrap {
-        @include v-text-align(25px);
-        .score {
-          @include font-size-regular;
-          @include font-weight-5;
-          color: $info;
-        }
-      }
-
-      .avatar-wrap {
-        .avatar {
-          width: 80px;
-          height: 80px;
-          border-radius: 100px;
-        }
-      }
-
-      .nickname-wrap {
+      height: auto;
+      .news-title {
+        @include font-size-large;
         @include v-text-align(40px);
-
-        .nickname {
-          @include font-size-large;
-          @include font-weight-5;
-          color: $primary;
-        }
-      }
-
-      .subscript-button-wrap {
-        width: 100%;
-        height: 30px;
-      }
-
-      .description-wrap {
-        .description {
-          margin: 10px 0;
-          @include font-size-small;
-          color: $info-blur;
-
-          .no-description {
-            @include font-size-small;
-            color: $info-blur;
-          }
-        }
-
-        .edit-description-area {
-          margin: 10px 0;
-        }
-      }
-
-      .badge-wrap {
-        margin: 15px 0;
-        padding: 10px;
-
-        .badge-box {
-          @include v-text-align(40px);
-          width: 20vw;
-          height: 40px;
-          border: 1px solid #eee;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: 0.2s ease-in-out;
-        }
-        .badge-box:hover {
-          transform: translateY(-2px);
-        }
+        color: #202124;
       }
     }
-  }
-  .ant-modal-body {
-    .subscribe-wrap {
+    .news-created-at-container {
+      z-index: -10;
       display: block;
-      list-style: none;
-      margin: 0;
-      padding: 0;
       width: 100%;
-      height: 40vh;
-      overflow-y: scroll;
-
-      .sub-item {
-        @include v-text-align(40px);
-        width: 100%;
-        border-bottom: 1px solid #e2e2e2;
-
-        .sub-item-text {
-          @include font-size-normal;
-          color: $info;
-        }
+      position: relative;
+      height: 20px;
+      .created-at {
+        @include font-size-normal;
+        @include font-weight-4;
+        letter-spacing: 0.2px;
+        color: $info-blur;
       }
+    }
+    .news-content-wrap {
+      width: 100%;
+      height: auto;
+      margin-bottom: 50px;
+    }
+    .feedback-wrap {
+      @include box-shadow;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      .feedback-title {
+        @include font-size-small;
+        @include v-text-align(25px);
+        color: $primary;
+      }
+      .emoji-area {
+        margin-bottom: 20px;
+      }
+    }
+    .loadmore {
+      //@include box-shadow;
+      width: 100%;
+      height: 40px;
+      .no-more-comment {
+        @include font-size-normal;
+        color: $info-blur;
+      }
+    }
+    .comment-write-wrap {
+      @include box-shadow;
+      margin-top: 20px;
+      padding: 10px;
     }
   }
 </style>

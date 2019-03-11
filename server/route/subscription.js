@@ -10,7 +10,6 @@ router.post('/reporter', async (req, res) => {
     .then(results => results)
     .catch(err => err);
   return res.json('ok');
-
 });
 
 router.post('/local', async (req, res) => {

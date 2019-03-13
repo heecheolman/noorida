@@ -317,6 +317,23 @@ export default {
     });
   },
 
+  evaluate(userId, contentId, score) {
+    return axios.post('api/evaluation',  {
+      userId,
+      contentId,
+      score,
+    });
+  },
+  getReliabilityScore(userId) {
+    return axios.get('api/evaluation/reliability', {
+      params: { userId },
+    });
+  },
+  getEvaluationScore(userId, contendId) {
+    return axios.get('api/evaluation', {
+      params: { userId, contendId },
+
+
   isBlocked(applicant, blockedUser) {
     return axios.get('api/block/is-blocked', {
       params: { applicant, blockedUser },

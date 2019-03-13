@@ -64,6 +64,14 @@ module.exports = {
     return result;
   },
 
+  isSubscribed: async ({ reader, reporter }) => {
+    const result = await knex('subscriptionReporter')
+      .where({ reader, reporter })
+      .then(results => results)
+      .catch(err => err)
+    return result.length !== 0;
+  },
+
   countSubscription: async ({ userId }) => {
     const countReader = await knex('subscriptionReporter')
       .count('*')

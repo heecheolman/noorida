@@ -1,6 +1,14 @@
 const knex = require('./service.config');
 
-module.exports ={
+module.exports = {
+  isBlocked: async ({ applicant, blockedUser }) => {
+    const result = knex('block')
+      .select('applicant', 'blockedUser')
+      .where({ applicant, blockedUser })
+      .then(results => results)
+      .catch(err => err)
+    return result.length !== 0;
+  },
   block: async ({ applicant, blockedUser }) => {
     const result = knex('block')
       .insert({ applicant, blockedUser })
@@ -17,14 +25,6 @@ module.exports ={
       .catch(err => err)
     return result;
     },
-  isBlocked: async ({ applicant, blockedUser }) => {
-    const result = knex('block')
-      .select('applicant', 'blockedUser')
-      .where({ applicant, blockedUser })
-      .then(results => results)
-      .catch(err => err)
-    return result.length !== 0;
-  },
   cancelBlock: async ({ applicant, blockedUser }) => {
     const result = knex('block')
       .where({ applicant, blockedUser })
@@ -34,3 +34,4 @@ module.exports ={
     return result;
   },
 };
+

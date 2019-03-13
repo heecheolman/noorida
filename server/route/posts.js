@@ -53,4 +53,28 @@ router.get('/users/:userId', async (req, res) => {
   res.json(result);
 });
 
+router.post('/emotion', async (req, res) => {
+  const { userId, contentId, emotionCode } = req.body;
+  const result = await postService.emotion({ contentId, userId, emotionCode })
+    .then(results => results)
+    .catch(err => err);
+  res.json('ok');
+});
+
+router.get('/emotion', async (req, res) => {
+  const { userId, contentId, emotionCode } = req.params;
+  const result = await postService.countEmotion({ userId, contentId, emotionCode })
+    .then(results => results)
+    .catch(err => err);
+  res.json(result);
+});
+
+router.put('/emotion', async (req, res) => {
+  const { userId, contentId, emotionCode } = req.body;
+  const result = await postService.editEmotion({ contentId, userId, emotionCode })
+    .then(results => results)
+    .catch(err => err);
+  res.json('ok');
+});
+
 module.exports = router;

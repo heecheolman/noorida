@@ -332,6 +332,8 @@ export default {
   getEvaluationScore(userId, contendId) {
     return axios.get('api/evaluation', {
       params: { userId, contendId },
+    });
+  },
 
 
   isBlocked(applicant, blockedUser) {
@@ -351,9 +353,11 @@ export default {
       params: { applicant, blockedUser },
     });
   },
-  cancleBlock(applicant, blockedUser) {
+
+  cancelBlock(applicant, blockedUser) {
     return axios.delete('api/block',{
       params: { applicant, blockedUser },
     });
   },
+
 };

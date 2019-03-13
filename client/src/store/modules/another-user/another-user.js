@@ -26,18 +26,22 @@ const mutations = {
     state.readerList = payload;
   },
   [types.UPDATE_REPORTER_LIST](state, payload) {
-    payload.forEach((user) => {
-      user.userId = user.reporter;
-      delete user.reporter;
-    });
-    state.reporterList = payload;
+    if (Array.isArray(payload)) {
+      payload.forEach((user) => {
+        user.userId = user.reporter;
+        delete user.reporter;
+      });
+      state.reporterList = payload;
+    }
   },
   [types.UPDATE_LOCAL_LIST](state, payload) {
-    payload.forEach((user) => {
-      user.userId = user.local;
-      delete user.local;
-    });
-    state.localList = payload;
+    if (Array.isArray(payload)) {
+      payload.forEach((user) => {
+        user.userId = user.local;
+        delete user.local;
+      });
+      state.localList = payload;
+    }
   },
   [types.UPDATE_IS_SUBSCRIBE](state, payload) {
     state.isSubscribe = payload;

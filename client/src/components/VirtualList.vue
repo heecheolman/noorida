@@ -10,8 +10,9 @@
 
       <a-list-item slot-scope="{ item }" @click="routeDetailPage(item.contentId)">
 
-        <a-list-item-meta :description="item.nickName || '지역이름'">
-          <a slot="title">{{ item.title }}</a>
+        <a-list-item-meta>
+          <a slot="title" class="title">{{ item.title }}</a>
+          <span slot="description">{{ item.nickName || '지역이름' }}</span>
           <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
         </a-list-item-meta>
         <span class="timeline">{{ item.updatedAt | timeline }}</span>
@@ -118,6 +119,10 @@ export default {
             white-space: nowrap;
             word-break: break-all;
             width: 55vw;
+
+            .title {
+              color: #222;
+            }
           }
           .ant-list-item-meta-description {
             @include font-size-xx-small;

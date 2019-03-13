@@ -316,6 +316,7 @@ export default {
       params: { userId },
     });
   },
+
   evaluate(userId, contentId, score) {
     return axios.post('api/evaluation',  {
       userId,
@@ -331,6 +332,28 @@ export default {
   getEvaluationScore(userId, contendId) {
     return axios.get('api/evaluation', {
       params: { userId, contendId },
+
+
+  isBlocked(applicant, blockedUser) {
+    return axios.get('api/block/is-blocked', {
+      params: { applicant, blockedUser },
+    });
+  },
+
+  blockUser(applicant, blockedUser) {
+    return axios.post('api/block', {
+      applicant, blockedUser,
+    });
+  },
+
+  blockList(applicant, blockedUser) {
+    return axios.get('api/block',{
+      params: { applicant, blockedUser },
+    });
+  },
+  cancleBlock(applicant, blockedUser) {
+    return axios.delete('api/block',{
+      params: { applicant, blockedUser },
     });
   },
 };

@@ -9,9 +9,33 @@
         <div class="news-created-at-container">
           <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
         </div>
+
         <div class="news-content-wrap">
           <div class="ql-editor">
             <div v-html="detailPost.content"></div>
+
+        <a-textarea v-else-if="editMode"
+                    class="edit-description-area"
+                    placeholder="자기소개를 작성해주세요"
+                    :autosize="{ minRows: 2, maxRows: 4 }"
+                    maxlength="60"
+                    @input="copiedDescriptionChange($event.target.value)"
+                    :value="copiedDescription"></a-textarea>
+        <span v-if="isMe">
+          <a-button type="default"
+                    size="small"
+                    v-if="!editMode"
+                    @click="toggleEditMode()">수정</a-button>
+          <div v-else-if="editMode" style="float: right;">
+            <span class="description-length">({{ descriptionLength || 0 }}/60)</span>
+            <a-button type="default"
+                      size="small"
+                      @click="toggleEditMode()">취소</a-button>
+          <a-button type="primary"
+                    size="small"
+                    :loading="descriptionLoading"
+                    @click="updateDescription()">저장</a-button>
+
           </div>
         </div>
         <profile-card />
@@ -107,6 +131,7 @@
         type: Number,
       },
     },
+
     computed: {
       ...mapState('comment', [
         'commentContent',
@@ -117,6 +142,35 @@
       ...mapState('post', [
         'detailPost',
       ]),
+
+    descriptionLength() {
+      if (this.copiedDescription) {
+        return this.copiedDescription.length;
+      }
+    },
+  },
+  data() {
+    return {
+      badgeStyle: { backgroundColor: '#1F74FF' },
+      editMode: false,
+      description: '',
+      copiedDescription: '',
+      descriptionLoading: false,
+      modalTitle: '',
+      modalVisible: false,
+      modalSubscribeList: [],
+    };
+  },
+  methods: {
+    ...mapMutations('post', {
+      initPreviewList: 'INIT_PREVIEW_LIST',
+    }),
+    toggleEditMode() {
+      this.editMode = !this.editMode;
+      if (this.editMode) {
+        this.copiedDescription = this.description;
+      }
+
     },
     async created() {
       this.loading = true;
@@ -186,7 +240,19 @@
         }
       },
     },
+
   };
+
+    copiedDescriptionChange(e) {
+      this.copiedDescription = e;
+    },
+  },
+  async created() {
+    await this.initPreviewList();
+    await this.dataUpdate();
+  },
+};
+
 </script>
 
 <style lang="scss" scoped>
@@ -221,6 +287,7 @@
         letter-spacing: 0.2px;
         color: $info-blur;
       }
+
     }
     .news-content-wrap {
       width: 100%;
@@ -236,6 +303,30 @@
         @include font-size-small;
         @include v-text-align(25px);
         color: $primary;
+
+
+      .description-wrap {
+        .description {
+          margin: 10px 0;
+          @include font-size-small;
+          color: $info-blur;
+
+          .no-description {
+            @include font-size-small;
+            color: $info-blur;
+          }
+        }
+
+        .edit-description-area {
+          margin: 10px 0;
+        }
+
+        .description-length {
+          @include font-size-small;
+          color: $info-blur;
+          margin-right: 5px;
+        }
+
       }
       .emoji-area {
         margin-bottom: 20px;

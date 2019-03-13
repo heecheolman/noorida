@@ -33,6 +33,7 @@
                           width: '100%',
                           height: '70px',
                           padding: '0',
+                          backgroundColor: '#fff',
                        }">
         <div class="flex-container flex-between-sort flex-row footer">
           <a-button class="button-common"
@@ -137,6 +138,7 @@ export default {
     height: calc(100vh - 70px);
     padding-top: $header-height;
     /*overflow-y: scroll;*/
+    background-color: #fff;
   }
 
   .tab-pane {

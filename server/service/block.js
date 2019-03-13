@@ -13,7 +13,7 @@ module.exports ={
       .select('users.userId','users.nickName','users.avatar','block.blockedUser')
       .where({ applicant })
       .join('users', 'user.Id','=','block.blockedUser')
-      .then(results => reusults)
+      .then(results => results)
       .catch(err => err)
     return result;
     },

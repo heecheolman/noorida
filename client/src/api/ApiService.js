@@ -316,4 +316,27 @@ export default {
       params: { userId },
     });
   },
+
+  isBlocked(applicant, blockedUser) {
+    return axios.get('api/block/is-blocked', {
+      params: { applicant, blockedUser },
+    });
+  },
+
+  blockUser(applicant, blockedUser) {
+    return axios.post('api/block', {
+      applicant, blockedUser,
+    });
+  },
+
+  blockList(applicant, blockedUser) {
+    return axios.get('api/block',{
+      params: { applicant, blockedUser },
+    });
+  },
+  cancleBlock(applicant, blockedUser) {
+    return axios.delete('api/block',{
+      params: { applicant, blockedUser },
+    });
+  },
 };

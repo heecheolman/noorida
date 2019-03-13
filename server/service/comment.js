@@ -48,7 +48,7 @@ module.exports = {
       .update({ commentContent })
       .where({ commentId, userId })
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
 
@@ -57,7 +57,7 @@ module.exports = {
       .update('active', 'F')
       .where({ commentId, userId })
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
 };

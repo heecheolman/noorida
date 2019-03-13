@@ -13,7 +13,7 @@ module.exports = {
       .update({ emotionCode })
       .where({ contentId, userId })
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
     return result;
   },
   countEmotion: async ({ contentId, emotionCode }) => {

@@ -4,8 +4,8 @@ const evaluationService = require('../service/evaluation');
 const router = express.Router();
 
 router.post('', async (req, res) => {
-  const { userId, contendId, score } = req.body;
-  const result = await evaluationService.evaluate({ userId, contendId, score })
+  const { userId, contentId, score } = req.body;
+  const result = await evaluationService.evaluate({ userId, contentId, score })
     .then(results => results)
     .catch(err => err);
   return res.json('ok');

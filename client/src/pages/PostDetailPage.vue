@@ -35,6 +35,7 @@
                       :max="5"
                       :included="false"
                       :step="1"
+                      :value="evaluationScore"
                       @afterChange="updateReliability"/>
           </div>
         </div>
@@ -115,11 +116,13 @@ export default {
     ]),
     ...mapState('post', [
       'detailPost',
+      'evaluationScore',
     ]),
   },
   async created() {
     this.loading = true;
     await this.$store.dispatch('post/fetchDetailPost', this.contentId);
+    await this.$store.dispatch('post/getEvaluationScore', { userId: this.$store.state.user.user.userId, contentId: this.contentId });
     this.loading = false;
     this.initCommentData();
     this.loadCommentList();
@@ -180,9 +183,14 @@ export default {
       console.log('이모지 수정', e.target.value);
     },
     updateReliability(value) {
-      if (this.reliabilityOldValue !== value) {
-        this.reliabilityOldValue = value;
-        console.log('신뢰도 수정', value);
+      if (this.evaluationScore !== value) {
+        this.evaluationScore = value;
+        const payload = {
+          userId: this.$store.state.user.user.userId,
+          contentId: this.contentId,
+          value,
+        };
+        this.$store.dispatch('post/evaluateReliabilityScore', payload);
       }
     },
   },

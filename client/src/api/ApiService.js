@@ -318,7 +318,7 @@ export default {
   },
 
   evaluate(userId, contentId, score) {
-    return axios.post('api/evaluation',  {
+    return axios.post('api/evaluation', {
       userId,
       contentId,
       score,

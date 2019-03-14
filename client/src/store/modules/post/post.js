@@ -11,6 +11,7 @@ const state = {
   busy: false,
   detailPost: {},
   profileCard: {},
+  evaluationScore: 0,
 };
 
 const mutations = {
@@ -50,6 +51,9 @@ const mutations = {
   },
   [types.INIT_PROFILE_CARD](state) {
     state.profileCard = {};
+  },
+  [types.UPDATE_EVAL_SCORE](state, payload) {
+    state.evaluationScore = payload;
   },
 };
 
@@ -123,6 +127,25 @@ const actions = {
       .catch(err => err);
     profileCard.userId = contentData.userId;
     commit(types.UPDATE_PROFILE_CARD, profileCard);
+  },
+
+  async evaluateReliabilityScore({ commit }, payload) {
+    const { userId, contentId, value } = payload;
+    const resData = await api.evaluate(userId, contentId, value)
+      .then(result => result.data)
+      .catch(err => err);
+  },
+
+  async getEvaluationScore({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.getEvaluationScore(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (!resData) {
+      commit(types.UPDATE_EVAL_SCORE, 0);
+    } else {
+      // commit(types.UPDATE_EVAL_SCORE, resData);
+    }
   },
 };
 

@@ -166,8 +166,8 @@ export default {
     });
   },
 
-  insertTmpPassword(email){
-    return axios.put('api/auth/find-password',{
+  insertTmpPassword(email) {
+    return axios.put('api/auth/find-password', {
       email,
     });
   },
@@ -325,17 +325,15 @@ export default {
     });
   },
   getReliabilityScore(userId) {
-    return axios.get('api/evaluation/reliability', {
+    return axios.get(`api/posts/evaluation/${userId}`, {
       params: { userId },
     });
   },
-  getEvaluationScore(userId, contendId) {
-    return axios.get('api/evaluation', {
-      params: { userId, contendId },
+  isEvaluated(userId, contentId) {
+    return axios.get('api/posts/is-evaluated', {
+      params: { userId, contentId },
     });
   },
-
-
   isBlocked(applicant, blockedUser) {
     return axios.get('api/block/is-blocked', {
       params: { applicant, blockedUser },

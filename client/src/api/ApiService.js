@@ -178,9 +178,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getPostContent(id) {
-    return axios.get(`/api/posts/${id}`, {
-      params: { id },
-    });
+    return axios.get(`/api/posts/${id}`);
   },
 
   /**
@@ -247,9 +245,6 @@ export default {
    */
   updateDescription(userId, description) {
     return axios.put(`/api/users/${userId}/description`, {
-      params: {
-        userId,
-      },
       description,
     });
   },
@@ -318,7 +313,7 @@ export default {
   },
 
   evaluate(userId, contentId, score) {
-    return axios.post('api/evaluation', {
+    return axios.post('/api/posts/evaluation', {
       userId,
       contentId,
       score,
@@ -330,12 +325,12 @@ export default {
     });
   },
   isEvaluated(userId, contentId) {
-    return axios.get('api/posts/is-evaluated', {
+    return axios.get('/api/posts/evaluation/check/is-evaluated', {
       params: { userId, contentId },
     });
   },
   isBlocked(applicant, blockedUser) {
-    return axios.get('api/block/is-blocked', {
+    return axios.get('/api/block/is-blocked', {
       params: { applicant, blockedUser },
     });
   },

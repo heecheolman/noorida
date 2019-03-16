@@ -12,6 +12,7 @@ const state = {
   detailPost: {},
   profileCard: {},
   evaluationScore: 0,
+  isEvaluated: false,
 };
 
 const mutations = {
@@ -54,6 +55,9 @@ const mutations = {
   },
   [types.UPDATE_EVAL_SCORE](state, payload) {
     state.evaluationScore = payload;
+  },
+  [types.UPDATE_IS_EVALUATED](state, payload) {
+    state.isEvaluated = payload;
   },
 };
 
@@ -130,22 +134,21 @@ const actions = {
   },
 
   async evaluateReliabilityScore({ commit }, payload) {
-    const { userId, contentId, value } = payload;
-    const resData = await api.evaluate(userId, contentId, value)
+    const { userId, contentId, score } = payload;
+    const resData = await api.evaluate(userId, contentId, score)
       .then(result => result.data)
       .catch(err => err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_IS_EVALUATED, true);
+    }
   },
 
-  async getEvaluationScore({ commit }, payload) {
+  async isEvaluated({ commit }, payload) {
     const { userId, contentId } = payload;
-    const resData = await api.getEvaluationScore(userId, contentId)
+    const isEvaluated = await api.isEvaluated(userId, contentId)
       .then(result => result.data)
       .catch(err => err);
-    if (!resData) {
-      commit(types.UPDATE_EVAL_SCORE, 0);
-    } else {
-      // commit(types.UPDATE_EVAL_SCORE, resData);
-    }
+    commit(types.UPDATE_IS_EVALUATED, isEvaluated);
   },
 };
 

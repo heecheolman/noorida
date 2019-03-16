@@ -94,11 +94,11 @@ router.get('/evaluation/:userId', async (req, res) => {
 });
 
 
-router.get('/is-evaluated', async (req, res) => {
-  const  { userId, contentId } = req.params;
-  const result = await postService.isEvaluated({ userId, contentId})
+router.get('/evaluation/check/is-evaluated', async (req, res) => {
+  const { userId, contentId } = req.query;
+  const result = await postService.isEvaluated({ userId, contentId })
     .then(results => results)
-    .catch(err => err)
+    .catch(err => err);
   if (result) {
     res.json(true);
   } else {

@@ -349,13 +349,13 @@ export default {
   },
 
   blockList(applicant, blockedUser) {
-    return axios.get('api/block',{
+    return axios.get('api/block', {
       params: { applicant, blockedUser },
     });
   },
 
   cancelBlock(applicant, blockedUser) {
-    return axios.delete('api/block',{
+    return axios.delete('api/block', {
       params: { applicant, blockedUser },
     });
   },

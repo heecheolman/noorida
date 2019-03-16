@@ -21,10 +21,10 @@
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
           <div class="emoji-area flex-container flex-center-sort">
             <a-radio-group defaultValue="" size="large" @change="updateEmoji">
-              <a-radio-button value="like"><i class="far fa-thumbs-up"></i></a-radio-button>
-              <a-radio-button value="smile"><i class="far fa-smile"></i></a-radio-button>
-              <a-radio-button value="angry"><i class="far fa-angry"></i></a-radio-button>
-              <a-radio-button value="sad"><i class="far fa-sad-tear"></i></a-radio-button>
+              <a-radio-button value="1"><i class="far fa-thumbs-up"></i></a-radio-button>
+              <a-radio-button value="2"><i class="far fa-smile"></i></a-radio-button>
+              <a-radio-button value="3"><i class="far fa-angry"></i></a-radio-button>
+              <a-radio-button value="4"><i class="far fa-sad-tear"></i></a-radio-button>
             </a-radio-group>
           </div>
 
@@ -35,7 +35,6 @@
                       :max="5"
                       :included="false"
                       :step="1"
-                      :value="evaluationScore"
                       @afterChange="updateReliability"/>
           </div>
         </div>
@@ -48,8 +47,10 @@
 
               <a-form-item>
                 <a-textarea :rows="1"
+                            :maxlength="'200'"
                             @change="setCommentContent($event.target.value)"
                             :value="commentContent" ></a-textarea>
+                <span class="comment-guide">({{ commentLength }}/200)</span>
               </a-form-item>
               <a-form-item>
                 <a-button htmlType="submit"
@@ -110,6 +111,7 @@ export default {
   computed: {
     ...mapState('comment', [
       'commentContent',
+      'commentLength',
       'commentList',
       'commentLoading',
       'hasNextComment',
@@ -122,7 +124,6 @@ export default {
   async created() {
     this.loading = true;
     await this.$store.dispatch('post/fetchDetailPost', this.contentId);
-    await this.$store.dispatch('post/getEvaluationScore', { userId: this.$store.state.user.user.userId, contentId: this.contentId });
     this.loading = false;
     this.initCommentData();
     this.loadCommentList();
@@ -179,19 +180,9 @@ export default {
       this.initCommentData();
       this.loadCommentList();
     },
-    updateEmoji(e) {
-      console.log('이모지 수정', e.target.value);
+    async updateEmoji(e) {
     },
     updateReliability(value) {
-      if (this.evaluationScore !== value) {
-        this.evaluationScore = value;
-        const payload = {
-          userId: this.$store.state.user.user.userId,
-          contentId: this.contentId,
-          value,
-        };
-        this.$store.dispatch('post/evaluateReliabilityScore', payload);
-      }
     },
   },
 };
@@ -273,6 +264,11 @@ export default {
       @include box-shadow;
       margin-top: 20px;
       padding: 10px;
+
+      .comment-guide {
+        @include font-size-small;
+        color: $info-blur;
+      }
     }
   }
 </style>

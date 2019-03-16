@@ -155,7 +155,8 @@ module.exports = {
       .join('contents', 'contentId', '=', 'evaluation.contentId')
       .join('users', 'users.userId', '=', 'contents.userId')
       .sum('evaluation.score')
-      .then(results => results);
+      .then(results => results)
+      .catch(err => err);
     return result;
   },
   // 평가 했는지 안했는지 확인

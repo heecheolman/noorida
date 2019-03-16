@@ -150,6 +150,14 @@ const actions = {
       .catch(err => err);
     commit(types.UPDATE_IS_EVALUATED, isEvaluated);
   },
+
+  async getUserReliabilityScore({ commit, state }, payload) {
+    const { userId } = payload;
+    const score = await api.getReliabilityScore(state.detailPost.userId)
+      .then(result => result.data)
+      .catch(err => err);
+  },
+
 };
 
 export default {

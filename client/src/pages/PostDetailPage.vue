@@ -134,6 +134,7 @@ export default {
       userId: this.user.userId,
       contentId: this.contentId,
     });
+    await this.$store.dispatch('post/getUserReliabilityScore', this.detailPost.userId);
     this.loading = false;
     this.initCommentData();
     this.loadCommentList();

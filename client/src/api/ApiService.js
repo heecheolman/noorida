@@ -320,9 +320,7 @@ export default {
     });
   },
   getReliabilityScore(userId) {
-    return axios.get(`api/posts/evaluation/${userId}`, {
-      params: { userId },
-    });
+    return axios.get(`api/posts/evaluation/${userId}`);
   },
   isEvaluated(userId, contentId) {
     return axios.get('/api/posts/evaluation/check/is-evaluated', {

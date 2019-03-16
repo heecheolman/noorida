@@ -152,12 +152,13 @@ module.exports = {
   getReliabilityScore: async ({ userId }) => {
     const result = await knex('evaluation')
       .where('contents.userId', userId)
-      .join('contents', 'contentId', '=', 'evaluation.contentId')
+      .join('contents', 'contents.contentId', '=', 'evaluation.contentId')
       .join('users', 'users.userId', '=', 'contents.userId')
       .sum('evaluation.score')
       .then(results => results)
       .catch(err => err);
     return result;
+
   },
   // 평가 했는지 안했는지 확인
   isEvaluated: async ({ userId, contentId }) => {

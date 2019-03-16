@@ -11,7 +11,15 @@ const storage = multer.diskStorage({
     cb(null, '../client/static/images');
   },
   filename(req, file, cb) {
-    cb(null, file.originalname);
+    const { nickName } = req.query;
+    let filename;
+    if (nickName) {
+      const ext = file.originalname.split('.').pop();
+      filename = `${nickName}.${ext}`;
+    } else {
+      filename = file.originalname;
+    }
+    cb(null, filename);
   },
 });
 const upload = multer({

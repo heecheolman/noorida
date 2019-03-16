@@ -84,8 +84,8 @@ export default {
    * 이미지 업로드
    * @returns {AxiosPromise<any>}
    */
-  uploadImage(formData) {
-    return axios.post('/api/upload/image', formData, {
+  uploadImage(formData, nickName = '') {
+    return axios.post(`/api/upload/image?nickName=${nickName}`, formData, {
       timeout: 5000,
     });
   },
@@ -348,6 +348,12 @@ export default {
   cancelBlock(applicant, blockedUser) {
     return axios.delete('api/block', {
       params: { applicant, blockedUser },
+    });
+  },
+
+  updateProfileImage(userId, filename) {
+    return axios.put(`/api/users/${userId}/avatar`, {
+      filename,
     });
   },
 

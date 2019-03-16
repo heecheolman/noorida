@@ -9,7 +9,19 @@
         <span class="score">475</span>
       </div>
       <div class="avatar-wrap flex-container flex-center-sort">
-        <img class="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png">
+        <div class="profile-upload-wrapper">
+          <div class="avatar-zone">
+            <!--이미지가 존재하는 경우-->
+            <img v-if="profilePath"
+                 class="avatar"
+                 :src="`http://localhost:3000/images/${profilePath}`"
+                 alt="profile">
+            <!--존재하지 않는 경우-->
+            <div v-else class="default-profile"></div>
+          </div>
+          <label v-if="isMe" class="upload-text" for="upload">편집</label>
+          <input v-if="isMe" id="upload" class="upload" type="file" accept="image/*" @change="uploadProcess">
+        </div>
       </div>
       <div class="nickname-wrap text-center">
         <span class="nickname">{{ info.nickName }}</span>
@@ -96,7 +108,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapGetters, mapMutations } from 'vuex';
 
 const Toolbar = () => import('@/components/Toolbar');
 const VirtualList = () => import('@/components/VirtualList');
@@ -114,7 +126,7 @@ export default {
   },
   watch: {
     async $route(to) {
-      const {userId} = to.params;
+      const { userId } = to.params;
       await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
       this.dataUpdate();
     },
@@ -133,8 +145,14 @@ export default {
     ...mapState('post', [
       'previewPostList',
     ]),
+    ...mapGetters('user', [
+      'avatar',
+    ]),
     isMe() {
       return this.info.userId === this.$store.state.user.user.userId;
+    },
+    profilePath() {
+      return this.isMe ? this.avatar : this.info.avatar;
     },
     noDescript() {
       return {
@@ -168,6 +186,20 @@ export default {
       this.editMode = !this.editMode;
       if (this.editMode) {
         this.copiedDescription = this.description;
+      }
+    },
+    uploadProcess(e) {
+      const file = e.target.files[0];
+      if (/^image\//.test(file.type)) {
+        const formData = new FormData();
+        formData.append('image', file);
+        const payload = {
+          formData,
+          nickName: this.user.nickName,
+          userId: this.user.userId,
+        };
+        this.$store.dispatch('user/updateProfileImage', payload);
+        this.$message.success('프로필 사진이 업데이트 되었습니다');
       }
     },
     async updateDescription() {
@@ -282,10 +314,51 @@ export default {
       }
 
       .avatar-wrap {
-        .avatar {
-          width: 80px;
-          height: 80px;
-          border-radius: 100px;
+        .profile-upload-wrapper {
+          position: relative;
+          width: 150px;
+          height: 150px;
+          border-radius: 50%;
+          border: 1px solid #e2e2e2;
+          overflow: hidden;
+          transition: ease-in-out 0.2s;
+
+          .avatar-zone {
+            width: 100%;
+            height: 100%;
+
+            .avatar {
+              width: 100%;
+              height: auto;
+            }
+
+            .default-profile {
+              width: 100%;
+              height: 100%;
+              background-color: rgba(226, 226, 226, 0.4);
+            }
+          }
+          .upload {
+            position: absolute;
+            cursor: pointer;
+            opacity: 0;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+          }
+          .upload-text {
+            @include font-size-small;
+            color: #fff;
+            position: absolute;
+            width: 100%;
+            background: rgba(151, 151, 151, 0.9);
+            bottom: 0;
+            text-align: center;
+          }
+        }
+        .profile-upload-wrapper:hover {
+          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
         }
       }
 

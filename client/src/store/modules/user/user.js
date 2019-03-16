@@ -14,6 +14,7 @@ const state = {
 
 const getters = {
   userId: state => state.user.userId,
+  avatar: state => state.user.avatar,
 };
 
 const mutations = {
@@ -31,6 +32,9 @@ const mutations = {
   },
   [types.UPDATE_USER_DESCRIPTION](state, payload) {
     state.user.description = payload;
+  },
+  [types.UPDATE_PROFILE_IMAGE_SRC](state, payload) {
+    state.user.avatar = payload;
   },
 };
 
@@ -62,6 +66,19 @@ const actions = {
     if (result === 'ok') {
       commit(types.UPDATE_USER_DESCRIPTION, payload);
       state.committed = true;
+    }
+  },
+
+  async updateProfileImage({ commit }, payload) {
+    const { formData, nickName, userId } = payload;
+    const resData = await api.uploadImage(formData, nickName)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData) {
+      commit(types.UPDATE_PROFILE_IMAGE_SRC, resData);
+      await api.updateProfileImage(userId, resData)
+        .then(result => result.data)
+        .catch(err => err);
     }
   },
 };

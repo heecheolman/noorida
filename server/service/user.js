@@ -25,4 +25,12 @@ module.exports = {
       .catch(err => err);
     return result;
   },
+  updateUserProfile: async ({ userId, filename }) => {
+    const result = await knex('users')
+      .update('avatar', filename)
+      .where({ userId })
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
 };

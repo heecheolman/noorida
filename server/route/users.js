@@ -44,4 +44,12 @@ router.put('/:userId/description', async (req, res) => {
   }
 });
 
+router.put('/:userId/avatar', async (req, res) => {
+  const { filename } = req.body;
+  const { userId } = req.params;
+  const result = await userService.updateUserProfile({ userId, filename })
+    .then(results => results)
+    .catch(err => err);
+});
+
 module.exports = router;

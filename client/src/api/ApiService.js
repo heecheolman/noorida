@@ -318,24 +318,22 @@ export default {
   },
 
   evaluate(userId, contentId, score) {
-    return axios.post('api/evaluation',  {
+    return axios.post('api/posts/evaluation',  {
       userId,
       contentId,
       score,
     });
   },
   getReliabilityScore(userId) {
-    return axios.get('api/evaluation/reliability', {
+    return axios.get(`api/posts/evaluation/${userId}`, {
       params: { userId },
     });
   },
-  getEvaluationScore(userId, contendId) {
-    return axios.get('api/evaluation', {
-      params: { userId, contendId },
+  isEvaluated(userId, contentId) {
+    return axios.get('api/posts/is-evaluated', {
+      params: { userId, contentId},
     });
   },
-
-
   isBlocked(applicant, blockedUser) {
     return axios.get('api/block/is-blocked', {
       params: { applicant, blockedUser },

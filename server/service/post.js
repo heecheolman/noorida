@@ -158,7 +158,6 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
     return result;
-
   },
   // 평가 했는지 안했는지 확인
   isEvaluated: async ({ userId, contentId }) => {

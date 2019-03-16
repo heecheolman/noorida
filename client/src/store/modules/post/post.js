@@ -151,11 +151,11 @@ const actions = {
     commit(types.UPDATE_IS_EVALUATED, isEvaluated);
   },
 
-  async getUserReliabilityScore({ commit, state }, payload) {
-    const { userId } = payload;
+  async getUserReliabilityScore({ commit, state }) {
     const score = await api.getReliabilityScore(state.detailPost.userId)
       .then(result => result.data)
       .catch(err => err);
+    console.log('score', score);
   },
 
 };

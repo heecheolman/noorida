@@ -86,13 +86,16 @@ router.post('/evaluation', async (req, res) => {
 });
 
 router.get('/evaluation/:userId', async (req, res) => {
-  console.log('1');
   const { userId } = req.params;
   const result = await postService.getReliabilityScore({ userId })
     .then(results => results)
     .catch(err => err);
-  return res.json(Object.values(result[0]))
-
+  const extractedScore = Object.values(result[0]);
+  if (extractedScore[0]) {
+    res.json(extractedScore[0]);
+  } else {
+    res.json(0);
+  }
 });
 
 

@@ -77,4 +77,37 @@ router.put('/emotion', async (req, res) => {
   res.json('ok');
 });
 
+router.post('/evaluation', async (req, res) => {
+  const { userId, contentId, score } = req.body;
+  const result = await postService.evaluate({ userId, contentId, score })
+    .then(results => results)
+    .catch(err => err);
+  return res.json('ok');
+});
+
+router.get('/evaluation/:userId', async (req, res) => {
+  const { userId } = req.params;
+  const result = await postService.getReliabilityScore({ userId })
+    .then(results => results)
+    .catch(err => err);
+  const extractedScore = Object.values(result[0]);
+  if (extractedScore[0]) {
+    res.json(extractedScore[0]);
+  } else {
+    res.json(0);
+  }
+});
+
+
+router.get('/evaluation/check/is-evaluated', async (req, res) => {
+  const { userId, contentId } = req.query;
+  const result = await postService.isEvaluated({ userId, contentId })
+    .then(results => results)
+    .catch(err => err);
+  if (result) {
+    res.json(true);
+  } else {
+    res.json(false);
+  }
+});
 module.exports = router;

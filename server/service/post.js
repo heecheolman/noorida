@@ -140,4 +140,32 @@ module.exports = {
       .catch(err => err);
     return result;
   },
+
+  evaluate: async ({ userId, contentId, score }) => {
+    const result = await knex('evaluation')
+      .insert({ userId, contentId, score })
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
+  // 자신이 작성한 게시글에 대한 평가 점수의 총합
+  getReliabilityScore: async ({ userId }) => {
+    const result = await knex('evaluation')
+      .where('contents.userId', userId)
+      .join('contents', 'contents.contentId', '=', 'evaluation.contentId')
+      .join('users', 'users.userId', '=', 'contents.userId')
+      .sum('evaluation.score')
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
+  // 평가 했는지 안했는지 확인
+  isEvaluated: async ({ userId, contentId }) => {
+    const result = await knex('evaluation')
+      .select('*')
+      .where({ userId, contentId })
+      .then(results => results)
+      .catch(err => err);
+    return result.length !== 0;
+  },
 };

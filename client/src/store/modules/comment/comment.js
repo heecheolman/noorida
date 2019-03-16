@@ -3,6 +3,7 @@ import * as types from './mutation_types';
 
 const state = {
   commentContent: '',
+  commentLength: 0,
   commentList: [],
   lastId: -1,
   hasNextComment: true,
@@ -15,6 +16,7 @@ const getters = {
 const mutations = {
   [types.SET_COMMENT_CONTENT](state, payload) {
     state.commentContent = payload;
+    state.commentLength = state.commentContent.length;
   },
   [types.UPDATE_LAST_ID](state, payload) {
     state.lastId = payload;
@@ -25,6 +27,7 @@ const mutations = {
   [types.INIT_COMMENT_DATA](state) {
     state.commentList = [];
     state.commentContent = '';
+    state.commentLength = 0;
     state.lastId = -1;
     state.hasNextComment = true;
     state.commentLoading = false;

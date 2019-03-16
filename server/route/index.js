@@ -10,7 +10,6 @@ const usersRouter = require('./users');
 const commentsRouter = require('./comment');
 const changePasswordRouter = require('./changePassword');
 const subscriptionRouter = require('./subscription');
-const evaluationRouter = require('./evaluation');
 const blockRouter = require('./block');
 
 router.use('/posts', postsRouter); // ok
@@ -21,7 +20,6 @@ router.use('/users', usersRouter); // ok
 router.use('/comments', commentsRouter);
 router.use('/change-Password', changePasswordRouter);
 router.use('/subscription', subscriptionRouter);
-router.use('/evaluation', evaluationRouter);
 router.use('/block', blockRouter);
 
 module.exports = router;

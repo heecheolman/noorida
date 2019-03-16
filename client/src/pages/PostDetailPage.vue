@@ -16,27 +16,29 @@
           </div>
           <profile-card />
         </a-spin>
-        <div class="feedback-wrap">
+        <div v-if="detailPost.userId !== user.userId" class="feedback-wrap">
 
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
           <div class="emoji-area flex-container flex-center-sort">
             <a-radio-group defaultValue="" size="large" @change="updateEmoji">
-              <a-radio-button value="like"><i class="far fa-thumbs-up"></i></a-radio-button>
-              <a-radio-button value="smile"><i class="far fa-smile"></i></a-radio-button>
-              <a-radio-button value="angry"><i class="far fa-angry"></i></a-radio-button>
-              <a-radio-button value="sad"><i class="far fa-sad-tear"></i></a-radio-button>
+              <a-radio-button value="1"><i class="far fa-thumbs-up"></i></a-radio-button>
+              <a-radio-button value="2"><i class="far fa-smile"></i></a-radio-button>
+              <a-radio-button value="3"><i class="far fa-angry"></i></a-radio-button>
+              <a-radio-button value="4"><i class="far fa-sad-tear"></i></a-radio-button>
             </a-radio-group>
           </div>
 
-          <h4 class="feedback-title text-center">이 기사의 신뢰도는?</h4>
+          <h4 v-if="!isEvaluated" class="feedback-title text-center">이 기사의 신뢰도는?</h4>
           <div class="reliability-area">
-            <a-slider :marks="marks"
+            <a-slider v-if="!isEvaluated"
+                      :marks="marks"
                       :min="-5"
                       :max="5"
                       :included="false"
                       :step="1"
                       @afterChange="updateReliability"/>
           </div>
+          <h4 class="feedback-info text-center" v-if="isEvaluated">이미 신뢰도를 평가하셨습니다.</h4>
         </div>
         <div class="comment-wrap">
           <a-comment class="comment-write-wrap">
@@ -47,8 +49,10 @@
 
               <a-form-item>
                 <a-textarea :rows="1"
+                            :maxlength="'200'"
                             @change="setCommentContent($event.target.value)"
                             :value="commentContent" ></a-textarea>
+                <span class="comment-guide">({{ commentLength }}/200)</span>
               </a-form-item>
               <a-form-item>
                 <a-button htmlType="submit"
@@ -107,19 +111,30 @@ export default {
     },
   },
   computed: {
+    ...mapState('user', [
+      'user',
+    ]),
     ...mapState('comment', [
       'commentContent',
+      'commentLength',
       'commentList',
       'commentLoading',
       'hasNextComment',
     ]),
     ...mapState('post', [
       'detailPost',
+      'evaluationScore',
+      'isEvaluated',
     ]),
   },
   async created() {
     this.loading = true;
     await this.$store.dispatch('post/fetchDetailPost', this.contentId);
+    await this.$store.dispatch('post/isEvaluated', {
+      userId: this.user.userId,
+      contentId: this.contentId,
+    });
+    await this.$store.dispatch('post/getUserReliabilityScore');
     this.loading = false;
     this.initCommentData();
     this.loadCommentList();
@@ -144,6 +159,7 @@ export default {
       submitting: false,
       value: '',
       reliabilityOldValue: '',
+      evaluating: false,
     };
   },
   methods: {
@@ -165,7 +181,7 @@ export default {
 
       const payload = {
         contentId: this.contentId,
-        userId: this.$store.state.user.user.userId,
+        userId: this.user.userId,
         commentContent: this.commentContent,
       };
       /**
@@ -176,13 +192,32 @@ export default {
       this.initCommentData();
       this.loadCommentList();
     },
-    updateEmoji(e) {
-      console.log('이모지 수정', e.target.value);
+    async updateEmoji(e) {
     },
     updateReliability(value) {
+      const vm = this;
       if (this.reliabilityOldValue !== value) {
+        const modalRef = this.$confirm({
+          title: '평가하기',
+          content: `${value} 점수로 평가하시겠습니까? 평가 후에는 재평가할 수 없습니다`,
+          okText: '평가',
+          cancelText: '취소',
+          onOk: async () => {
+            vm.evaluating = true;
+            const payload = {
+              userId: vm.$store.state.user.user.userId,
+              contentId: vm.contentId,
+              score: value,
+            };
+            await vm.$store.dispatch('post/evaluateReliabilityScore', payload);
+            vm.evaluating = false;
+            vm.$message.success(`${value} 점수를 주었습니다!`);
+          },
+          afterClose: () => {
+            modalRef.destroy();
+          },
+        });
         this.reliabilityOldValue = value;
-        console.log('신뢰도 수정', value);
       }
     },
   },
@@ -246,6 +281,12 @@ export default {
         color: $primary;
       }
 
+      .feedback-info {
+        @include font-size-small;
+        @include v-text-align(25px);
+        color: $info-blur;
+      }
+
       .emoji-area {
         margin-bottom: 20px;
       }
@@ -265,6 +306,11 @@ export default {
       @include box-shadow;
       margin-top: 20px;
       padding: 10px;
+
+      .comment-guide {
+        @include font-size-small;
+        color: $info-blur;
+      }
     }
   }
 </style>

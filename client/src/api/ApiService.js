@@ -84,8 +84,8 @@ export default {
    * 이미지 업로드
    * @returns {AxiosPromise<any>}
    */
-  uploadImage(formData) {
-    return axios.post('/api/upload/image', formData, {
+  uploadImage(formData, nickName = '') {
+    return axios.post(`/api/upload/image?nickName=${nickName}`, formData, {
       timeout: 5000,
     });
   },
@@ -166,8 +166,8 @@ export default {
     });
   },
 
-  insertTmpPassword(email){
-    return axios.put('api/auth/find-password',{
+  insertTmpPassword(email) {
+    return axios.put('api/auth/find-password', {
       email,
     });
   },
@@ -178,9 +178,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getPostContent(id) {
-    return axios.get(`/api/posts/${id}`, {
-      params: { id },
-    });
+    return axios.get(`/api/posts/${id}`);
   },
 
   /**
@@ -247,9 +245,6 @@ export default {
    */
   updateDescription(userId, description) {
     return axios.put(`/api/users/${userId}/description`, {
-      params: {
-        userId,
-      },
       description,
     });
   },
@@ -318,26 +313,22 @@ export default {
   },
 
   evaluate(userId, contentId, score) {
-    return axios.post('api/evaluation',  {
+    return axios.post('/api/posts/evaluation', {
       userId,
       contentId,
       score,
     });
   },
   getReliabilityScore(userId) {
-    return axios.get('api/evaluation/reliability', {
-      params: { userId },
+    return axios.get(`api/posts/evaluation/${userId}`);
+  },
+  isEvaluated(userId, contentId) {
+    return axios.get('/api/posts/evaluation/check/is-evaluated', {
+      params: { userId, contentId },
     });
   },
-  getEvaluationScore(userId, contendId) {
-    return axios.get('api/evaluation', {
-      params: { userId, contendId },
-    });
-  },
-
-
   isBlocked(applicant, blockedUser) {
-    return axios.get('api/block/is-blocked', {
+    return axios.get('/api/block/is-blocked', {
       params: { applicant, blockedUser },
     });
   },
@@ -349,14 +340,20 @@ export default {
   },
 
   blockList(applicant, blockedUser) {
-    return axios.get('api/block',{
+    return axios.get('api/block', {
       params: { applicant, blockedUser },
     });
   },
 
   cancelBlock(applicant, blockedUser) {
-    return axios.delete('api/block',{
+    return axios.delete('api/block', {
       params: { applicant, blockedUser },
+    });
+  },
+
+  updateProfileImage(userId, filename) {
+    return axios.put(`/api/users/${userId}/avatar`, {
+      filename,
     });
   },
 

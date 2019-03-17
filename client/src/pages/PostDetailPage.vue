@@ -193,6 +193,13 @@ export default {
       this.loadCommentList();
     },
     async updateEmoji(e) {
+      const payload = {
+        contentId: this.contentId,
+        userId: this.user.userId,
+        emotionCode: e.target.value,
+      };
+      console.log(payload);
+      await this.$store.dispatch('post/updatePostEmotion', payload);
     },
     updateReliability(value) {
       const vm = this;

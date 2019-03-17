@@ -161,6 +161,15 @@ const actions = {
       .catch(err => err);
     commit(types.UPDATE_RELIABILITY_SCORE, score);
   },
+
+  async updatePostEmotion({ commit }, payload) {
+    const { contentId, userId, emotionCode } = payload;
+    const resData = await api.updatePostEmotion(contentId, userId, emotionCode)
+      .then(result => result.data)
+      .catch(err => err);
+
+    console.log(resData);
+  }
 };
 
 export default {

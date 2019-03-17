@@ -357,4 +357,9 @@ export default {
     });
   },
 
+  updatePostEmotion(contentId, userId, emotionCode) {
+    return axios.post('/api/posts/emotion', {
+      contentId, userId, emotionCode,
+    });
+  },
 };

@@ -117,20 +117,27 @@ module.exports = {
   },
 
   emotion: async ({ userId, contentId, emotionCode }) => {
-    const result = await knex('emotions')
-      .insert({ userId, contentId, emotionCode })
-      .then(results => results)
-      .catch(err => err);
-    return result;
-  },
-  editEmotion: async ({ userId, contentId, emotionCode }) => {
-    const result = await knex('emotions')
-      .update({ emotionCode })
-      .where({ contentId, userId })
+    const emotionId = await knex('emotions')
+      .select('emotionId')
+      .where({ userId, contentId })
       .then(results => results)
       .catch(err => err)
-    return result;
-  },
+    if (emotionId) {
+      const result = await knex('emotions')
+        .update({ emotionCode })
+        .where({ contentId, userId })
+        .then(results => results)
+        .catch(err => err)
+      return result;
+    } else {
+      const result = await knex('emotions')
+        .insert({ userId, contentId, emotionCode })
+        .then(results => results)
+        .catch(err => err);
+      return result;
+    }
+    },
+
   countEmotion: async ({ contentId, emotionCode }) => {
     const result = await knex('emotions')
       .count({ emotionCode })

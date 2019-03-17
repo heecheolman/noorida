@@ -69,13 +69,6 @@ router.get('/emotion', async (req, res) => {
   res.json(result);
 });
 
-router.put('/emotion', async (req, res) => {
-  const { userId, contentId, emotionCode } = req.body;
-  const result = await postService.editEmotion({ contentId, userId, emotionCode })
-    .then(results => results)
-    .catch(err => err);
-  res.json('ok');
-});
 
 router.post('/evaluation', async (req, res) => {
   const { userId, contentId, score } = req.body;

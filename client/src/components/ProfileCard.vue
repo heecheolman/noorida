@@ -2,11 +2,11 @@
   <div class="profile-card-container flex-container flex-row" @click="routeUserProfile">
     <div class="user-icon-wrap">
       <div class="medal flex-container flex-center-sort">
-        <i class="fas fa-medal"></i>
+        <i class="fas fa-medal medal" :class="medalColorPicker"></i>
       </div>
       <div class="avatar-wrap flex-container flex-center-sort">
-        <img class="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png">
-        <!--{{ user.avatar }}-->
+        <a-avatar v-if="profileCard.avatar" :src="`http://localhost:3000/images/${profileCard.avatar}`"></a-avatar>
+        <a-avatar v-else icon="user"></a-avatar>
       </div>
     </div>
     <div class="user-info-wrap flex-container flex-column">
@@ -29,7 +29,18 @@ export default {
   computed: {
     ...mapState('post', [
       'profileCard',
+      'reliabilityScore',
     ]),
+    medalColorPicker() {
+      switch (parseInt(this.reliabilityScore / 100, 10)) {
+        case 0: case 1: return 'medal-bronze';
+        case 2: case 3: return 'medal-silver';
+        default: return 'medal-gold';
+      }
+    },
+  },
+  async created() {
+    await this.$store.dispatch('post/getUserReliabilityScore');
   },
   methods: {
     async routeUserProfile() {
@@ -59,19 +70,10 @@ export default {
       flex: 1;
 
       .medal {
-        width: 100%;
-        height: auto;
         margin-bottom: 5px;
-        color: $medal-gold;
       }
 
       .avatar-wrap {
-
-        .avatar {
-          width: 32px;
-          height: 32px;
-          border-radius: 32px;
-        }
       }
     }
 

@@ -50,6 +50,7 @@ module.exports = {
         const result = await knex('contents')
           .select(
             'users.nickName',
+            'users.avatar',
             'contents.contentId',
             'contents.title',
             'contents.content',
@@ -117,20 +118,26 @@ module.exports = {
   },
 
   emotion: async ({ userId, contentId, emotionCode }) => {
+    const extractedRow = await knex('emotions')
+      .select('emotionId')
+      .where({ userId, contentId })
+      .then(results => results)
+      .catch(err => err);
+    if (extractedRow.length) {
+      const result = await knex('emotions')
+        .update({ emotionCode })
+        .where({ contentId, userId })
+        .then(results => results)
+        .catch(err => err);
+      return result;
+    }
     const result = await knex('emotions')
       .insert({ userId, contentId, emotionCode })
       .then(results => results)
       .catch(err => err);
     return result;
   },
-  editEmotion: async ({ userId, contentId, emotionCode }) => {
-    const result = await knex('emotions')
-      .update({ emotionCode })
-      .where({ contentId, userId })
-      .then(results => results)
-      .catch(err => err)
-    return result;
-  },
+
   countEmotion: async ({ contentId, emotionCode }) => {
     const result = await knex('emotions')
       .count({ emotionCode })

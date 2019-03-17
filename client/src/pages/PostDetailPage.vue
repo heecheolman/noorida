@@ -42,9 +42,9 @@
         </div>
         <div class="comment-wrap">
           <a-comment class="comment-write-wrap">
-            <a-avatar slot="avatar"
-                      src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                      alt="Han Solo"/>
+            <a-avatar v-if="user.avatar" slot="avatar"
+                      :src="`http://localhost:3000/images/${user.avatar}`"/>
+            <a-avatar v-else slot="avatar" icon="user"></a-avatar>
             <div slot="content">
 
               <a-form-item>
@@ -71,9 +71,10 @@
 
             <a-list-item slot="renderItem" slot-scope="item, index">
               <a-comment :author="item.nickName"
-                         :avatar="item.avatar"
                          :content="item.commentContent"
                          :datetime="item.updatedAt | timeline">
+                <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"></a-avatar>
+                <a-avatar v-else slot="avatar" icon="user"></a-avatar>
               </a-comment>
             </a-list-item>
 

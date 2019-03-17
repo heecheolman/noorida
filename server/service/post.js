@@ -50,6 +50,7 @@ module.exports = {
         const result = await knex('contents')
           .select(
             'users.nickName',
+            'users.avatar',
             'contents.contentId',
             'contents.title',
             'contents.content',

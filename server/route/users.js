@@ -50,6 +50,7 @@ router.put('/:userId/avatar', async (req, res) => {
   const result = await userService.updateUserProfile({ userId, filename })
     .then(results => results)
     .catch(err => err);
+  res.send('ok');
 });
 
 module.exports = router;

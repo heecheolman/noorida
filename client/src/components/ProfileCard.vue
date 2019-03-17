@@ -2,12 +2,11 @@
   <div class="profile-card-container flex-container flex-row" @click="routeUserProfile">
     <div class="user-icon-wrap">
       <div class="medal flex-container flex-center-sort">
-        <!--<i class="fas fa-medal"></i>-->
-        {{ reliabilityScore }}
+        <i class="fas fa-medal"></i>
       </div>
       <div class="avatar-wrap flex-container flex-center-sort">
-        <img class="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png">
-        <!--{{ user.avatar }}-->
+        <a-avatar v-if="profileCard.avatar" :src="`http://localhost:3000/images/${profileCard.avatar}`"></a-avatar>
+        <a-avatar v-else icon="user"></a-avatar>
       </div>
     </div>
     <div class="user-info-wrap flex-container flex-column">
@@ -71,12 +70,6 @@ export default {
       }
 
       .avatar-wrap {
-
-        .avatar {
-          width: 32px;
-          height: 32px;
-          border-radius: 32px;
-        }
       }
     }
 

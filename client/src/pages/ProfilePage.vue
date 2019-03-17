@@ -12,13 +12,11 @@
       <div class="avatar-wrap flex-container flex-center-sort">
         <div class="profile-upload-wrapper">
           <div class="avatar-zone">
-            <!--이미지가 존재하는 경우-->
             <img v-if="profilePath"
                  class="avatar"
                  :src="`http://localhost:3000/images/${profilePath}`"
                  alt="profile">
-            <!--존재하지 않는 경우-->
-            <div v-else class="default-profile"></div>
+            <a-avatar v-else icon="user" :size="150"></a-avatar>
           </div>
           <label v-if="isMe" class="upload-text" for="upload">
             <a-popconfirm title="프로필 사진 변경"
@@ -118,7 +116,8 @@
     <div class="post-list-section">
       <virtual-list :postList="previewPostList"
                     :load-type="'user'"
-                    :userId="isMe ? user.userId : info.userId "/>
+                    :userId="isMe ? user.userId : info.userId "
+                    :avatar="profilePath"/>
     </div>
   </div>
 </template>
@@ -207,8 +206,9 @@ export default {
     selectProfile() {
       this.$refs.inputFile.click();
     },
-    changeDefaultProfile() {
+    async changeDefaultProfile() {
       console.log('기본 이미지로 변경');
+      await this.$store.dispatch('user/changeDefaultProfile', { userId: this.user.userId });
     },
     uploadProcess(e) {
       const file = e.target.files[0];
@@ -353,12 +353,6 @@ export default {
             .avatar {
               width: 100%;
               height: auto;
-            }
-
-            .default-profile {
-              width: 100%;
-              height: 100%;
-              background-color: rgba(226, 226, 226, 0.4);
             }
           }
           .upload {

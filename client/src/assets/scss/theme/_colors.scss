@@ -9,4 +9,14 @@ $info-blur: rgba(97, 103, 112, 0.6);
 
 $medal-gold: #ffd700;
 $medal-silver: #c0c0c0;
-$medal-bronze: #cd7f32;
+$medal-bronze: #cc6633;
+
+.medal-gold {
+  color: $medal-gold
+}
+.medal-silver {
+  color: $medal-silver;
+}
+.medal-bronze {
+  color: $medal-bronze;
+}

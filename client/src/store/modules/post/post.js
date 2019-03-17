@@ -169,7 +169,7 @@ const actions = {
       .catch(err => err);
 
     console.log(resData);
-  }
+  },
 };
 
 export default {

@@ -1,124 +1,126 @@
 <template>
   <div class="profile-container">
-    <toolbar :title="'프로필'"/>
-    <div class="user-header-section flex-container flex-column">
-      <div class="medal-wrap flex-container flex-center-sort">
-        <i class="fas fa-medal medal"></i>
-      </div>
-      <div class="score-wrap text-center">
-        <!-- 유저의 신뢰도 점수 -->
-        <span class="score">475</span>
-      </div>
-      <div class="avatar-wrap flex-container flex-center-sort">
-        <div class="profile-upload-wrapper">
-          <div class="avatar-zone">
-            <img v-if="profilePath"
-                 class="avatar"
-                 :src="`http://localhost:3000/images/${profilePath}`"
-                 alt="profile">
-            <a-avatar v-else icon="user" :size="150"></a-avatar>
+    <a-spin :spinning="pageSwitchLoading">
+      <toolbar :title="'프로필'"/>
+      <div class="user-header-section flex-container flex-column">
+        <div class="flex-container flex-center-sort">
+          <i class="fas fa-medal medal" :class="medalColorPicker"></i>
+        </div>
+        <div class="score-wrap text-center">
+          <!-- 유저의 신뢰도 점수 -->
+          <span class="score">{{ reliabilityScore }}</span>
+        </div>
+        <div class="avatar-wrap flex-container flex-center-sort">
+          <div class="profile-upload-wrapper">
+            <div class="avatar-zone">
+              <img v-if="profilePath"
+                   class="avatar"
+                   :src="`http://localhost:3000/images/${profilePath}`"
+                   alt="profile">
+              <a-avatar v-else icon="user" :size="150"></a-avatar>
+            </div>
+            <label v-if="isMe" class="upload-text" for="upload">
+              <a-popconfirm title="프로필 사진 변경"
+                            @confirm="selectProfile"
+                            @cancel="changeDefaultProfile"
+                            okText="이미지 선택"
+                            cancelText="기본 이미지로">
+                <span class="back-drop"></span>
+                <span class="edit-text">편집</span>
+              </a-popconfirm>
+            </label>
+            <input v-if="isMe"
+                   id="upload"
+                   class="upload"
+                   type="file"
+                   accept="image/*"
+                   ref="inputFile"
+                   @change="uploadProcess">
           </div>
-          <label v-if="isMe" class="upload-text" for="upload">
-            <a-popconfirm title="프로필 사진 변경"
-                          @confirm="selectProfile"
-                          @cancel="changeDefaultProfile"
-                          okText="이미지 선택"
-                          cancelText="기본 이미지로">
-              <span class="back-drop"></span>
-              <span class="edit-text">편집</span>
-            </a-popconfirm>
-          </label>
-          <input v-if="isMe"
-                 id="upload"
-                 class="upload"
-                 type="file"
-                 accept="image/*"
-                 ref="inputFile"
-                 @change="uploadProcess">
         </div>
-      </div>
-      <div class="nickname-wrap text-center">
-        <span class="nickname">{{ info.nickName }}</span>
-      </div>
-      <div class="subscript-button-wrap flex-container flex-center-sort" v-if="!isMe">
-        <a-button v-show="!isSubscribe"
-                  type="primary"
-                  size="small"
-                  @click="subscribeReporter">구독하기
-        </a-button>
-        <a-button v-show="isSubscribe"
-                  size="small"
-                  @click="cancelSubscribeReporter">구독중
-        </a-button>
-      </div>
-      <div class="description-wrap" :class="noDescript">
-        <div class="description" v-if="!editMode">
-          <span v-if="description">{{ description }}</span>
-          <span v-else class="no-description">등록된 자기소개가 없습니다.</span>
+        <div class="nickname-wrap text-center">
+          <span class="nickname">{{ info.nickName }}</span>
         </div>
-        <a-textarea v-else-if="editMode"
-                    class="edit-description-area"
-                    placeholder="자기소개를 작성해주세요"
-                    :autosize="{ minRows: 2, maxRows: 4 }"
-                    maxlength="60"
-                    @input="copiedDescriptionChange($event.target.value)"
-                    :value="copiedDescription"></a-textarea>
-        <span v-if="isMe">
-          <a-button type="default"
+        <div class="subscript-button-wrap flex-container flex-center-sort" v-if="!isMe">
+          <a-button v-show="!isSubscribe"
+                    type="primary"
                     size="small"
-                    v-if="!editMode"
-                    @click="toggleEditMode()">수정</a-button>
-          <div v-else-if="editMode" style="float: right;">
-            <span class="description-length">({{ descriptionLength || 0 }}/60)</span>
+                    @click="subscribeReporter">구독하기
+          </a-button>
+          <a-button v-show="isSubscribe"
+                    size="small"
+                    @click="cancelSubscribeReporter">구독중
+          </a-button>
+        </div>
+        <div class="description-wrap" :class="noDescript">
+          <div class="description" v-if="!editMode">
+            <span v-if="description">{{ description }}</span>
+            <span v-else class="no-description">등록된 자기소개가 없습니다.</span>
+          </div>
+          <a-textarea v-else-if="editMode"
+                      class="edit-description-area"
+                      placeholder="자기소개를 작성해주세요"
+                      :autosize="{ minRows: 2, maxRows: 4 }"
+                      maxlength="60"
+                      @input="copiedDescriptionChange($event.target.value)"
+                      :value="copiedDescription"></a-textarea>
+          <span v-if="isMe">
             <a-button type="default"
                       size="small"
-                      @click="toggleEditMode()">취소</a-button>
-          <a-button type="primary"
-                    size="small"
-                    :loading="descriptionLoading"
-                    @click="updateDescription()">저장</a-button>
-          </div>
-        </span>
+                      v-if="!editMode"
+                      @click="toggleEditMode()">수정</a-button>
+            <div v-else-if="editMode" style="float: right;">
+              <span class="description-length">({{ descriptionLength || 0 }}/60)</span>
+              <a-button type="default"
+                        size="small"
+                        @click="toggleEditMode()">취소</a-button>
+            <a-button type="primary"
+                      size="small"
+                      :loading="descriptionLoading"
+                      @click="updateDescription()">저장</a-button>
+            </div>
+          </span>
+        </div>
+        <div class="badge-wrap flex-container flex-between-sort flex-row">
+          <a-badge @click="showSubListModal('readers')"
+                   :count="readerList.length"
+                   :overflow-count="999"
+                   :numberStyle="badgeStyle">
+            <div class="badge-box text-center">Readers</div>
+          </a-badge>
+          <a-badge @click="showSubListModal('reporters')"
+                   :count="reporterList.length"
+                   :overflow-count="999"
+                   :numberStyle="badgeStyle">
+            <div class="badge-box text-center">Reporter</div>
+          </a-badge>
+          <a-badge @click="showSubListModal('locals')"
+                   :count="localList.length"
+                   :overflow-count="999"
+                   :numberStyle="badgeStyle">
+            <div class="badge-box text-center">Locals</div>
+          </a-badge>
+          <a-modal :title="modalTitle"
+                   v-model="modalVisible"
+                   @ok="modalVisible = false">
+            <ul class="subscribe-wrap">
+              <li v-for="(user, index) in modalSubscribeList"
+                  :key="index"
+                  class="sub-item text-center"
+                  @click="routeProfilePage(user.userId)">
+                <span class="sub-item-text">{{ user.nickName }}</span>
+              </li>
+            </ul>
+          </a-modal>
+        </div>
       </div>
-      <div class="badge-wrap flex-container flex-between-sort flex-row">
-        <a-badge @click="showSubListModal('readers')"
-                 :count="readerList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Readers</div>
-        </a-badge>
-        <a-badge @click="showSubListModal('reporters')"
-                 :count="reporterList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Reporter</div>
-        </a-badge>
-        <a-badge @click="showSubListModal('locals')"
-                 :count="localList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Locals</div>
-        </a-badge>
-        <a-modal :title="modalTitle"
-                 v-model="modalVisible"
-                 @ok="modalVisible = false">
-          <ul class="subscribe-wrap">
-            <li v-for="(user, index) in modalSubscribeList"
-                :key="index"
-                class="sub-item text-center"
-                @click="routeProfilePage(user.userId)">
-              <span class="sub-item-text">{{ user.nickName }}</span>
-            </li>
-          </ul>
-        </a-modal>
+      <div class="post-list-section">
+        <virtual-list :postList="previewPostList"
+                      :load-type="'user'"
+                      :userId="isMe ? user.userId : info.userId "
+                      :avatar="profilePath"/>
       </div>
-    </div>
-    <div class="post-list-section">
-      <virtual-list :postList="previewPostList"
-                    :load-type="'user'"
-                    :userId="isMe ? user.userId : info.userId "
-                    :avatar="profilePath"/>
-    </div>
+    </a-spin>
   </div>
 </template>
 
@@ -141,10 +143,16 @@ export default {
   },
   watch: {
     async $route(to) {
+      this.pageSwitchLoading = true;
       const { userId } = to.params;
       await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
-      this.dataUpdate();
+      await this.dataUpdate();
+      this.pageSwitchLoading = false;
     },
+  },
+  async created() {
+    await this.initPreviewList();
+    await this.dataUpdate();
   },
   computed: {
     ...mapState('anotherUser', [
@@ -153,6 +161,7 @@ export default {
       'reporterList',
       'localList',
       'isSubscribe',
+      'reliabilityScore',
     ]),
     ...mapState('user', [
       'user',
@@ -179,6 +188,14 @@ export default {
       if (this.copiedDescription) {
         return this.copiedDescription.length;
       }
+      return 0;
+    },
+    medalColorPicker() {
+      switch (parseInt(this.reliabilityScore / 100, 10)) {
+        case 0: case 1: return 'medal-bronze';
+        case 2: case 3: return 'medal-silver';
+        default: return 'medal-gold';
+      }
     },
   },
   data() {
@@ -191,6 +208,7 @@ export default {
       modalTitle: '',
       modalVisible: false,
       modalSubscribeList: [],
+      pageSwitchLoading: false,
     };
   },
   methods: {
@@ -207,7 +225,6 @@ export default {
       this.$refs.inputFile.click();
     },
     async changeDefaultProfile() {
-      console.log('기본 이미지로 변경');
       await this.$store.dispatch('user/changeDefaultProfile', { userId: this.user.userId });
     },
     uploadProcess(e) {
@@ -275,6 +292,7 @@ export default {
       await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
       await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'reporters', userId});
       await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'locals', userId});
+      await this.$store.dispatch('anotherUser/fetchUserReliabilityScore', { userId });
     },
     async subscribeReporter() {
       const payload = {
@@ -298,10 +316,6 @@ export default {
       this.copiedDescription = e;
     },
   },
-  async created() {
-    await this.initPreviewList();
-    await this.dataUpdate();
-  },
 };
 </script>
 
@@ -318,12 +332,6 @@ export default {
       @include box-shadow;
       width: 100%;
       padding: 15px 25px;
-
-      .medal-wrap {
-        .medal {
-          color: $medal-silver;
-        }
-      }
 
       .score-wrap {
         @include v-text-align(25px);

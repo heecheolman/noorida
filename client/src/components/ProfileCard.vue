@@ -2,7 +2,7 @@
   <div class="profile-card-container flex-container flex-row" @click="routeUserProfile">
     <div class="user-icon-wrap">
       <div class="medal flex-container flex-center-sort">
-        <i class="fas fa-medal"></i>
+        <i class="fas fa-medal medal" :class="medalColorPicker"></i>
       </div>
       <div class="avatar-wrap flex-container flex-center-sort">
         <a-avatar v-if="profileCard.avatar" :src="`http://localhost:3000/images/${profileCard.avatar}`"></a-avatar>
@@ -31,6 +31,13 @@ export default {
       'profileCard',
       'reliabilityScore',
     ]),
+    medalColorPicker() {
+      switch (parseInt(this.reliabilityScore / 100, 10)) {
+        case 0: case 1: return 'medal-bronze';
+        case 2: case 3: return 'medal-silver';
+        default: return 'medal-gold';
+      }
+    },
   },
   async created() {
     await this.$store.dispatch('post/getUserReliabilityScore');
@@ -63,10 +70,7 @@ export default {
       flex: 1;
 
       .medal {
-        width: 100%;
-        height: auto;
         margin-bottom: 5px;
-       /* color: $medal-gold;*/
       }
 
       .avatar-wrap {

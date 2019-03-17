@@ -13,6 +13,7 @@ const state = {
   profileCard: {},
   evaluationScore: 0,
   isEvaluated: false,
+  reliabilityScore: 0,
 };
 
 const mutations = {
@@ -58,6 +59,9 @@ const mutations = {
   },
   [types.UPDATE_IS_EVALUATED](state, payload) {
     state.isEvaluated = payload;
+  },
+  [types.UPDATE_RELIABILITY_SCORE](state, payload) {
+    state.reliabilityScore = payload;
   },
 };
 
@@ -155,9 +159,8 @@ const actions = {
     const score = await api.getReliabilityScore(state.detailPost.userId)
       .then(result => result.data)
       .catch(err => err);
-    console.log('score', score);
+    commit(types.UPDATE_RELIABILITY_SCORE, score);
   },
-
 };
 
 export default {

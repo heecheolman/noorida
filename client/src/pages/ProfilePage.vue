@@ -6,6 +6,7 @@
         <i class="fas fa-medal medal"></i>
       </div>
       <div class="score-wrap text-center">
+        <!-- 유저의 신뢰도 점수 -->
         <span class="score">475</span>
       </div>
       <div class="avatar-wrap flex-container flex-center-sort">
@@ -19,8 +20,23 @@
             <!--존재하지 않는 경우-->
             <div v-else class="default-profile"></div>
           </div>
-          <label v-if="isMe" class="upload-text" for="upload">편집</label>
-          <input v-if="isMe" id="upload" class="upload" type="file" accept="image/*" @change="uploadProcess">
+          <label v-if="isMe" class="upload-text" for="upload">
+            <a-popconfirm title="프로필 사진 변경"
+                          @confirm="selectProfile"
+                          @cancel="changeDefaultProfile"
+                          okText="이미지 선택"
+                          cancelText="기본 이미지로">
+              <span class="back-drop"></span>
+              <span class="edit-text">편집</span>
+            </a-popconfirm>
+          </label>
+          <input v-if="isMe"
+                 id="upload"
+                 class="upload"
+                 type="file"
+                 accept="image/*"
+                 ref="inputFile"
+                 @change="uploadProcess">
         </div>
       </div>
       <div class="nickname-wrap text-center">
@@ -188,9 +204,15 @@ export default {
         this.copiedDescription = this.description;
       }
     },
+    selectProfile() {
+      this.$refs.inputFile.click();
+    },
+    changeDefaultProfile() {
+      console.log('기본 이미지로 변경');
+    },
     uploadProcess(e) {
       const file = e.target.files[0];
-      if (/^image\//.test(file.type)) {
+      if (file && /^image\//.test(file.type)) {
         const formData = new FormData();
         formData.append('image', file);
         const payload = {
@@ -324,6 +346,7 @@ export default {
           transition: ease-in-out 0.2s;
 
           .avatar-zone {
+            position: relative;
             width: 100%;
             height: 100%;
 
@@ -341,6 +364,8 @@ export default {
           .upload {
             position: absolute;
             cursor: pointer;
+            visibility: hidden;
+            display: none;
             opacity: 0;
             top: 0;
             left: 0;
@@ -349,12 +374,27 @@ export default {
           }
           .upload-text {
             @include font-size-small;
+            @include v-text-align(30px);
+            z-index: 100;
             color: #fff;
             position: absolute;
             width: 100%;
             background: rgba(151, 151, 151, 0.9);
             bottom: 0;
             text-align: center;
+            cursor: pointer;
+
+            .back-drop {
+              position: absolute;
+              top: 0;
+              display: block;
+              width: 100%;
+              height: 150px;
+              background-color: transparent;
+            }
+            .edit-text {
+              width: 100%;
+            }
           }
         }
         .profile-upload-wrapper:hover {

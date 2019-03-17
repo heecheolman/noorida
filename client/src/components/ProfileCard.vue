@@ -2,7 +2,8 @@
   <div class="profile-card-container flex-container flex-row" @click="routeUserProfile">
     <div class="user-icon-wrap">
       <div class="medal flex-container flex-center-sort">
-        <i class="fas fa-medal"></i>
+        <!--<i class="fas fa-medal"></i>-->
+        {{ reliabilityScore }}
       </div>
       <div class="avatar-wrap flex-container flex-center-sort">
         <img class="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png">
@@ -29,7 +30,11 @@ export default {
   computed: {
     ...mapState('post', [
       'profileCard',
+      'reliabilityScore',
     ]),
+  },
+  async created() {
+    await this.$store.dispatch('post/getUserReliabilityScore');
   },
   methods: {
     async routeUserProfile() {
@@ -62,7 +67,7 @@ export default {
         width: 100%;
         height: auto;
         margin-bottom: 5px;
-        color: $medal-gold;
+       /* color: $medal-gold;*/
       }
 
       .avatar-wrap {

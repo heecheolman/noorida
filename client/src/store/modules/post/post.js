@@ -167,8 +167,6 @@ const actions = {
     const resData = await api.updatePostEmotion(contentId, userId, emotionCode)
       .then(result => result.data)
       .catch(err => err);
-
-    console.log(resData);
   },
 };
 

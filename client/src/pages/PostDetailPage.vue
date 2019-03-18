@@ -199,7 +199,6 @@ export default {
         userId: this.user.userId,
         emotionCode: e.target.value,
       };
-      console.log(payload);
       await this.$store.dispatch('post/updatePostEmotion', payload);
     },
     updateReliability(value) {

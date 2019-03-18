@@ -14,7 +14,10 @@ const storage = multer.diskStorage({
     const { nickName } = req.query;
     let filename;
     if (nickName) {
-      const ext = file.originalname.split('.').pop();
+      let ext = file.originalname.split('.').pop();
+      if (ext === 'blob') {
+        ext = 'jpg';
+      }
       filename = `${nickName}.${ext}`;
     } else {
       filename = file.originalname;

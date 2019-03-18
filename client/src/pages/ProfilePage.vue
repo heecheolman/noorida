@@ -230,15 +230,89 @@ export default {
     uploadProcess(e) {
       const file = e.target.files[0];
       if (file && /^image\//.test(file.type)) {
-        const formData = new FormData();
-        formData.append('image', file);
-        const payload = {
-          formData,
-          nickName: this.user.nickName,
-          userId: this.user.userId,
+
+        /**
+         * 클라이언트사이드 이미지 최적화
+         */
+
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = event => {
+          // something
+          const image = new Image();
+          image.src = event.target.result;
+          image.onload = imageEvent => {
+            // resize
+            const canvas = document.createElement('canvas');
+            const maxSize = 1280;
+            let width = image.width;
+            let height = image.height;
+            if (width > height && width > maxSize) {
+              height *= maxSize / width;
+              width = maxSize;
+            } else if (height > maxSize){
+              width *= maxSize / height;
+              height = maxSize;
+            }
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg');
+            const BASE64 = ';base64,';
+
+            if (dataUrl.indexOf(BASE64) === -1) {
+              const parts = dataUrl.split(',');
+              const contentType = parts[0].split(':')[1];
+              const raw = parts[1];
+              const blob = new Blob([raw], {
+                type: contentType,
+              });
+              const formData = new FormData();
+              formData.append('image', blob);
+              const payload = {
+                formData,
+                nickName: this.user.nickName,
+                userId: this.user.userId,
+              };
+              this.$store.dispatch('user/updateProfileImage', payload);
+              this.$message.success('프로필 사진이 업데이트 되었습니다');
+              return;
+            }
+
+            const parts = dataUrl.split(BASE64);
+            const contentType = parts[0].split(':')[1];
+            const raw = window.atob(parts[1]);
+            const rawLength = raw.length;
+            const uInt8Array = new Uint8Array(rawLength);
+            for (let i = 0; i < rawLength; i++) {
+              uInt8Array[i] = raw.charCodeAt(i);
+            }
+            const blob = new Blob([uInt8Array], {
+              type: contentType,
+            });
+
+            const formData = new FormData();
+            formData.append('image', blob);
+            const payload = {
+              formData,
+              nickName: this.user.nickName,
+              userId: this.user.userId,
+            };
+            this.$store.dispatch('user/updateProfileImage', payload);
+            this.$message.success('프로필 사진이 업데이트 되었습니다');
+          };
         };
-        this.$store.dispatch('user/updateProfileImage', payload);
-        this.$message.success('프로필 사진이 업데이트 되었습니다');
+
+
+        // const formData = new FormData();
+        // formData.append('image', file);
+        // const payload = {
+        //   formData,
+        //   nickName: this.user.nickName,
+        //   userId: this.user.userId,
+        // };
+        // this.$store.dispatch('user/updateProfileImage', payload);
+        // this.$message.success('프로필 사진이 업데이트 되었습니다');
       }
     },
     async updateDescription() {

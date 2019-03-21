@@ -38,7 +38,8 @@
         <div class="flex-container flex-between-sort flex-row footer">
           <a-button class="button-common"
                     shape="circle"
-                    size="large">
+                    size="large"
+                    @click="routeSearchPage()">
             <a-icon type="search" />
           </a-button>
           <a-button class="button-primary"
@@ -123,6 +124,9 @@ export default {
     },
     routeWritePage() {
       this.$router.replace({ name: 'WritePage' });
+    },
+    routeSearchPage() {
+      this.$router.replace({ name: 'SearchPage' });
     },
   },
 };

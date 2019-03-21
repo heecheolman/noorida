@@ -211,6 +211,12 @@ export default {
     });
   },
 
+  loadLocalPostList(localId, lastId) {
+    return axios.get(`/api/posts/users/${localId}`, {
+      params: { lastId },
+    });
+  },
+
   writeComment(contentId, userId, commentContent) {
     return axios.post('/api/comments', {
       contentId,

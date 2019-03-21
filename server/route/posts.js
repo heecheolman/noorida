@@ -53,6 +53,19 @@ router.get('/users/:userId', async (req, res) => {
   res.json(result);
 });
 
+/**
+ * localId 가 갖는 포스트리스트들 조회
+ */
+router.get('/users/:localId', async (req, res) => {
+  const { localId } = req.params;
+  const { lastId } = req.query;
+  const result = await postService.loadLocalPostList({ localId, lastId })
+    .then(results => results)
+    .catch(err => err);
+
+  res.json(result);
+});
+
 router.post('/emotion', async (req, res) => {
   const { userId, contentId, emotionCode } = req.body;
   const result = await postService.emotion({ contentId, userId, emotionCode })

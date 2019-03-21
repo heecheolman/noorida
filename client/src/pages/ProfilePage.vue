@@ -310,7 +310,7 @@ export default {
       };
       await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
     },
     copiedDescriptionChange(e) {
       this.copiedDescription = e;

@@ -56,67 +56,67 @@
 </template>
 
 <script>
-  export default {
-    name: 'FindPasswordPage',
-    beforeCreate() {
-      this.form = this.$form.createForm(this);
-    },
-    data() {
-      return {
-        realName: '',
-        nickName: '',
-        email: '',
-        validateConfig: {
-          realName: {
-            rules: [{
-              required: true, message: '이름을 입력해주세요.',
-            }],
-          },
-          nickName: {
-            rules: [{
-              required: true, message: '닉네임을 입력해주세요.',
-            }],
-          },
-          email: {
-            rules: [{
-              type: 'email', message: '이메일형식이 아니에요.',
-            }, {
-              required: true, message: '이메일을 입력해주세요.',
-            }],
-          },
+export default {
+  name: 'FindPasswordPage',
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
+  },
+  data() {
+    return {
+      realName: '',
+      nickName: '',
+      email: '',
+      validateConfig: {
+        realName: {
+          rules: [{
+            required: true, message: '이름을 입력해주세요.',
+          }],
         },
-      };
-    },
+        nickName: {
+          rules: [{
+            required: true, message: '닉네임을 입력해주세요.',
+          }],
+        },
+        email: {
+          rules: [{
+            type: 'email', message: '이메일형식이 아니에요.',
+          }, {
+            required: true, message: '이메일을 입력해주세요.',
+          }],
+        },
+      },
+    };
+  },
 
-    methods: {
-      goToBack() {
-        this.$router.push({ name: 'LoginPage' });
-      },
-      FindPassword(e) {
-        e.preventDefault();
-        this.form.validateFields(async (err, values) => {
-          if (!err) {
-            await this.$store.dispatch('find/findPasswordProcess', {
-              realName: values.realName,
-              nickName: values.nickName,
-              email: values.email,
-            });
-            if (this.$store.getters['find/getFindPasswordSuccess']) {
-              this.$success({
-                title: '비밀번호 찾기',
-                content: `${this.email} (으)로 임시 비밀번호를 발송하였습니다.`,
-                okText: '로그인',
-                centered: true,
-              });
-              this.$router.replace({name: 'LoginPage'});
-            } else {
-              this.$message.warning('회원정보가 존재하지 않습니다. ');
-            }
-          }
-        });
-      },
+  methods: {
+    goToBack() {
+      this.$router.push({ name: 'LoginPage' });
     },
-  };
+    FindPassword(e) {
+      e.preventDefault();
+      this.form.validateFields(async (err, values) => {
+        if (!err) {
+          await this.$store.dispatch('find/findPasswordProcess', {
+            realName: values.realName,
+            nickName: values.nickName,
+            email: values.email,
+          });
+          if (this.$store.getters['find/getFindPasswordSuccess']) {
+            this.$success({
+              title: '비밀번호 찾기',
+              content: `${this.email} (으)로 임시 비밀번호를 발송하였습니다.`,
+              okText: '로그인',
+              centered: true,
+            });
+            this.$router.replace({name: 'LoginPage'});
+          } else {
+            this.$message.warning('회원정보가 존재하지 않습니다. ');
+          }
+        }
+      });
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

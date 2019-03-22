@@ -362,4 +362,26 @@ export default {
       contentId, userId, emotionCode,
     });
   },
+
+  insertWord(userId, word) {
+    return axios.post('api/search', {
+      userId, word,
+    });
+  },
+
+  searchLocal(word) {
+    return axios.get('api/search/local', {
+      params: word,
+    });
+  },
+  searchuser(word) {
+    return axios.get('api/search/user', {
+      params: word,
+    });
+  },
+  searchPostTitle(word) {
+    return axios.get('api/search/post-title', {
+      params: word,
+    });
+  },
 };

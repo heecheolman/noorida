@@ -15,6 +15,7 @@ const state = {
   isEvaluated: false,
   reliabilityScore: 0,
   contentScrapState: false,
+  userEmotion: 0,
 };
 
 const mutations = {
@@ -66,6 +67,9 @@ const mutations = {
   },
   [types.UPDATE_SCRAPPED_STATE](state, payload) {
     state.contentScrapState = payload;
+  },
+  [types.UPDATE_USER_EMOTION](state, payload) {
+    state.userEmotion = payload;
   },
 };
 
@@ -169,6 +173,21 @@ const actions = {
   async updatePostEmotion({ commit }, payload) {
     const { contentId, userId, emotionCode } = payload;
     const resData = await api.updatePostEmotion(contentId, userId, emotionCode)
+      .then(result => result.data)
+      .catch(err => err);
+  },
+
+  async getUserEmotion({ commit, rootState }, payload) {
+    const { contentId } = payload;
+    const resData = await api.getUserEmotion(rootState.user.user.userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_USER_EMOTION, resData.emotionCode);
+  },
+
+  async getEmotionList({ commit }, payload) {
+    const { contentId } = payload;
+    const resData = await api.getContentEmotionList(contentId)
       .then(result => result.data)
       .catch(err => err);
   },

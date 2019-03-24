@@ -34,8 +34,6 @@ router.get('/check/is-scraped', async (req, res) => {
   const result = await scrapService.isScraped({ userId, contentId })
     .then(results => results)
     .catch(err => err);
-
-  console.log('result', result);
   if (result) {
     res.json(true);
   } else {

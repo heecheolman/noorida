@@ -369,6 +369,18 @@ export default {
     });
   },
 
+  getUserEmotion(userId, contentId) {
+    return axios.get('/api/posts/emotion/check/is-expressed', {
+      params: { userId, contentId },
+    });
+  },
+
+  getContentEmotionList(contentId) {
+    return axios.get('/api/posts/emotions/count', {
+      params: { contentId },
+    });
+  },
+
   insertWord(userId, word) {
     return axios.post('api/search', {
       userId, word,

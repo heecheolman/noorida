@@ -23,7 +23,7 @@
 
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
           <div class="emoji-area flex-container flex-center-sort">
-            <a-radio-group defaultValue="" size="large" @change="updateEmoji">
+            <a-radio-group size="large" :defaultValue="userEmotion.toString()" @change="updateEmoji">
               <a-radio-button value="1"><i class="far fa-thumbs-up"></i></a-radio-button>
               <a-radio-button value="2"><i class="far fa-smile"></i></a-radio-button>
               <a-radio-button value="3"><i class="far fa-angry"></i></a-radio-button>
@@ -132,11 +132,13 @@ export default {
       'evaluationScore',
       'isEvaluated',
       'contentScrapState',
+      'userEmotion',
     ]),
     isScrapped() {
       if (typeof this.contentScrapState === 'boolean') {
         return this.contentScrapState ? 'filled' : 'outlined';
       }
+      return 'filled';
     },
     isMe() {
       return this.user.userId === this.detailPost.userId;
@@ -149,6 +151,10 @@ export default {
       userId: this.user.userId,
       contentId: this.contentId,
     });
+    if (!this.isMe) {
+      await this.$store.dispatch('post/getUserEmotion', { userId: this.user.userId, contentId: this.contentId });
+      await this.$store.dispatch('post/getEmotionList', { contentId: this.contentId });
+    }
     await this.$store.dispatch('post/getUserReliabilityScore');
     await this.$store.dispatch('post/contentScrappedCheck', { userId: this.user.userId, contentId: this.contentId });
     this.loading = false;

@@ -138,6 +138,11 @@ export default new Router({
       name: 'PostDetailPage',
       component: PostDetailPage,
       props: true,
+      async beforeEnter(to, from, next) {
+        await store.dispatch('post/getUserEmotion', { contentId: to.params.contentId });
+        await store.dispatch('post/getEmotionList', { contentId: to.params.contentId });
+        next();
+      },
     },
     {
       path: '*',

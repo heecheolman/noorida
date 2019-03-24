@@ -74,9 +74,21 @@ router.post('/emotion', async (req, res) => {
   res.json('ok');
 });
 
-router.get('/emotion', async (req, res) => {
-  const { userId, contentId, emotionCode } = req.params;
-  const result = await postService.countEmotion({ userId, contentId, emotionCode })
+router.get('/emotion/check/is-expressed', async (req, res) => {
+  const { userId, contentId } = req.query;
+  const result = await postService.isExpressedEmotion({ userId, contentId })
+    .then(results => results)
+    .catch(err => err);
+  if (result.length !== 0) {
+    res.json(result[0]);
+  } else {
+    res.json({ emotionCode: 0 });
+  }
+});
+
+router.get('/emotions/count', async (req, res) => {
+  const { contentId } = req.query;
+  const result = await postService.countEmotion({ contentId })
     .then(results => results)
     .catch(err => err);
   res.json(result);

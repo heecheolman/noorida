@@ -29,11 +29,13 @@ router.delete('', async (req, res) => {
   return res.json('ok');
 });
 
-router.get('/is-scraped', async (req, res) => {
+router.get('/check/is-scraped', async (req, res) => {
   const { userId, contentId } = req.query;
   const result = await scrapService.isScraped({ userId, contentId })
     .then(results => results)
     .catch(err => err);
+
+  console.log('result', result);
   if (result) {
     res.json(true);
   } else {

@@ -400,7 +400,7 @@ export default {
   },
 
   contentScrappedCheck(userId, contentId) {
-    return axios.get('/api/scrap/is-scraped', {
+    return axios.get('/api/scrap/check/is-scraped', {
       params: { userId, contentId },
     });
   },

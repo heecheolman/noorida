@@ -134,7 +134,9 @@ export default {
       'contentScrapState',
     ]),
     isScrapped() {
-      return this.contentScrapState ? 'filled' : 'outlined';
+      if (typeof this.contentScrapState === 'boolean') {
+        return this.contentScrapState ? 'filled' : 'outlined';
+      }
     },
     isMe() {
       return this.user.userId === this.detailPost.userId;

@@ -162,6 +162,9 @@ export default {
   },
   async created() {
     await this.initPreviewList();
+    if (this.isMe) {
+      await this.initScrapPostList();
+    }
     await this.dataUpdate();
   },
   computed: {
@@ -232,6 +235,9 @@ export default {
   methods: {
     ...mapMutations('post', {
       initPreviewList: 'INIT_PREVIEW_LIST',
+    }),
+    ...mapMutations('scrap', {
+      initScrapPostList: 'INIT_SCRAP_POST_LIST',
     }),
     toggleEditMode() {
       this.editMode = !this.editMode;

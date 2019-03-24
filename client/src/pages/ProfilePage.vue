@@ -114,12 +114,19 @@
           </a-modal>
         </div>
       </div>
-      <div class="post-list-section">
-        <virtual-list :postList="previewPostList"
-                      :load-type="'user'"
-                      :userId="isMe ? user.userId : info.userId "
-                      :avatar="profilePath"/>
-      </div>
+      <a-tabs defaultActiveKey="1">
+        <a-tab-pane tab="내 게시물" key="1">
+          <div class="post-list-section">
+            <virtual-list :postList="previewPostList"
+                          :load-type="'user'"
+                          :userId="isMe ? user.userId : info.userId "
+                          :avatar="profilePath"/>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane tab="스크랩 게시물" key="2" forceRender>
+
+        </a-tab-pane>
+      </a-tabs>
     </a-spin>
   </div>
 </template>
@@ -192,15 +199,20 @@ export default {
     },
     medalColorPicker() {
       switch (parseInt(this.reliabilityScore / 100, 10)) {
-        case 0: case 1: return 'medal-bronze';
-        case 2: case 3: return 'medal-silver';
-        default: return 'medal-gold';
+        case 0:
+        case 1:
+          return 'medal-bronze';
+        case 2:
+        case 3:
+          return 'medal-silver';
+        default:
+          return 'medal-gold';
       }
     },
   },
   data() {
     return {
-      badgeStyle: {backgroundColor: '#1F74FF'},
+      badgeStyle: { backgroundColor: '#1F74FF' },
       editMode: false,
       description: '',
       copiedDescription: '',
@@ -230,89 +242,85 @@ export default {
     uploadProcess(e) {
       const file = e.target.files[0];
       if (file && /^image\//.test(file.type)) {
-
-        /**
-         * 클라이언트사이드 이미지 최적화
-         */
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = event => {
-          // something
-          const image = new Image();
-          image.src = event.target.result;
-          image.onload = imageEvent => {
-            // resize
-            const canvas = document.createElement('canvas');
-            const maxSize = 1280;
-            let width = image.width;
-            let height = image.height;
-            if (width > height && width > maxSize) {
-              height *= maxSize / width;
-              width = maxSize;
-            } else if (height > maxSize){
-              width *= maxSize / height;
-              height = maxSize;
-            }
-            canvas.width = width;
-            canvas.height = height;
-            canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-            const BASE64 = ';base64,';
-
-            if (dataUrl.indexOf(BASE64) === -1) {
-              const parts = dataUrl.split(',');
-              const contentType = parts[0].split(':')[1];
-              const raw = parts[1];
-              const blob = new Blob([raw], {
-                type: contentType,
-              });
-              const formData = new FormData();
-              formData.append('image', blob);
-              const payload = {
-                formData,
-                nickName: this.user.nickName,
-                userId: this.user.userId,
-              };
-              this.$store.dispatch('user/updateProfileImage', payload);
-              this.$message.success('프로필 사진이 업데이트 되었습니다');
-              return;
-            }
-
-            const parts = dataUrl.split(BASE64);
-            const contentType = parts[0].split(':')[1];
-            const raw = window.atob(parts[1]);
-            const rawLength = raw.length;
-            const uInt8Array = new Uint8Array(rawLength);
-            for (let i = 0; i < rawLength; i++) {
-              uInt8Array[i] = raw.charCodeAt(i);
-            }
-            const blob = new Blob([uInt8Array], {
-              type: contentType,
-            });
-
-            const formData = new FormData();
-            formData.append('image', blob);
-            const payload = {
-              formData,
-              nickName: this.user.nickName,
-              userId: this.user.userId,
-            };
-            this.$store.dispatch('user/updateProfileImage', payload);
-            this.$message.success('프로필 사진이 업데이트 되었습니다');
-          };
-        };
-
-
-        // const formData = new FormData();
-        // formData.append('image', file);
-        // const payload = {
-        //   formData,
-        //   nickName: this.user.nickName,
-        //   userId: this.user.userId,
+        // const reader = new FileReader();
+        // reader.readAsDataURL(file);
+        // reader.onload = (event) => {
+        //   // something
+        //   const image = new Image();
+        //   image.src = event.target.result;
+        //   image.onload = () => {
+        //     // resize
+        //     const canvas = document.createElement('canvas');
+        //     const maxSize = 1280;
+        //     let width = image.width;
+        //     let height = image.height;
+        //     if (width > height && width > maxSize) {
+        //       height *= maxSize / width;
+        //       width = maxSize;
+        //     } else if (height > maxSize) {
+        //       width *= maxSize / height;
+        //       height = maxSize;
+        //     }
+        //     canvas.width = width;
+        //     canvas.height = height;
+        //     canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+        //     const dataUrl = canvas.toDataURL('image/jpeg');
+        //     const BASE64 = ';base64,';
+        //
+        //     if (dataUrl.indexOf(BASE64) === -1) {
+        //       const parts = dataUrl.split(',');
+        //       const contentType = parts[0].split(':')[1];
+        //       const raw = parts[1];
+        //       const blob = new Blob([raw], {
+        //         type: contentType,
+        //       });
+        //       const formData = new FormData();
+        //       formData.append('image', blob);
+        //       const payload = {
+        //         formData,
+        //         nickName: this.user.nickName,
+        //         userId: this.user.userId,
+        //       };
+        //       this.$store.dispatch('user/updateProfileImage', payload);
+        //       this.$message.success('프로필 사진이 업데이트 되었습니다');
+        //       return;
+        //     }
+        //
+        //     const parts = dataUrl.split(BASE64);
+        //     const contentType = parts[0].split(':')[1];
+        //     const raw = window.atob(parts[1]);
+        //     const rawLength = raw.length;
+        //     const uInt8Array = new Uint8Array(rawLength);
+        //     for (let i = 0; i < rawLength; i++) {
+        //       uInt8Array[i] = raw.charCodeAt(i);
+        //     }
+        //     const blob = new Blob([uInt8Array], {
+        //       type: contentType,
+        //     });
+        //
+        //     const formData = new FormData();
+        //     formData.append('image', blob);
+        //     const payload = {
+        //       formData,
+        //       nickName: this.user.nickName,
+        //       userId: this.user.userId,
+        //     };
+        //     console.log(blob);
+        //     this.$store.dispatch('user/updateProfileImage', payload);
+        //     this.$message.success('프로필 사진이 업데이트 되었습니다');
+        //   };
         // };
-        // this.$store.dispatch('user/updateProfileImage', payload);
-        // this.$message.success('프로필 사진이 업데이트 되었습니다');
+
+
+        const formData = new FormData();
+        formData.append('image', file);
+        const payload = {
+          formData,
+          nickName: this.user.nickName,
+          userId: this.user.userId,
+        };
+        this.$store.dispatch('user/updateProfileImage', payload);
+        this.$message.success('프로필 사진이 업데이트 되었습니다');
       }
     },
     async updateDescription() {
@@ -354,7 +362,7 @@ export default {
       this.modalVisible = true;
     },
     routeProfilePage(userId) {
-      this.$router.replace({name: 'ProfilePage', params: {userId}});
+      this.$router.replace({ name: 'ProfilePage', params: { userId } });
       this.modalVisible = false;
     },
     async dataUpdate() {
@@ -362,10 +370,10 @@ export default {
         ? this.$store.state.user.user.description
         : this.$store.state.anotherUser.info.description;
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/isSubscribe', {reader: this.user.userId, reporter: this.info.userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'reporters', userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'locals', userId});
+      await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
       await this.$store.dispatch('anotherUser/fetchUserReliabilityScore', { userId });
     },
     async subscribeReporter() {
@@ -375,7 +383,7 @@ export default {
       };
       await this.$store.dispatch('anotherUser/subscribeReporter', payload);
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
     },
     async cancelSubscribeReporter() {
       const payload = {
@@ -437,6 +445,7 @@ export default {
               height: auto;
             }
           }
+
           .upload {
             position: absolute;
             cursor: pointer;
@@ -448,6 +457,7 @@ export default {
             width: 100%;
             height: 100%;
           }
+
           .upload-text {
             @include font-size-small;
             @include v-text-align(30px);
@@ -468,13 +478,15 @@ export default {
               height: 150px;
               background-color: transparent;
             }
+
             .edit-text {
               width: 100%;
             }
           }
         }
+
         .profile-upload-wrapper:hover {
-          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
         }
       }
 

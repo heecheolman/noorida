@@ -6,8 +6,11 @@
           <div class="news-title-wrap">
             <span class="news-title">{{ detailPost.title }}</span>
           </div>
-          <div class="news-created-at-container">
+          <div class="news-created-at-container flex-container flex-between-sort flex-row">
             <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
+            <span v-if="!isMe" class="scrap-icon flex-container flex-center-sort" @click="updateContentScrap">
+              <a-icon type="book" :theme="isScrapped" />
+            </span>
           </div>
           <div class="news-content-wrap">
             <div class="ql-editor">
@@ -126,7 +129,14 @@ export default {
       'detailPost',
       'evaluationScore',
       'isEvaluated',
+      'contentScrapState',
     ]),
+    isScrapped() {
+      return this.contentScrapState ? 'filled' : 'outlined';
+    },
+    isMe() {
+      return this.user.userId === this.detailPost.userId;
+    },
   },
   async created() {
     this.loading = true;
@@ -136,6 +146,7 @@ export default {
       contentId: this.contentId,
     });
     await this.$store.dispatch('post/getUserReliabilityScore');
+    await this.$store.dispatch('post/contentScrappedCheck', { userId: this.user.userId, contentId: this.contentId });
     this.loading = false;
     this.initCommentData();
     this.loadCommentList();
@@ -227,6 +238,19 @@ export default {
         this.reliabilityOldValue = value;
       }
     },
+    async updateContentScrap() {
+      const payload = {
+        userId: this.user.userId,
+        contentId: this.contentId,
+      };
+      if (this.contentScrapState) {
+        await this.$store.dispatch('post/cancelContentScrapping', payload);
+        this.$message.success('스크랩 목록에서 제거되었습니다.');
+      } else {
+        await this.$store.dispatch('post/contentScrapping', payload);
+        this.$message.success('스크랩목록에 추가되었습니다.');
+      }
+    },
   },
 };
 </script>
@@ -243,8 +267,8 @@ export default {
     overflow-y: scroll;
 
     .news-title-wrap {
-      display: block;
-      position: relative;
+      /*display: block;*/
+      /*position: relative;*/
       width: 100%;
       height: auto;
 
@@ -257,16 +281,24 @@ export default {
 
     .news-created-at-container {
       z-index: -10;
-      display: block;
+      /*display: block;*/
       width: 100%;
-      position: relative;
-      height: 20px;
+      /*position: relative;*/
+      @include v-text-align(40px);
 
       .created-at {
         @include font-size-normal;
         @include font-weight-4;
         letter-spacing: 0.2px;
         color: $info-blur;
+      }
+
+      .scrap-icon {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+        color: $primary;
       }
     }
 

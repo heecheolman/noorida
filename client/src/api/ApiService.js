@@ -390,4 +390,24 @@ export default {
       params: word,
     });
   },
+
+  contentScrappedCheck(userId, contentId) {
+    return axios.get('/api/scrap/is-scraped', {
+      params: { userId, contentId },
+    });
+  },
+
+  contentScrapping(userId, contentId) {
+    return axios.post('/api/scrap', {
+      userId, contentId,
+    });
+  },
+
+  cancelContentScrapping(userId, contentId) {
+    return axios.delete('/api/scrap', {
+      params: {
+        userId, contentId,
+      },
+    });
+  },
 };

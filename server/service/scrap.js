@@ -1,63 +1,43 @@
 const knex = require('./service.config');
 
 module.exports = {
-  scrap: async ({ userId, scrapId, contentId, time }) => {
+  scrap: async ({ userId, contentId }) => {
     const result = await knex('scrap')
-      .insert({ userId, scrapId, contentId, time })
+      .insert({ userId, contentId })
       .then(results => results)
       .catch(err => err);
     return result;
   },
 
-  loadScrapList: async ({ localName, lastId }) => {
+  loadScrapList: async ({ userId, lastId }) => {
     const LIMIT = 15;
-    const extractedData = await knex('local')
-      .where({ localName })
-      .then(rowData => JSON.parse(JSON.stringify(rowData)))
+
+    /* 초기일시 lastId 기준 처리 */
+    const opr = lastId < 0
+      ? '>'
+      : '<';
+
+    const result = await knex('scrap')
+      .select(
+        'users.userId', 'users.nickName', 'users.avatar', 'contents.contentId', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
+      .where('scrap.userId', userId)
+      .where('contents.active', 'Y')
+      .join('users', 'users.userId', '=', 'contents.userId')
+      .join('local', 'local.localId', '=', 'contents.localId')
+      .join('contents', 'contents.contentId', '=', 'scrap.contentId')
+      .orderBy('contents.createdAt', 'desc')
+      .limit(LIMIT)
+      .then(results => results)
       .catch(err => err);
 
-    if (extractedData.length) {
-      const extLocalName = extractedData[0].localName;
+    /* 초기일시 lastId 기준 처리 */
+    lastId = lastId === -1 ? 0 : lastId;
 
-      if (extLocalName === localName) {
-        const extLocalId = extractedData[0].localId;
-
-        /* 초기일시 lastId 기준 처리 */
-        const opr = lastId < 0
-          ? '>'
-          : '<';
-
-        const result = await knex('contents')
-          .select(
-            'users.nickName',
-            'users.avatar',
-            'contents.contentId',
-            'contents.title',
-            'contents.content',
-            'contents.updatedAt',
-            'local.localName',
-          )
-          .where('local.localId', extLocalId)
-          .where('contents.contentId', opr, lastId)
-          .join('users', 'users.userId', '=', 'contents.userId')
-          .join('local', 'local.localId', '=', 'contents.localId')
-          .join('scrap', 'scrap.userId', '=', 'users.userId')
-          .orderBy('contents.createdAt', 'desc')
-          .limit(LIMIT)
-          .then(results => results)
-          .catch(err => err);
-
-        /* 초기일시 lastId 기준 처리 */
-        lastId = lastId === -1 ? 0 : lastId;
-
-        return {
-          result,
-          lastId: result.length ? result[result.length - 1].contentId : lastId,
-          hasNextPost: result.length === LIMIT,
-        };
-      }
-    }
-    return {};
+    return {
+      result,
+      lastId: result.length ? result[result.length - 1].contentId : lastId,
+      hasNextPost: result.length === LIMIT,
+    };
   },
 
   cancelScrap: async ({ contentId, userId }) => {
@@ -67,5 +47,14 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
     return result;
+  },
+
+  isScraped: async ({ userId, contentId }) => {
+    const result = await knex('scrap')
+      .select('*')
+      .where({ contentId, userId })
+      .then(results => results)
+      .catch(err => err);
+    return result.length !== 0;
   },
 };

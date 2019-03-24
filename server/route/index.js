@@ -12,6 +12,7 @@ const changePasswordRouter = require('./changePassword');
 const subscriptionRouter = require('./subscription');
 const blockRouter = require('./block');
 const searchRouter = require('./search');
+const scrapRouter = require('./scrap');
 
 router.use('/posts', postsRouter); // ok
 router.use('/cert', certRouter); // ok
@@ -23,5 +24,6 @@ router.use('/change-Password', changePasswordRouter);
 router.use('/subscription', subscriptionRouter);
 router.use('/block', blockRouter);
 router.use('/search', searchRouter);
+router.use('/scrap', scrapRouter);
 
 module.exports = router;

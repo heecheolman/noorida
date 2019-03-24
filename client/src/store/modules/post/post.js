@@ -14,6 +14,7 @@ const state = {
   evaluationScore: 0,
   isEvaluated: false,
   reliabilityScore: 0,
+  contentScrapState: false,
 };
 
 const mutations = {
@@ -63,6 +64,9 @@ const mutations = {
   [types.UPDATE_RELIABILITY_SCORE](state, payload) {
     state.reliabilityScore = payload;
   },
+  [types.UPDATE_SCRAPPED_STATE](state, payload) {
+    state.contentScrapState = payload;
+  },
 };
 
 const getters = {
@@ -74,7 +78,7 @@ const actions = {
       rootState.user.user.userId,
       state.title,
       state.content,
-      rootState.user.location.address,
+      '대한민국 서울특별시 노원구 상계8동',
     )
       .then(results => results)
       .catch(err => err);
@@ -167,6 +171,34 @@ const actions = {
     const resData = await api.updatePostEmotion(contentId, userId, emotionCode)
       .then(result => result.data)
       .catch(err => err);
+  },
+
+  async contentScrappedCheck({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.contentScrappedCheck(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_SCRAPPED_STATE, resData);
+  },
+
+  async contentScrapping({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.contentScrapping(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_SCRAPPED_STATE, true);
+    }
+  },
+
+  async cancelContentScrapping({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.cancelContentScrapping(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_SCRAPPED_STATE, false);
+    }
   },
 };
 

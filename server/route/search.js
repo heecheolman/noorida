@@ -1,0 +1,38 @@
+const express = require('express');
+const searchService = require('../service/search')
+
+const router = express.Router();
+
+router.post('', async (res, req) => {
+  const { userId, word } = req.body;
+  const result = await searchService.insertWord({userId, word})
+    .then(results => results)
+    .catch(err => err)
+  return res.json('ok');
+});
+
+router.get('/local', async (res, req) => {
+  const { word } = req.query;
+  const result = await  searchService.searchLocal({ word })
+    .then(results => results)
+    .catch(err => err)
+  return res.json(result);
+});
+
+router.get('/user', async (res, req) => {
+  const { word } = req.query;
+  const result = await  searchService.searchUser({ word })
+    .then(results => results)
+    .catch(err => err)
+  return res.json(result);
+})
+
+router.get('/post-title', async (res, req) => {
+  const { word } = req.query;
+  const result = await  searchService.searchPostTitle({ word })
+    .then(results => results)
+    .catch(err => err)
+  return res.json(result);
+})
+
+module.exports = router;

@@ -18,8 +18,7 @@ module.exports = {
       : '<';
 
     const result = await knex('scrap')
-      .select(
-        'users.userId', 'users.nickName', 'users.avatar', 'contents.contentId', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
+      .select('users.userId', 'users.nickName', 'users.avatar', 'contents.contentId', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
       .where('scrap.userId', userId)
       .where('contents.active', 'Y')
       .join('users', 'users.userId', '=', 'contents.userId')

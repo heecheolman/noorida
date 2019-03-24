@@ -69,7 +69,9 @@
 
           <a-list v-if="commentList.length"
                   :dataSource="commentList"
-                  :header="`${commentList.length} ${commentList.length > 1 ? '개 댓글들 (최신순)' : '개 댓글 (최신순)'}`"
+                  :header="`${commentList.length} ${commentList.length > 1
+                    ? '개 댓글들 (최신순)'
+                    : '개 댓글 (최신순)'}`"
                   itemLayout="horizontal">
 
             <a-list-item slot="renderItem" slot-scope="item, index">

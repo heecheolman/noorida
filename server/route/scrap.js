@@ -11,7 +11,7 @@ router.post('', async (req, res) => {
   return res.json('ok');
 });
 
-router.get('', async (req, res) => {
+router.get('/:userId', async (req, res) => {
   const { lastId } = req.query;
   const { userId } = req.params;
   const result = await scrapService.loadScrapList({ userId, lastId })

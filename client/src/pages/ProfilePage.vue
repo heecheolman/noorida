@@ -114,7 +114,7 @@
           </a-modal>
         </div>
       </div>
-      <a-tabs defaultActiveKey="1">
+      <a-tabs defaultActiveKey="1" type="card">
         <a-tab-pane tab="내 게시물" key="1">
           <div class="post-list-section">
             <virtual-list :postList="previewPostList"
@@ -123,8 +123,11 @@
                           :avatar="profilePath"/>
           </div>
         </a-tab-pane>
-        <a-tab-pane tab="스크랩 게시물" key="2" forceRender>
-
+        <a-tab-pane v-if="isMe" tab="스크랩한 게시물" key="2">
+          <div class="post-list-section">
+            <virtual-list :postList="scrapPostList"
+                          :load-type="'scrap'"></virtual-list>
+          </div>
         </a-tab-pane>
       </a-tabs>
     </a-spin>
@@ -175,6 +178,9 @@ export default {
     ]),
     ...mapState('post', [
       'previewPostList',
+    ]),
+    ...mapState('scrap', [
+      'scrapPostList',
     ]),
     ...mapGetters('user', [
       'avatar',
@@ -414,6 +420,7 @@ export default {
       @include box-shadow;
       width: 100%;
       padding: 15px 25px;
+      margin-bottom: 10px;
 
       .score-wrap {
         @include v-text-align(25px);

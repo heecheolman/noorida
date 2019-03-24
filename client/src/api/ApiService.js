@@ -377,17 +377,25 @@ export default {
 
   searchLocal(word) {
     return axios.get('api/search/local', {
-      params: word,
+      params: { word },
     });
   },
+
   searchuser(word) {
     return axios.get('api/search/user', {
       params: word,
     });
   },
+
   searchPostTitle(word) {
     return axios.get('api/search/post-title', {
       params: word,
+    });
+  },
+
+  getScrappedPostList(userId, lastId) {
+    return axios.get(`/api/scrap/${userId}`, {
+      params: { lastId },
     });
   },
 

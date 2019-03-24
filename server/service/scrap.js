@@ -17,13 +17,14 @@ module.exports = {
       ? '>'
       : '<';
 
-    const result = await knex('scrap')
-      .select('users.userId', 'users.nickName', 'users.avatar', 'contents.contentId', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
+    const result = await knex('contents')
+      .select(
+        'users.userId', 'users.nickName', 'users.avatar', 'contents.contentId', 'contents.title', 'contents.content', 'contents.updatedAt', 'local.localName')
       .where('scrap.userId', userId)
       .where('contents.active', 'Y')
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
-      .join('contents', 'contents.contentId', '=', 'scrap.contentId')
+      .join('scrap', 'scrap.contentId', '=', 'contents.contentId')
       .orderBy('contents.createdAt', 'desc')
       .limit(LIMIT)
       .then(results => results)

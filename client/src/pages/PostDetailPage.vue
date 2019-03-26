@@ -19,11 +19,11 @@
           </div>
           <profile-card />
         </a-spin>
-        <div v-if="detailPost.userId !== user.userId" class="feedback-wrap">
+        <div class="feedback-wrap">
 
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
           <div class="emoji-area flex-container flex-center-sort">
-            <a-radio-group size="large" :defaultValue="userEmotion.toString()" @change="updateEmoji">
+            <a-radio-group size="large" :defaultValue="userEmotion.toString()" @change="updateEmoji" :disabled="isMe">
               <a-radio-button value="1"><i class="far fa-thumbs-up"></i></a-radio-button>
               <a-radio-button value="2"><i class="far fa-smile"></i></a-radio-button>
               <a-radio-button value="3"><i class="far fa-angry"></i></a-radio-button>
@@ -34,6 +34,7 @@
           <h4 v-if="!isEvaluated" class="feedback-title text-center">이 기사의 신뢰도는?</h4>
           <div class="reliability-area">
             <a-slider v-if="!isEvaluated"
+                      :disabled="isMe"
                       :marks="marks"
                       :min="-5"
                       :max="5"

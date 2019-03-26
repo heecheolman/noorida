@@ -221,6 +221,7 @@ export default {
         emotionCode: e.target.value,
       };
       await this.$store.dispatch('post/updatePostEmotion', payload);
+      this.$message.success('감정이 적용되었습니다');
     },
     updateReliability(value) {
       const vm = this;

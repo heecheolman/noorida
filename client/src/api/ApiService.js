@@ -80,6 +80,10 @@ export default {
     return axios.get('/api/auth/login');
   },
 
+  sessionInit() {
+    return axios.delete('/api/auth/login');
+  },
+
   /**
    * 이미지 업로드
    * @returns {AxiosPromise<any>}

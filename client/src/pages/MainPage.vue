@@ -71,8 +71,7 @@
                        tag= "p">설정</router-link>
           <router-link :to="{ name : 'ChangePasswordPage' }"
                        tag= "p">비밀번호 변경</router-link>
-          <router-link :to="{ name : '' }"
-                       tag= "p">로그아웃</router-link>
+          <p @click="logout()">로그아웃</p>
         </div>
         <!-- menu content -->
         <div
@@ -94,7 +93,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'MainPage',
@@ -114,6 +113,12 @@ export default {
     };
   },
   methods: {
+    ...mapMutations('user', {
+      userInit: 'INIT_USER_DATA',
+    }),
+    ...mapMutations('auth', {
+      setLoginStatus: 'SET_LOGIN_STATUS',
+    }),
     callback() {
     },
     openSidebar() {
@@ -127,6 +132,12 @@ export default {
     },
     routeSearchPage() {
       this.$router.replace({ name: 'SearchPage' });
+    },
+    async logout() {
+      this.setLoginStatus(false);
+      this.userInit();
+      await this.$store.dispatch('auth/sessionInit');
+      this.$router.replace({ name: 'LoginPage' });
     },
   },
 };

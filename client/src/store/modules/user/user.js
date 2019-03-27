@@ -21,6 +21,15 @@ const mutations = {
   [types.FETCH_USER_DATA](state, payload) {
     state.user = payload;
   },
+  [types.INIT_USER_DATA](state) {
+    state.user = {};
+    state.location = {
+      lat: 0,
+      lng: 0,
+      address: '',
+      placeId: '',
+    };
+  },
   [types.UPDATE_USER_LOCATION](state, payload) {
     state.location = payload;
   },

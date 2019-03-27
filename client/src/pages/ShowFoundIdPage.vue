@@ -25,25 +25,25 @@
 
 <script>
 
-  export default {
-    name: 'ShowFoundIdPage',
-    async created() {
-      this.nickName = this.$store.getters['find/getFindNickname'];
-      this.realName = this.$store.getters['find/getRealName'];
+export default {
+  name: 'ShowFoundIdPage',
+  async created() {
+    this.nickName = this.$store.getters['find/getFindNickname'];
+    this.realName = this.$store.getters['find/getRealName'];
+  },
+  data() {
+    return {
+      realName: '',
+      nickName: '',
+      message: '',
+    };
+  },
+  methods: {
+    Login() {
+      this.$router.push({ name: 'LoginPage' });
     },
-    data() {
-      return {
-        realName : '',
-        nickName : '',
-        message : '',
-      };
-    },
-    methods : {
-      Login() {
-        this.$router.push({ name: 'LoginPage' });
-      },
-    },
-  };
+  },
+};
 </script>
 
 <style lang="scss" scoped>

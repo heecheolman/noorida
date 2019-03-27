@@ -103,6 +103,30 @@ module.exports = {
     };
   },
 
+  loadLocalPostList: async ({ localId, lastId }) => {
+    const LIMIT = 15;
+    const opr = lastId < 0
+      ? '>'
+      : '<';
+
+    const result = await knex('contents')
+      .select('*')
+      .where('localId', localId)
+      .where('contentId', opr, lastId)
+      .orderBy('createdAt', 'desc')
+      .limit(LIMIT)
+      .then(results => results)
+      .catch(err => err);
+
+    lastId = lastId === -1 ? 0 : lastId;
+
+    return {
+      result,
+      lastId: result.length ? result[result.length - 1].contentId : lastId,
+      hasNextPost: result.length === LIMIT,
+    };
+  },
+
   getPost: async ({ id }) => {
     /**
      * localId 를 가져와야하는가 */
@@ -138,11 +162,38 @@ module.exports = {
     return result;
   },
 
-  countEmotion: async ({ contentId, emotionCode }) => {
+  countEmotion: async ({ contentId }) => {
+    const countLike = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 1)
+      .then(results => results)
+      .catch(err => err);
+    const countHappy = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 2)
+      .then(results => results)
+      .catch(err => err);
+    const countAngry = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 3)
+      .then(results => results)
+      .catch(err => err);
+    const countSad = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 4)
+      .then(results => results)
+      .catch(err => err);
+    return { countLike, countHappy, countAngry, countSad };
+  },
+
+  isExpressedEmotion: async ({ userId, contentId }) => {
     const result = await knex('emotions')
-      .count({ emotionCode })
-      .where(contentId)
-      .groupBy(emotionCode)
+      .select('emotionCode')
+      .where({ userId, contentId })
       .then(results => results)
       .catch(err => err);
     return result;

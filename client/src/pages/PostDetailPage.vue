@@ -6,8 +6,11 @@
           <div class="news-title-wrap">
             <span class="news-title">{{ detailPost.title }}</span>
           </div>
-          <div class="news-created-at-container">
+          <div class="news-created-at-container flex-container flex-between-sort flex-row">
             <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
+            <span v-if="!isMe" class="scrap-icon flex-container flex-center-sort" @click="updateContentScrap">
+              <a-icon type="book" :theme="isScrapped" />
+            </span>
           </div>
           <div class="news-content-wrap">
             <div class="ql-editor">
@@ -16,11 +19,11 @@
           </div>
           <profile-card />
         </a-spin>
-        <div v-if="detailPost.userId !== user.userId" class="feedback-wrap">
+        <div class="feedback-wrap">
 
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
           <div class="emoji-area flex-container flex-center-sort">
-            <a-radio-group defaultValue="" size="large" @change="updateEmoji">
+            <a-radio-group size="large" :defaultValue="userEmotion.toString()" @change="updateEmoji" :disabled="isMe">
               <a-radio-button value="1"><i class="far fa-thumbs-up"></i></a-radio-button>
               <a-radio-button value="2"><i class="far fa-smile"></i></a-radio-button>
               <a-radio-button value="3"><i class="far fa-angry"></i></a-radio-button>
@@ -31,6 +34,7 @@
           <h4 v-if="!isEvaluated" class="feedback-title text-center">이 기사의 신뢰도는?</h4>
           <div class="reliability-area">
             <a-slider v-if="!isEvaluated"
+                      :disabled="isMe"
                       :marks="marks"
                       :min="-5"
                       :max="5"
@@ -66,7 +70,9 @@
 
           <a-list v-if="commentList.length"
                   :dataSource="commentList"
-                  :header="`${commentList.length} ${commentList.length > 1 ? '개 댓글들 (최신순)' : '개 댓글 (최신순)'}`"
+                  :header="`${commentList.length} ${commentList.length > 1
+                    ? '개 댓글들 (최신순)'
+                    : '개 댓글 (최신순)'}`"
                   itemLayout="horizontal">
 
             <a-list-item slot="renderItem" slot-scope="item, index">
@@ -126,7 +132,18 @@ export default {
       'detailPost',
       'evaluationScore',
       'isEvaluated',
+      'contentScrapState',
+      'userEmotion',
     ]),
+    isScrapped() {
+      if (typeof this.contentScrapState === 'boolean') {
+        return this.contentScrapState ? 'filled' : 'outlined';
+      }
+      return 'filled';
+    },
+    isMe() {
+      return this.user.userId === this.detailPost.userId;
+    },
   },
   async created() {
     this.loading = true;
@@ -135,7 +152,12 @@ export default {
       userId: this.user.userId,
       contentId: this.contentId,
     });
+    if (!this.isMe) {
+      await this.$store.dispatch('post/getUserEmotion', { userId: this.user.userId, contentId: this.contentId });
+      await this.$store.dispatch('post/getEmotionList', { contentId: this.contentId });
+    }
     await this.$store.dispatch('post/getUserReliabilityScore');
+    await this.$store.dispatch('post/contentScrappedCheck', { userId: this.user.userId, contentId: this.contentId });
     this.loading = false;
     this.initCommentData();
     this.loadCommentList();
@@ -200,6 +222,7 @@ export default {
         emotionCode: e.target.value,
       };
       await this.$store.dispatch('post/updatePostEmotion', payload);
+      this.$message.success('감정이 적용되었습니다');
     },
     updateReliability(value) {
       const vm = this;
@@ -227,6 +250,19 @@ export default {
         this.reliabilityOldValue = value;
       }
     },
+    async updateContentScrap() {
+      const payload = {
+        userId: this.user.userId,
+        contentId: this.contentId,
+      };
+      if (this.contentScrapState) {
+        await this.$store.dispatch('post/cancelContentScrapping', payload);
+        this.$message.success('스크랩 목록에서 제거되었습니다.');
+      } else {
+        await this.$store.dispatch('post/contentScrapping', payload);
+        this.$message.success('스크랩목록에 추가되었습니다.');
+      }
+    },
   },
 };
 </script>
@@ -243,8 +279,8 @@ export default {
     overflow-y: scroll;
 
     .news-title-wrap {
-      display: block;
-      position: relative;
+      /*display: block;*/
+      /*position: relative;*/
       width: 100%;
       height: auto;
 
@@ -257,16 +293,24 @@ export default {
 
     .news-created-at-container {
       z-index: -10;
-      display: block;
+      /*display: block;*/
       width: 100%;
-      position: relative;
-      height: 20px;
+      /*position: relative;*/
+      @include v-text-align(40px);
 
       .created-at {
         @include font-size-normal;
         @include font-weight-4;
         letter-spacing: 0.2px;
         color: $info-blur;
+      }
+
+      .scrap-icon {
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        font-size: 30px;
+        color: $primary;
       }
     }
 

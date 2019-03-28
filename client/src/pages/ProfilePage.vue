@@ -106,9 +106,12 @@
             <ul class="subscribe-wrap">
               <li v-for="(user, index) in modalSubscribeList"
                   :key="index"
-                  class="sub-item text-center"
+                  class="sub-item flex-container flex-row"
                   @click="routeProfilePage(user.userId)">
-                <span class="sub-item-text">{{ user.nickName }}</span>
+                <a-avatar v-if="user.avatar" slot="avatar"
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+                <div class="sub-item-text text-center">{{ user.nickName }}</div>
               </li>
             </ul>
           </a-modal>
@@ -413,6 +416,7 @@ export default {
 };
 </script>
 
+
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/mixin';
   @import './../assets/scss/theme/colors';
@@ -573,11 +577,20 @@ export default {
       overflow-y: scroll;
 
       .sub-item {
-        @include v-text-align(40px);
+        display: flex;
+        align-items: center;
+        @include v-text-align(50px);
         width: 100%;
         border-bottom: 1px solid #e2e2e2;
+        cursor: pointer;
+        transition: .1s ease-in;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.02);
+        }
 
         .sub-item-text {
+          width: 100%;
           @include font-size-normal;
           color: $info;
         }

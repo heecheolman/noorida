@@ -337,27 +337,27 @@ export default {
       params: { userId, contentId },
     });
   },
-  isBlocked(applicant, blockedUser) {
+  isBlocked(myUserId, targetUserId) {
     return axios.get('/api/block/is-blocked', {
-      params: { applicant, blockedUser },
+      params: { myUserId, targetUserId },
     });
   },
 
-  blockUser(applicant, blockedUser) {
+  blockUser(myUserId, targetUserId) {
     return axios.post('api/block', {
-      applicant, blockedUser,
+      myUserId, targetUserId,
     });
   },
 
-  blockList(applicant, blockedUser) {
+  blockList(myUserId, targetUserId) {
     return axios.get('api/block', {
-      params: { applicant, blockedUser },
+      params: { myUserId, targetUserId },
     });
   },
 
-  cancelBlock(applicant, blockedUser) {
+  cancelBlock(myUserId, targetUserId) {
     return axios.delete('api/block', {
-      params: { applicant, blockedUser },
+      params: { myUserId, targetUserId },
     });
   },
 

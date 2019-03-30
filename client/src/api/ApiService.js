@@ -349,9 +349,9 @@ export default {
     });
   },
 
-  blockList(myUserId, targetUserId) {
+  blockList(myUserId) {
     return axios.get('api/block', {
-      params: { myUserId, targetUserId },
+      params: { myUserId },
     });
   },
 

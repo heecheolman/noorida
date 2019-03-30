@@ -363,6 +363,7 @@ export default {
       await this.$store.dispatch('user/blockUserProcess', payload);
       this.modalLoading = false;
       this.blockVisible = false;
+      this.$message.success(`${this.profileCard.nickName} 님을 차단했습니다.`);
     },
   },
 };

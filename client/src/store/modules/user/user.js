@@ -10,6 +10,7 @@ const state = {
     address: '',
     placeId: '',
   },
+  blockedUserList: [],
 };
 
 const getters = {
@@ -29,6 +30,7 @@ const mutations = {
       address: '',
       placeId: '',
     };
+    state.blockedUserList = [];
   },
   [types.UPDATE_USER_LOCATION](state, payload) {
     state.location = payload;
@@ -44,6 +46,15 @@ const mutations = {
   },
   [types.UPDATE_PROFILE_IMAGE_SRC](state, payload) {
     state.user.avatar = payload;
+  },
+  [types.UPDATE_BLOCKED_USER_LIST](state, payload) {
+    state.blockedUserList = [...payload];
+  },
+  [types.INIT_BLOCKED_USER_LIST](state) {
+    state.blockedUserList = [];
+  },
+  [types.DELETE_BLOCKED_USER_LIST_ELEMENT](state, payload) {
+    state.blockedUserList = state.blockedUserList.filter(user => user.userId !== payload);
   },
 };
 
@@ -99,9 +110,25 @@ const actions = {
     commit(types.UPDATE_PROFILE_IMAGE_SRC, null);
   },
 
-  async blockUserProcess(payload) {
+  async blockUserProcess({ commit }, payload) {
     const { myUserId, targetUserId } = payload;
     await api.blockUser(myUserId, targetUserId)
+      .then(result => result.data)
+      .catch(err => err);
+  },
+
+  async fetchBlockUserList({ commit, state }) {
+    const resData = await api.blockList(state.user.userId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData.length) {
+      commit(types.UPDATE_BLOCKED_USER_LIST, resData);
+    }
+  },
+
+  async cancelBlock({ commit, state }, payload) {
+    const { targetUserId } = payload;
+    await api.cancelBlock(state.user.userId, targetUserId)
       .then(result => result.data)
       .catch(err => err);
   },

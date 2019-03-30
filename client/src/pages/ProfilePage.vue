@@ -132,6 +132,26 @@
                           :load-type="'scrap'"></virtual-list>
           </div>
         </a-tab-pane>
+        <a-tab-pane v-if="isMe" tab="차단목록" key="3">
+          <ul class="block-list-wrap">
+            <li v-for="(user, index) in blockedUserList"
+                :key="index" class="user-list-item flex-container flex-between-sort flex-row">
+              <div class="block-avatar-wrap">
+                <a-avatar v-if="user.avatar"
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                <a-avatar v-else icon="user"></a-avatar>
+              </div>
+              <div class="block-nickname-wrap text-center">
+                {{ user.nickName }}
+              </div>
+              <div class="block-action-wrap">
+                <a-popconfirm title="차단을 해제하시겠습니까?" okText="해제" cancelText="취소" @confirm="cancelBlock(user.userId)" placement="topRight">
+                  <a-button size="small">차단 해제</a-button>
+                </a-popconfirm>
+              </div>
+            </li>
+          </ul>
+        </a-tab-pane>
       </a-tabs>
     </a-spin>
   </div>
@@ -167,6 +187,8 @@ export default {
     await this.initPreviewList();
     if (this.isMe) {
       await this.initScrapPostList();
+      await this.initBlockedUserList();
+      await this.$store.dispatch('user/fetchBlockUserList');
     }
     await this.dataUpdate();
   },
@@ -181,6 +203,7 @@ export default {
     ]),
     ...mapState('user', [
       'user',
+      'blockedUserList',
     ]),
     ...mapState('post', [
       'previewPostList',
@@ -241,6 +264,10 @@ export default {
     }),
     ...mapMutations('scrap', {
       initScrapPostList: 'INIT_SCRAP_POST_LIST',
+    }),
+    ...mapMutations('user', {
+      initBlockedUserList: 'INIT_BLOCKED_USER_LIST',
+      deleteBlockedUserListElement: 'DELETE_BLOCKED_USER_LIST_ELEMENT',
     }),
     toggleEditMode() {
       this.editMode = !this.editMode;
@@ -412,6 +439,13 @@ export default {
     copiedDescriptionChange(e) {
       this.copiedDescription = e;
     },
+    async cancelBlock(targetUserId) {
+      const payload = { targetUserId };
+      await this.$store.dispatch('user/cancelBlock', payload);
+      await this.$store.dispatch('user/fetchBlockUserList');
+      this.deleteBlockedUserListElement(targetUserId);
+      this.$message.success('차단해제 완료');
+    },
   },
 };
 </script>
@@ -562,6 +596,18 @@ export default {
         .badge-box:hover {
           transform: translateY(-2px);
         }
+      }
+    }
+
+    .block-list-wrap {
+      margin: 0;
+      padding: 0 0 20px 0;
+
+      .user-list-item {
+        width: 100%;
+        height: 50px;
+        padding: 0 20px;
+        border-bottom: 1px solid #d7d7d7;
       }
     }
   }

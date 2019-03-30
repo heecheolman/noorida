@@ -64,7 +64,7 @@
                       @afterChange="updateReliability"/>
           </div>
           <h4 class="feedback-info text-center" v-if="isEvaluated">이미 신뢰도를 평가하셨습니다.</h4>
-          <div class="flex-container flex-center-sort">
+          <div v-if="!isMe" class="flex-container flex-center-sort">
             <a-popconfirm title="게시글이나 유저에대한 신고나 차단"
                           okText="신고하기"
                           cancelText="차단하기"
@@ -154,6 +154,7 @@
           차단할 리포터는 <span style="color: #1F74FF;">{{ profileCard.nickName }}</span> 입니다.
         </div>
         <p class="info-text">해당 리포터를 차단하게되면, 관련된 뉴스들을 볼 수 없게됩니다.<br>차단하시겠습니까?</p>
+        <p class="info-text">차단 후 이전 페이지로 돌아갑니다.</p>
       </div>
     </a-modal>
   </div>
@@ -364,6 +365,7 @@ export default {
       this.modalLoading = false;
       this.blockVisible = false;
       this.$message.success(`${this.profileCard.nickName} 님을 차단했습니다.`);
+      this.$router.replace({ name: 'LocalNewsTab' });
     },
   },
 };

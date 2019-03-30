@@ -98,6 +98,13 @@ const actions = {
       .catch(err => err);
     commit(types.UPDATE_PROFILE_IMAGE_SRC, null);
   },
+
+  async blockUserProcess(payload) {
+    const { myUserId, targetUserId } = payload;
+    await api.blockUser(myUserId, targetUserId)
+      .then(result => result.data)
+      .catch(err => err);
+  },
 };
 
 export default {

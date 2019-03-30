@@ -8,7 +8,9 @@
           </div>
           <div class="news-created-at-container flex-container flex-between-sort flex-row">
             <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
-            <span v-if="!isMe" class="scrap-icon flex-container flex-center-sort" @click="updateContentScrap">
+            <span v-if="!isMe"
+                  class="scrap-icon flex-container flex-center-sort"
+                  @click="updateContentScrap">
               <a-icon type="book" :theme="isScrapped" />
             </span>
           </div>
@@ -23,11 +25,30 @@
 
           <h4 class="feedback-title text-center">이 기사가 어떠셨나요?</h4>
           <div class="emoji-area flex-container flex-center-sort">
-            <a-radio-group size="large" :defaultValue="userEmotion.toString()" @change="updateEmoji" :disabled="isMe">
-              <a-radio-button value="1"><i class="far fa-thumbs-up"></i></a-radio-button>
-              <a-radio-button value="2"><i class="far fa-smile"></i></a-radio-button>
-              <a-radio-button value="3"><i class="far fa-angry"></i></a-radio-button>
-              <a-radio-button value="4"><i class="far fa-sad-tear"></i></a-radio-button>
+            <a-radio-group size="large"
+                           :disabled="isMe"
+                           :defaultValue="userEmotion.toString()"
+                           @change="updateEmoji">
+              <a-badge :count="postEmotions.like"
+                       :overflow-count="9999"
+                       :numberStyle="emotionCountStyle">
+                <a-radio-button value="1"><i class="far fa-thumbs-up"></i></a-radio-button>
+              </a-badge>
+              <a-badge :count="postEmotions.happy"
+                       :overflow-count="9999"
+                       :numberStyle="emotionCountStyle">
+                <a-radio-button value="2"><i class="far fa-smile"></i></a-radio-button>
+              </a-badge>
+              <a-badge :count="postEmotions.angry"
+                       :overflow-count="9999"
+                       :numberStyle="emotionCountStyle">
+                <a-radio-button value="3"><i class="far fa-angry"></i></a-radio-button>
+              </a-badge>
+              <a-badge :count="postEmotions.sad"
+                       :overflow-count="9999"
+                       :numberStyle="emotionCountStyle">
+                <a-radio-button value="4"><i class="far fa-sad-tear"></i></a-radio-button>
+              </a-badge>
             </a-radio-group>
           </div>
 
@@ -134,6 +155,7 @@ export default {
       'isEvaluated',
       'contentScrapState',
       'userEmotion',
+      'postEmotions',
     ]),
     isScrapped() {
       if (typeof this.contentScrapState === 'boolean') {
@@ -183,6 +205,9 @@ export default {
       value: '',
       reliabilityOldValue: '',
       evaluating: false,
+      emotionCountStyle: {
+        backgroundColor: '#1F74FF',
+      },
     };
   },
   methods: {
@@ -223,6 +248,7 @@ export default {
       };
       await this.$store.dispatch('post/updatePostEmotion', payload);
       this.$message.success('감정이 적용되었습니다');
+      await this.$store.dispatch('post/getEmotionList', { contentId: this.contentId });
     },
     updateReliability(value) {
       const vm = this;

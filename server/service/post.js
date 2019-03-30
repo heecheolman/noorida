@@ -129,19 +129,19 @@ module.exports = {
       ? '>'
       : '<';
 
-      const result = await knex('contents')
-        .select('users.userId',
-          'users.nickName',
-          'users.avatar',
-          'contents.contentId',
-          'contents.title',
-          'contents.content',
-          'local.localName')
-        .where('local.localId', localId)
-        .join('users', 'users.userId', '=', 'contents.userId')
-        .join('local', 'local.localId', '=', 'contents.localId')
-        .then(results => results)
-        .catch(err => err);
+    const result = await knex('contents')
+      .select('users.userId',
+        'users.nickName',
+        'users.avatar',
+        'contents.contentId',
+        'contents.title',
+        'contents.content',
+        'local.localName')
+      .where('local.localId', localId)
+      .join('users', 'users.userId', '=', 'contents.userId')
+      .join('local', 'local.localId', '=', 'contents.localId')
+      .then(results => results)
+      .catch(err => err);
 
 
     lastId = lastId === -1 ? 0 : lastId;
@@ -189,7 +189,6 @@ module.exports = {
   },
 
   countEmotion: async ({ contentId }) => {
-
     const countLike = await knex('emotions')
       .count('emotionCode')
       .where({ contentId })
@@ -218,10 +217,11 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
-    return { "like": Object.values(countHappy[0])[0],
-     "happy": Object.values(countHappy[0])[0],
-      "angry": Object.values(countAngry[0])[0],
-      "sad": Object.values(countSad[0])[0],
+    return {
+      like: Object.values(countLike[0])[0],
+      happy: Object.values(countHappy[0])[0],
+      angry: Object.values(countAngry[0])[0],
+      sad: Object.values(countSad[0])[0],
     };
   },
 

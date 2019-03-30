@@ -12,7 +12,7 @@ router.post('', async (req, res) => {
 });
 
 router.get('', async (req, res) => {
-  const { myUserId, targetUserId } = req.query;
+  const { myUserId } = req.query;
   const result = await blockService.blockList({ applicant: myUserId })
     .then(results => results)
     .catch(err => err);

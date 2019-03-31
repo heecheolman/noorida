@@ -38,7 +38,7 @@ module.exports = {
    */
 
   loadPreviewLocalNewsList: async ({ localName, lastId }) => {
-    const userId = 1;
+
     const LIMIT = 15;
     const extractedData = await knex('local')
       .where({ localName })
@@ -47,6 +47,7 @@ module.exports = {
 
     if (extractedData.length) {
       const extLocalName = extractedData[0].localName;
+      console.log(extLocalName)
 
       if (extLocalName === localName) {
         const extLocalId = extractedData[0].localId;
@@ -55,8 +56,24 @@ module.exports = {
         const opr = lastId < 0
           ? '>'
           : '<';
+        const userId = 2;
+
+        const subQuery = await knex('block')
+          .where('applicant',userId)
+          .select('blockedUser')
+          .then(rowData => JSON.parse(JSON.stringify(rowData)))
+          .catch(err => err)
+
+        console.log(Object.values(subQuery));
+
+        const blockedUserList = [];
+
+        for (let i in subQuery){
+          blockedUserList[i] = Object.values(subQuery[i]);
+        }
 
         const result = await knex('contents')
+
           .select(
             'users.nickName',
             'users.avatar',
@@ -68,13 +85,14 @@ module.exports = {
           )
           .where('local.localId', extLocalId)
           .where('contents.contentId', opr, lastId)
+          .where('contents.userId', 'not in',blockedUserList)
+          .where('contents.active','Y')
           .join('users', 'users.userId', '=', 'contents.userId')
           .join('local', 'local.localId', '=', 'contents.localId')
           .orderBy('contents.createdAt', 'desc')
           .limit(LIMIT)
           .then(results => results)
           .catch(err => err);
-
 
         /* 초기일시 lastId 기준 처리 */
         lastId = lastId === -1 ? 0 : lastId;

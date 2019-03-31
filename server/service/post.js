@@ -37,7 +37,7 @@ module.exports = {
    * 지역 소식 미리보기 list
    */
 
-  loadPreviewLocalNewsList: async ({ localName, lastId }) => {
+  loadPreviewLocalNewsList: async ({ localName, lastId , userId}) => {
 
     const LIMIT = 15;
     const extractedData = await knex('local')
@@ -56,15 +56,12 @@ module.exports = {
         const opr = lastId < 0
           ? '>'
           : '<';
-        const userId = 2;
 
         const subQuery = await knex('block')
           .where('applicant',userId)
           .select('blockedUser')
           .then(rowData => JSON.parse(JSON.stringify(rowData)))
           .catch(err => err)
-
-        console.log(Object.values(subQuery));
 
         const blockedUserList = [];
 

@@ -58,8 +58,8 @@ module.exports = {
           : '<';
 
         const subQuery = await knex('block')
-          .where('applicant',userId)
-          .select('blockedUser')
+          .where('myUserId',userId)
+          .select('targetId')
           .then(rowData => JSON.parse(JSON.stringify(rowData)))
           .catch(err => err)
 

@@ -202,10 +202,7 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
     return result;
-
-
-
-  },
+    },
 
   countEmotion: async ({ contentId }) => {
 

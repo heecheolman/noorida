@@ -435,11 +435,11 @@ export default {
       userId, contentId,
     });
   },
-
   getPostViews(contentId) {
     return axios.get('/api/posts/views', {
       params: { contentId },
     });
   },
+
 
 };

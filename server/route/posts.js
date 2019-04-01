@@ -141,7 +141,6 @@ router.get('/evaluation/:userId', async (req, res) => {
  * 게시글 평가 여부 확인
  */
 
-
 router.get('/evaluation/check/is-evaluated', async (req, res) => {
   const { userId, contentId } = req.query;
   const result = await postService.isEvaluated({ userId, contentId })

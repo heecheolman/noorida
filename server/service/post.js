@@ -37,8 +37,8 @@ module.exports = {
    * 지역 소식 미리보기 list
    */
 
-  loadPreviewLocalNewsList: async ({ localName, lastId }) => {
-    const userId = 1;
+  loadPreviewLocalNewsList: async ({ localName, lastId , userId}) => {
+
     const LIMIT = 15;
     const extractedData = await knex('local')
       .where({ localName })
@@ -47,6 +47,7 @@ module.exports = {
 
     if (extractedData.length) {
       const extLocalName = extractedData[0].localName;
+      console.log(extLocalName)
 
       if (extLocalName === localName) {
         const extLocalId = extractedData[0].localId;
@@ -56,7 +57,20 @@ module.exports = {
           ? '>'
           : '<';
 
+        const subQuery = await knex('block')
+          .where('myUserId',userId)
+          .select('targetId')
+          .then(rowData => JSON.parse(JSON.stringify(rowData)))
+          .catch(err => err)
+
+        const blockedUserList = [];
+
+        for (let i in subQuery){
+          blockedUserList[i] = Object.values(subQuery[i]);
+        }
+
         const result = await knex('contents')
+
           .select(
             'users.nickName',
             'users.avatar',
@@ -68,13 +82,14 @@ module.exports = {
           )
           .where('local.localId', extLocalId)
           .where('contents.contentId', opr, lastId)
+          .where('contents.userId', 'not in',blockedUserList)
+          .where('contents.active','Y')
           .join('users', 'users.userId', '=', 'contents.userId')
           .join('local', 'local.localId', '=', 'contents.localId')
           .orderBy('contents.createdAt', 'desc')
           .limit(LIMIT)
           .then(results => results)
           .catch(err => err);
-
 
         /* 초기일시 lastId 기준 처리 */
         lastId = lastId === -1 ? 0 : lastId;
@@ -128,7 +143,6 @@ module.exports = {
     const opr = lastId < 0
       ? '>'
       : '<';
-
     const result = await knex('contents')
       .select('users.userId',
         'users.nickName',
@@ -143,6 +157,7 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
+      
 
     lastId = lastId === -1 ? 0 : lastId;
 
@@ -189,6 +204,7 @@ module.exports = {
   },
 
   countEmotion: async ({ contentId }) => {
+
     const countLike = await knex('emotions')
       .count('emotionCode')
       .where({ contentId })
@@ -217,11 +233,10 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
-    return {
-      like: Object.values(countLike[0])[0],
-      happy: Object.values(countHappy[0])[0],
-      angry: Object.values(countAngry[0])[0],
-      sad: Object.values(countSad[0])[0],
+    return { "like": Object.values(countHappy[0])[0],
+      "happy": Object.values(countHappy[0])[0],
+      "angry": Object.values(countAngry[0])[0],
+      "sad": Object.values(countSad[0])[0],
     };
   },
 
@@ -261,4 +276,5 @@ module.exports = {
       .catch(err => err);
     return result.length !== 0;
   },
+
 };

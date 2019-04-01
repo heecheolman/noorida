@@ -14,7 +14,6 @@ router.post('', async (req, res) => {
 router.get('/local', async (req, res) => {
   let { word } = req.query;
   word = decodeURI(word);
-  console.log('입력값: ', word);
   const result = await searchService.searchLocal({ word })
     .then(results => results)
     .catch(err => err)
@@ -33,7 +32,6 @@ router.get('/user', async (req, res) => {
 router.get('/post-title', async (req, res) => {
   let { word } = req.query;
   word = decodeURI(word);
-  console.log('포스트의 워드!', word);
   const result = await searchService.searchPostTitle({ word })
     .then(results => results)
     .catch(err => err);

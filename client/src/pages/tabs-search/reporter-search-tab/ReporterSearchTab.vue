@@ -20,9 +20,6 @@
                   @click="cancelSubscribeReporter">구독중
         </a-button>
       </div>
-      <div v-if="isMe">
-        <a-button>저입니다^^</a-button>
-      </div>
     </div>
       <!--</div>-->
     </a-list-item>

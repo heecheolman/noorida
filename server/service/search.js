@@ -24,7 +24,6 @@ module.exports = {
       .where('nickName', 'LIKE', `%${word}%`)
       .then(results => results)
       .catch(err => err);
-    console.log('result=> ', result);
     return result;
   },
 
@@ -42,7 +41,6 @@ module.exports = {
       .join('local', 'local.localId', '=', 'contents.localId')
       .then(results => results)
       .catch(err => err);
-    console.log('에베베베베!!!!!!!!!1', result);
     return result;
   },
 };

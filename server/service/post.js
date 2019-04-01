@@ -37,9 +37,10 @@ module.exports = {
    * 지역 소식 미리보기 list
    */
 
-  loadPreviewLocalNewsList: async ({ localName, lastId , userId}) => {
+  loadPreviewLocalNewsList: async ({ localName, lastId }) => {
 
     const LIMIT = 15;
+    const userId = 1;
     const extractedData = await knex('local')
       .where({ localName })
       .then(rowData => JSON.parse(JSON.stringify(rowData)))
@@ -78,6 +79,7 @@ module.exports = {
             'contents.title',
             'contents.content',
             'contents.updatedAt',
+            'contents.views',
             'local.localName',
           )
           .where('local.localId', extLocalId)
@@ -144,7 +146,6 @@ module.exports = {
       ? '>'
       : '<';
 
-<<<<<<< HEAD
     const result = await knex('contents')
       .select('users.userId',
         'users.nickName',
@@ -158,22 +159,6 @@ module.exports = {
       .join('local', 'local.localId', '=', 'contents.localId')
       .then(results => results)
       .catch(err => err);
-=======
-      const result = await knex('contents')
-        .select('users.userId',
-          'users.nickName',
-          'users.avatar',
-          'contents.contentId',
-          'contents.title',
-          'contents.content',
-          'local.localName')
-        .where('local.localId', localId)
-        .join('users', 'users.userId', '=', 'contents.userId')
-        .join('local', 'local.localId', '=', 'contents.localId')
-        .then(results => results)
-        .catch(err => err);
-
->>>>>>> 863b4d52594403d67a280f98bd99b55d8d13e6ee
 
 
     lastId = lastId === -1 ? 0 : lastId;
@@ -200,6 +185,7 @@ module.exports = {
   },
 
   emotion: async ({ userId, contentId, emotionCode }) => {
+
     const extractedRow = await knex('emotions')
       .select('emotionId')
       .where({ userId, contentId })
@@ -218,11 +204,14 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
     return result;
+
+
+
   },
 
   countEmotion: async ({ contentId }) => {
 
-    const countLike = await knex('emotions')
+   const countLike = await knex('emotions')
       .count('emotionCode')
       .where({ contentId })
       .where('emotionCode', 1)
@@ -250,15 +239,12 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
-    return { "like": Object.values(countHappy[0])[0],
-<<<<<<< HEAD
+    return { "like": Object.values(countLike[0])[0],
       "happy": Object.values(countHappy[0])[0],
-=======
-     "happy": Object.values(countHappy[0])[0],
->>>>>>> 863b4d52594403d67a280f98bd99b55d8d13e6ee
       "angry": Object.values(countAngry[0])[0],
       "sad": Object.values(countSad[0])[0],
     };
+
   },
 
   isExpressedEmotion: async ({ userId, contentId }) => {
@@ -297,5 +283,28 @@ module.exports = {
       .catch(err => err);
     return result.length !== 0;
   },
+  insertViews: async ({ userId, contentId }) => {
+    const result = await knex('view')
+      .insert({ userId, contentId })
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
 
+  views: async ({ contentId }) => {
+    const viewsData = await knex('view')
+      .count('*')
+      .where({ contentId })
+      .then(results => results)
+      .catch (err => err);
+
+    const updateViews = await knex('contents')
+      .update('views',Object.values(viewsData[0])[0])
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+
+    return updateViews;
+
+  }
 };

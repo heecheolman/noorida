@@ -23,6 +23,7 @@ router.get('/local', async (req, res) => {
     .catch(err => err);
 
   res.json(result);
+  console.log(result);
 });
 
 /**
@@ -57,13 +58,8 @@ router.get('/users/:userId', async (req, res) => {
  * localId 가 갖는 포스트리스트들 조회
  */
 router.get('/users/:localId', async (req, res) => {
-<<<<<<< HEAD
   const { localId, lastId } = req.params;
   const result = await postService.loadLocalPostList({ localId, lastId })
-=======
-  const { localId, lastId, userId } = req.params;
-  const result = await postService.loadLocalPostList({ localId, lastId, userId })
->>>>>>> 863b4d52594403d67a280f98bd99b55d8d13e6ee
     .then(results => results)
     .catch(err => err);
 
@@ -157,4 +153,21 @@ router.get('/evaluation/check/is-evaluated', async (req, res) => {
     res.json(false);
   }
 });
+
+router.post('/views', async (req, res) => {
+  const { userId, contentId } = req.body;
+  const result = await postService.insertViews({ userId, contentId })
+    .then(results => results)
+    .catch(err => err);
+  return res.json('ok');
+});
+
+router.get('/views', async (req, res) => {
+  const { contentId } = req.query;
+  const result = await postService.views({ contentId })
+    .then (results => results)
+    .catch( err => err);
+  return result;
+});
+
 module.exports = router;

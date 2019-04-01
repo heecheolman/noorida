@@ -429,4 +429,17 @@ export default {
       },
     });
   },
+
+  insertView(userId, contentId) {
+    return axios.post('api/post/views', {
+      userId, contentId,
+    });
+  },
+
+  getPostViews(contentId) {
+    return axios.get('/api/posts/views', {
+      params: { contentId },
+    });
+  },
+
 };

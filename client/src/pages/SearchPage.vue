@@ -6,8 +6,8 @@
         <br /><br />
         <a-input-search
           placeholder="input search text"
-          @search="onSearch"
           enterButton
+          @input="searchWordChecker"
           v-model="searchData"></a-input-search>
         <br /><br />
       </div>
@@ -43,6 +43,7 @@
 <script>
 // import ALayoutSider from "ant-design-vue/es/layout/Sider";
 const Toolbar = () => import('@/components/Toolbar');
+import _ from 'lodash';
 
 export default {
   name: 'SearchPage',
@@ -58,15 +59,28 @@ export default {
         pane3: '게시글',
       },
       searchData: '',
+      userId: this.$store.state.user.user.userId,
     };
   },
   methods: {
-    async onSearch() {
-      await this.$store.dispatch('search/searchProcess', {
-        searchContent: this.searchData, // 검색창에 입력받은 내용을 전송한다!
-        userId: this.$store.state.user.user.userId, // 유저아이디 전송!
-      });
-    },
+    // async onSearch() {
+    //   await this.$store.dispatch('search/searchProcess', {
+    //     searchContent: this.searchData, // 검색창에 입력받은 내용을 전송한다!
+    //     userId: this.$store.state.user.user.userId, // 유저아이디 전송!
+    //   });
+    // },
+    searchWordChecker: _.debounce(
+      function () {
+        const userId = this.userId;
+        const word = this.searchData;
+        console.log(this.searchData);
+        console.log('userId:', userId, 'word', word);
+        const resData = this.$api.searchLocal(encodeURI(word))
+          .then(result => result.data)
+          .catch(err => err);
+        console.log('resData: ', resData);
+      }, 500,
+    ),
   },
 };
 </script>
@@ -86,7 +100,7 @@ export default {
     font-size: 18px;
   }
   /*.tab-design{*/
-    /*width: 100px;*/
+  /*width: 100px;*/
   /*}*/
 
   .design-box{

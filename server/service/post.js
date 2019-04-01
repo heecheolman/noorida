@@ -36,11 +36,8 @@ module.exports = {
   /**
    * 지역 소식 미리보기 list
    */
-
-  loadPreviewLocalNewsList: async ({ localName, lastId }) => {
-
+  loadPreviewLocalNewsList: async ({ localName, lastId , userId}) => {
     const LIMIT = 15;
-    const userId = 1;
     const extractedData = await knex('local')
       .where({ localName })
       .then(rowData => JSON.parse(JSON.stringify(rowData)))
@@ -160,6 +157,7 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
+      
 
     lastId = lastId === -1 ? 0 : lastId;
 
@@ -238,6 +236,7 @@ module.exports = {
       .where('emotionCode', 4)
       .then(results => results)
       .catch(err => err);
+
 
     return { "like": Object.values(countLike[0])[0],
       "happy": Object.values(countHappy[0])[0],

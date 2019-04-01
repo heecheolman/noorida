@@ -11,7 +11,6 @@ export default {
   /**
    * 이메일과 토큰을 이용해 해당 이메일에 대한 토큰값이 맞는지 확인
    * @param email
-   * @param token
    * @returns {AxiosPromise<any>}
    */
   confirmToken(email, token) {
@@ -386,19 +385,13 @@ export default {
     });
   },
 
-  insertWord(userId, word) {
-    return axios.post('api/search', {
-      userId, word,
-    });
-  },
-
   searchLocal(word) {
     return axios.get('api/search/local', {
       params: { word },
     });
   },
 
-  searchuser(word) {
+  searchUser(word) {
     return axios.get('api/search/user', {
       params: word,
     });
@@ -409,6 +402,7 @@ export default {
       params: word,
     });
   },
+
 
   getScrappedPostList(userId, lastId) {
     return axios.get(`/api/scrap/${userId}`, {

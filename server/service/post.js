@@ -144,6 +144,7 @@ module.exports = {
       ? '>'
       : '<';
 
+<<<<<<< HEAD
     const result = await knex('contents')
       .select('users.userId',
         'users.nickName',
@@ -157,6 +158,22 @@ module.exports = {
       .join('local', 'local.localId', '=', 'contents.localId')
       .then(results => results)
       .catch(err => err);
+=======
+      const result = await knex('contents')
+        .select('users.userId',
+          'users.nickName',
+          'users.avatar',
+          'contents.contentId',
+          'contents.title',
+          'contents.content',
+          'local.localName')
+        .where('local.localId', localId)
+        .join('users', 'users.userId', '=', 'contents.userId')
+        .join('local', 'local.localId', '=', 'contents.localId')
+        .then(results => results)
+        .catch(err => err);
+
+>>>>>>> 863b4d52594403d67a280f98bd99b55d8d13e6ee
 
 
     lastId = lastId === -1 ? 0 : lastId;
@@ -234,7 +251,11 @@ module.exports = {
       .catch(err => err);
 
     return { "like": Object.values(countHappy[0])[0],
+<<<<<<< HEAD
       "happy": Object.values(countHappy[0])[0],
+=======
+     "happy": Object.values(countHappy[0])[0],
+>>>>>>> 863b4d52594403d67a280f98bd99b55d8d13e6ee
       "angry": Object.values(countAngry[0])[0],
       "sad": Object.values(countSad[0])[0],
     };

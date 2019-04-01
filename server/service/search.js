@@ -11,19 +11,20 @@ module.exports = {
 
   searchLocal: async ({ word }) => {
     const result = await knex('local')
-      .select ('localId', 'localName')
-      .where('localName','Like','%word%')
-      .then( results => results)
-      .catch(err => err)
+      .select('localId', 'localName')
+      .where('localName', 'LIKE', `%${word}%`)
+      .then(results => results)
+      .catch(err => err);
     return result;
   },
 
   searchUser: async ({ word }) => {
     const result = await knex('users')
-      .select('userId','nickName','avatar')
-      .where('nickName','like','%word%')
+      .select('userId', 'nickName', 'avatar')
+      .where('nickName', 'LIKE', `%${word}%`)
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
+    console.log('result=> ', result);
     return result;
   },
 
@@ -36,11 +37,12 @@ module.exports = {
         'contents.title',
         'contents.content',
         'local.localName')
-      .where('contents.title','like','%word%')
+      .where('contents.title', 'LIKE', `%${word}%`)
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
       .then(results => results)
-      .catch(err => err)
+      .catch(err => err);
+    console.log('에베베베베!!!!!!!!!1', result);
     return result;
   },
-}
+};

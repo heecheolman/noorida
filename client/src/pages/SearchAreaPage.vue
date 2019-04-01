@@ -4,16 +4,37 @@
     <div class="">
       <div class="design-card text-center">
         <!--{{ LOCAL_NAME }}-->
-        {{ localNameList[localId - 1].localName }}
+        {{ localNameTag }}
       </div>
       <div class="button-common">
         <a-button >구독</a-button>
       </div>
+
+
+
       <div class="margin--10">
         <virtual-list :post-list="previewPostList"
                       :load-type="'local'"/>
       </div>
+
+
+    <a-list :loading="loading">
+      <div class="padding--10">
+        <a-list-item v-for="item in searchPostList" :key="item.contentId" class="box-size"
+                     @click="routeDetailPage(item.contentId)">
+          <a-list-item-meta>
+            <a slot="title" class="title">{{ item.title }}</a>
+            <span slot="description" class="title-nickname">{{ item.nickName || '지역이름' }}</span>
+            <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
+            <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+          </a-list-item-meta>
+        </a-list-item>
+      </div>
+    </a-list>
+
+
     </div>
+
   </div>
 </template>
 
@@ -35,6 +56,9 @@ export default {
     localId: {
       type: Number,
     },
+    localName: {
+      type: String,
+    },
   },
   computed: {
     ...mapState('post', [
@@ -42,27 +66,22 @@ export default {
     ]),
     ...mapState('search', [
       'loadLocalData',
-      'localNameList',
+      'localList',
+      'searchPostList',
     ]),
   },
   data() {
     return {
       loading: true,
       address: this.$store.state.user.address,
-      // localName: this.$store.state.search.localName,
-      // localNameList: this.$store.state.search.localNameList,
-      // Name: '',
+      localNameTag: '',
     };
   },
   async created() {
-    this.loading = true;
-    // await this.$store.dispatch('post/loadLocalPostList', this.localId);
-    // await this.$store.dispatch('search/loadLocalData', this.localId);
-    this.loading = false;
-    // if (this.localId === this.localNameList.localId) {
-    //   this.Name = this.localNameList.localName;
-    // };
-    console.log(this.localNameList[this.localId - 1].localName);
+    this.localNameTag = this.localName.substring(this.localName.length - 4); // 이거 고칠필요 있음!!!
+    await this.$store.dispatch('search/loadSearchPost', {
+      word: this.localName,
+    });
   },
   methods: {
     ...mapMutations('post', {
@@ -86,7 +105,7 @@ export default {
     border-radius: 100px;
     height: 130px;
     font-size: 30px;
-    color: black;
+    color: white;
     line-height: 4.3;
   }
   .button-common{

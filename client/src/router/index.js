@@ -92,7 +92,7 @@ export default new Router({
       name: 'SearchPage',
       component: SearchPage,
       children: [
-        { path: '', redirect: '/local-search' },
+        { path: '', redirect: { name: 'LocalSearchTab' } },
         { path: 'local-search', name: 'LocalSearchTab', component: LocalSearchTab },
         { path: 'reporter-search', name: 'ReporterSearchTab', component: ReporterSearchTab },
         { path: 'post-search', name: 'PostSearchTab', component: PostSearchTab },

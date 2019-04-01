@@ -162,7 +162,7 @@ module.exports = {
     return result;
   },
 
-  countEmotion: async ({ contentId, emotionCode }) => {
+  countEmotion: async ({ contentId }) => {
     const result = await knex('emotions')
       .count({ emotionCode })
       .where(contentId)

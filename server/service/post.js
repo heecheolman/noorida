@@ -37,7 +37,11 @@ module.exports = {
    * 지역 소식 미리보기 list
    */
 
+<<<<<<< HEAD
   loadPreviewLocalNewsList: async ({ localName, lastId }) => {
+=======
+  loadPreviewLocalNewsList: async ({ localName, lastId , userId}) => {
+>>>>>>> 1086655f7fdb8046906e68be87096d301f8c0a90
 
     const LIMIT = 15;
     const userId = 1;
@@ -145,7 +149,10 @@ module.exports = {
     const opr = lastId < 0
       ? '>'
       : '<';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1086655f7fdb8046906e68be87096d301f8c0a90
     const result = await knex('contents')
       .select('users.userId',
         'users.nickName',
@@ -160,6 +167,7 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
+      
 
     lastId = lastId === -1 ? 0 : lastId;
 
@@ -239,7 +247,11 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
+<<<<<<< HEAD
     return { "like": Object.values(countLike[0])[0],
+=======
+    return { "like": Object.values(countHappy[0])[0],
+>>>>>>> 1086655f7fdb8046906e68be87096d301f8c0a90
       "happy": Object.values(countHappy[0])[0],
       "angry": Object.values(countAngry[0])[0],
       "sad": Object.values(countSad[0])[0],

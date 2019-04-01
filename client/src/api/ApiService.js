@@ -134,11 +134,12 @@ export default {
    * @param lastId
    * @returns {AxiosPromise<any>}
    */
-  loadLocalPreviewPostList(localName, lastId) {
+  loadLocalPreviewPostList(localName, lastId, userId) {
     return axios.get('/api/posts/local', {
       params: {
         localName: decodeURI(localName),
         lastId,
+        userId,
       },
     });
   },

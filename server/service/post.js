@@ -143,7 +143,6 @@ module.exports = {
     const opr = lastId < 0
       ? '>'
       : '<';
-
     const result = await knex('contents')
       .select('users.userId',
         'users.nickName',
@@ -158,6 +157,7 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
+      
 
     lastId = lastId === -1 ? 0 : lastId;
 

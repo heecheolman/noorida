@@ -16,6 +16,7 @@ const state = {
   reliabilityScore: 0,
   contentScrapState: false,
   userEmotion: 0,
+  postEmotions: {},
 };
 
 const mutations = {
@@ -39,6 +40,7 @@ const mutations = {
     state.busy = false;
     state.lastId = -1;
     state.hasNextPost = true;
+    state.postEmotions = {};
   },
   [types.INIT_TITLE_CONTENT](state) {
     state.title = '';
@@ -70,6 +72,9 @@ const mutations = {
   },
   [types.UPDATE_USER_EMOTION](state, payload) {
     state.userEmotion = payload;
+  },
+  [types.UPDATE_POST_EMOTIONS](state, payload) {
+    state.postEmotions = { ...payload };
   },
 };
 
@@ -190,6 +195,13 @@ const actions = {
     const resData = await api.getContentEmotionList(contentId)
       .then(result => result.data)
       .catch(err => err);
+    const { like, happy, angry, sad } = resData;
+    commit(types.UPDATE_POST_EMOTIONS, {
+      like: like || 0,
+      happy: happy || 0,
+      angry: angry || 0,
+      sad: sad || 0,
+    });
   },
 
   async contentScrappedCheck({ commit }, payload) {

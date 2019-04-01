@@ -106,16 +106,37 @@
             <ul class="subscribe-wrap">
               <li v-for="(user, index) in modalSubscribeList"
                   :key="index"
-                  class="sub-item text-center"
+                  class="sub-item flex-container flex-row"
                   @click="routeProfilePage(user.userId)">
-                <span class="sub-item-text">{{ user.nickName }}</span>
+                <a-avatar v-if="user.avatar" slot="avatar"
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+                <div class="sub-item-text text-center">{{ user.nickName }}</div>
               </li>
             </ul>
           </a-modal>
         </div>
+        <div v-if="!isMe" class="flex-container flex-end" style="padding-right: 10px;">
+          <a-button size="small" @click="blockVisible = true">차단</a-button>
+          <a-modal v-model="blockVisible"
+                   title="리포터 차단하기"
+                   okText="차단"
+                   cancelText="취소"
+                   @ok="userBlockProcess()"
+                   :confirm-loading="modalLoading">
+            <div class="modal-container">
+              <div class="margin--bottom-20">
+                차단할 리포터는 <span style="color: #1F74FF;">{{ info.nickName }}</span> 입니다.
+              </div>
+              <p class="info-text">해당 리포터를 차단하게되면, 관련된 뉴스들을 볼 수 없게됩니다.<br>차단하시겠습니까?</p>
+
+              <p class="info-text">차단 후 이전 페이지로 돌아갑니다.</p>
+            </div>
+          </a-modal>
+        </div>
       </div>
       <a-tabs defaultActiveKey="1" type="card">
-        <a-tab-pane tab="내 게시물" key="1">
+        <a-tab-pane tab="게시물" key="1">
           <div class="post-list-section">
             <virtual-list :postList="previewPostList"
                           :load-type="'user'"
@@ -128,6 +149,30 @@
             <virtual-list :postList="scrapPostList"
                           :load-type="'scrap'"></virtual-list>
           </div>
+        </a-tab-pane>
+        <a-tab-pane v-if="isMe" tab="차단목록" key="3">
+          <ul class="block-list-wrap">
+            <li v-for="(user, index) in blockedUserList"
+                :key="index" class="user-list-item flex-container flex-between-sort flex-row">
+              <div class="block-avatar-wrap">
+                <a-avatar v-if="user.avatar"
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                <a-avatar v-else icon="user"></a-avatar>
+              </div>
+              <div class="block-nickname-wrap text-center">
+                {{ user.nickName }}
+              </div>
+              <div class="block-action-wrap">
+                <a-popconfirm title="차단을 해제하시겠습니까?"
+                              okText="해제"
+                              cancelText="취소"
+                              @confirm="cancelBlock(user.userId)"
+                              placement="topRight">
+                  <a-button size="small">차단 해제</a-button>
+                </a-popconfirm>
+              </div>
+            </li>
+          </ul>
         </a-tab-pane>
       </a-tabs>
     </a-spin>
@@ -164,6 +209,8 @@ export default {
     await this.initPreviewList();
     if (this.isMe) {
       await this.initScrapPostList();
+      await this.initBlockedUserList();
+      await this.$store.dispatch('user/fetchBlockUserList');
     }
     await this.dataUpdate();
   },
@@ -178,6 +225,7 @@ export default {
     ]),
     ...mapState('user', [
       'user',
+      'blockedUserList',
     ]),
     ...mapState('post', [
       'previewPostList',
@@ -230,6 +278,8 @@ export default {
       modalVisible: false,
       modalSubscribeList: [],
       pageSwitchLoading: false,
+      blockVisible: false,
+      modalLoading: false,
     };
   },
   methods: {
@@ -238,6 +288,10 @@ export default {
     }),
     ...mapMutations('scrap', {
       initScrapPostList: 'INIT_SCRAP_POST_LIST',
+    }),
+    ...mapMutations('user', {
+      initBlockedUserList: 'INIT_BLOCKED_USER_LIST',
+      deleteBlockedUserListElement: 'DELETE_BLOCKED_USER_LIST_ELEMENT',
     }),
     toggleEditMode() {
       this.editMode = !this.editMode;
@@ -409,9 +463,29 @@ export default {
     copiedDescriptionChange(e) {
       this.copiedDescription = e;
     },
+    async cancelBlock(targetUserId) {
+      const payload = { targetUserId };
+      await this.$store.dispatch('user/cancelBlock', payload);
+      await this.$store.dispatch('user/fetchBlockUserList');
+      this.deleteBlockedUserListElement(targetUserId);
+      this.$message.success('차단해제 완료');
+    },
+    async userBlockProcess() {
+      this.modalLoading = true;
+      const payload = {
+        myUserId: this.user.userId,
+        targetUserId: this.info.userId,
+      };
+      await this.$store.dispatch('user/blockUserProcess', payload);
+      this.modalLoading = false;
+      this.blockVisible = false;
+      this.$message.success(`${this.info.nickName} 님을 차단했습니다.`);
+      this.$router.replace({ name: 'LocalNewsTab' });
+    },
   },
 };
 </script>
+
 
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/mixin';
@@ -436,6 +510,12 @@ export default {
           @include font-weight-5;
           color: $info;
         }
+      }
+
+      .info-text {
+        margin-top: 10px;
+        @include font-size-normal;
+        color: $info;
       }
 
       .avatar-wrap {
@@ -560,6 +640,18 @@ export default {
         }
       }
     }
+
+    .block-list-wrap {
+      margin: 0;
+      padding: 0 0 20px 0;
+
+      .user-list-item {
+        width: 100%;
+        height: 50px;
+        padding: 0 20px;
+        border-bottom: 1px solid #d7d7d7;
+      }
+    }
   }
 
   .ant-modal-body {
@@ -573,11 +665,20 @@ export default {
       overflow-y: scroll;
 
       .sub-item {
-        @include v-text-align(40px);
+        display: flex;
+        align-items: center;
+        @include v-text-align(50px);
         width: 100%;
         border-bottom: 1px solid #e2e2e2;
+        cursor: pointer;
+        transition: .1s ease-in;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.02);
+        }
 
         .sub-item-text {
+          width: 100%;
           @include font-size-normal;
           color: $info;
         }

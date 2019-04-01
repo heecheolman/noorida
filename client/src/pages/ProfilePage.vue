@@ -1,109 +1,136 @@
 <template>
   <div class="profile-container">
-    <toolbar :title="'프로필'"/>
-    <div class="user-header-section flex-container flex-column">
-      <div class="medal-wrap flex-container flex-center-sort">
-        <i class="fas fa-medal medal"></i>
-      </div>
-      <div class="score-wrap text-center">
-        <span class="score">475</span>
-      </div>
-      <div class="avatar-wrap flex-container flex-center-sort">
-        <div class="profile-upload-wrapper">
-          <div class="avatar-zone">
-            <!--이미지가 존재하는 경우-->
-            <img v-if="profilePath"
-                 class="avatar"
-                 :src="`http://localhost:3000/images/${profilePath}`"
-                 alt="profile">
-            <!--존재하지 않는 경우-->
-            <div v-else class="default-profile"></div>
+    <a-spin :spinning="pageSwitchLoading">
+      <toolbar :title="'프로필'"/>
+      <div class="user-header-section flex-container flex-column">
+        <div class="flex-container flex-center-sort">
+          <i class="fas fa-medal medal" :class="medalColorPicker"></i>
+        </div>
+        <div class="score-wrap text-center">
+          <!-- 유저의 신뢰도 점수 -->
+          <span class="score">{{ reliabilityScore }}</span>
+        </div>
+        <div class="avatar-wrap flex-container flex-center-sort">
+          <div class="profile-upload-wrapper">
+            <div class="avatar-zone">
+              <img v-if="profilePath"
+                   class="avatar"
+                   :src="`http://localhost:3000/images/${profilePath}`"
+                   alt="profile">
+              <a-avatar v-else icon="user" :size="150"></a-avatar>
+            </div>
+            <label v-if="isMe" class="upload-text" for="upload">
+              <a-popconfirm title="프로필 사진 변경"
+                            @confirm="selectProfile"
+                            @cancel="changeDefaultProfile"
+                            okText="이미지 선택"
+                            cancelText="기본 이미지로">
+                <span class="back-drop"></span>
+                <span class="edit-text">편집</span>
+              </a-popconfirm>
+            </label>
+            <input v-if="isMe"
+                   id="upload"
+                   class="upload"
+                   type="file"
+                   accept="image/*"
+                   ref="inputFile"
+                   @change="uploadProcess">
           </div>
-          <label v-if="isMe" class="upload-text" for="upload">편집</label>
-          <input v-if="isMe" id="upload" class="upload" type="file" accept="image/*" @change="uploadProcess">
         </div>
-      </div>
-      <div class="nickname-wrap text-center">
-        <span class="nickname">{{ info.nickName }}</span>
-      </div>
-      <div class="subscript-button-wrap flex-container flex-center-sort" v-if="!isMe">
-        <a-button v-show="!isSubscribe"
-                  type="primary"
-                  size="small"
-                  @click="subscribeReporter">구독하기
-        </a-button>
-        <a-button v-show="isSubscribe"
-                  size="small"
-                  @click="cancelSubscribeReporter">구독중
-        </a-button>
-      </div>
-      <div class="description-wrap" :class="noDescript">
-        <div class="description" v-if="!editMode">
-          <span v-if="description">{{ description }}</span>
-          <span v-else class="no-description">등록된 자기소개가 없습니다.</span>
+        <div class="nickname-wrap text-center">
+          <span class="nickname">{{ info.nickName }}</span>
         </div>
-        <a-textarea v-else-if="editMode"
-                    class="edit-description-area"
-                    placeholder="자기소개를 작성해주세요"
-                    :autosize="{ minRows: 2, maxRows: 4 }"
-                    maxlength="60"
-                    @input="copiedDescriptionChange($event.target.value)"
-                    :value="copiedDescription"></a-textarea>
-        <span v-if="isMe">
-          <a-button type="default"
+        <div class="subscript-button-wrap flex-container flex-center-sort" v-if="!isMe">
+          <a-button v-show="!isSubscribe"
+                    type="primary"
                     size="small"
-                    v-if="!editMode"
-                    @click="toggleEditMode()">수정</a-button>
-          <div v-else-if="editMode" style="float: right;">
-            <span class="description-length">({{ descriptionLength || 0 }}/60)</span>
+                    @click="subscribeReporter">구독하기
+          </a-button>
+          <a-button v-show="isSubscribe"
+                    size="small"
+                    @click="cancelSubscribeReporter">구독중
+          </a-button>
+        </div>
+        <div class="description-wrap" :class="noDescript">
+          <div class="description" v-if="!editMode">
+            <span v-if="description">{{ description }}</span>
+            <span v-else class="no-description">등록된 자기소개가 없습니다.</span>
+          </div>
+          <a-textarea v-else-if="editMode"
+                      class="edit-description-area"
+                      placeholder="자기소개를 작성해주세요"
+                      :autosize="{ minRows: 2, maxRows: 4 }"
+                      maxlength="60"
+                      @input="copiedDescriptionChange($event.target.value)"
+                      :value="copiedDescription"></a-textarea>
+          <span v-if="isMe">
             <a-button type="default"
                       size="small"
-                      @click="toggleEditMode()">취소</a-button>
-          <a-button type="primary"
-                    size="small"
-                    :loading="descriptionLoading"
-                    @click="updateDescription()">저장</a-button>
+                      v-if="!editMode"
+                      @click="toggleEditMode()">수정</a-button>
+            <div v-else-if="editMode" style="float: right;">
+              <span class="description-length">({{ descriptionLength || 0 }}/60)</span>
+              <a-button type="default"
+                        size="small"
+                        @click="toggleEditMode()">취소</a-button>
+            <a-button type="primary"
+                      size="small"
+                      :loading="descriptionLoading"
+                      @click="updateDescription()">저장</a-button>
+            </div>
+          </span>
+        </div>
+        <div class="badge-wrap flex-container flex-between-sort flex-row">
+          <a-badge @click="showSubListModal('readers')"
+                   :count="readerList.length"
+                   :overflow-count="999"
+                   :numberStyle="badgeStyle">
+            <div class="badge-box text-center">Readers</div>
+          </a-badge>
+          <a-badge @click="showSubListModal('reporters')"
+                   :count="reporterList.length"
+                   :overflow-count="999"
+                   :numberStyle="badgeStyle">
+            <div class="badge-box text-center">Reporter</div>
+          </a-badge>
+          <a-badge @click="showSubListModal('locals')"
+                   :count="localList.length"
+                   :overflow-count="999"
+                   :numberStyle="badgeStyle">
+            <div class="badge-box text-center">Locals</div>
+          </a-badge>
+          <a-modal :title="modalTitle"
+                   v-model="modalVisible"
+                   @ok="modalVisible = false">
+            <ul class="subscribe-wrap">
+              <li v-for="(user, index) in modalSubscribeList"
+                  :key="index"
+                  class="sub-item text-center"
+                  @click="routeProfilePage(user.userId)">
+                <span class="sub-item-text">{{ user.nickName }}</span>
+              </li>
+            </ul>
+          </a-modal>
+        </div>
+      </div>
+      <a-tabs defaultActiveKey="1" type="card">
+        <a-tab-pane tab="내 게시물" key="1">
+          <div class="post-list-section">
+            <virtual-list :postList="previewPostList"
+                          :load-type="'user'"
+                          :userId="isMe ? user.userId : info.userId "
+                          :avatar="profilePath"/>
           </div>
-        </span>
-      </div>
-      <div class="badge-wrap flex-container flex-between-sort flex-row">
-        <a-badge @click="showSubListModal('readers')"
-                 :count="readerList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Readers</div>
-        </a-badge>
-        <a-badge @click="showSubListModal('reporters')"
-                 :count="reporterList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Reporter</div>
-        </a-badge>
-        <a-badge @click="showSubListModal('locals')"
-                 :count="localList.length"
-                 :overflow-count="999"
-                 :numberStyle="badgeStyle">
-          <div class="badge-box text-center">Locals</div>
-        </a-badge>
-        <a-modal :title="modalTitle"
-                 v-model="modalVisible"
-                 @ok="modalVisible = false">
-          <ul class="subscribe-wrap">
-            <li v-for="(user, index) in modalSubscribeList"
-                :key="index"
-                class="sub-item text-center"
-                @click="routeProfilePage(user.userId)">
-              <span class="sub-item-text">{{ user.nickName }}</span>
-            </li>
-          </ul>
-        </a-modal>
-      </div>
-    </div>
-    <div class="post-list-section">
-      <virtual-list :postList="previewPostList"
-                    :load-type="'user'"
-                    :userId="isMe ? user.userId : info.userId "/>
-    </div>
+        </a-tab-pane>
+        <a-tab-pane v-if="isMe" tab="스크랩한 게시물" key="2">
+          <div class="post-list-section">
+            <virtual-list :postList="scrapPostList"
+                          :load-type="'scrap'"></virtual-list>
+          </div>
+        </a-tab-pane>
+      </a-tabs>
+    </a-spin>
   </div>
 </template>
 
@@ -126,10 +153,19 @@ export default {
   },
   watch: {
     async $route(to) {
+      this.pageSwitchLoading = true;
       const { userId } = to.params;
       await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
-      this.dataUpdate();
+      await this.dataUpdate();
+      this.pageSwitchLoading = false;
     },
+  },
+  async created() {
+    await this.initPreviewList();
+    if (this.isMe) {
+      await this.initScrapPostList();
+    }
+    await this.dataUpdate();
   },
   computed: {
     ...mapState('anotherUser', [
@@ -138,12 +174,16 @@ export default {
       'reporterList',
       'localList',
       'isSubscribe',
+      'reliabilityScore',
     ]),
     ...mapState('user', [
       'user',
     ]),
     ...mapState('post', [
       'previewPostList',
+    ]),
+    ...mapState('scrap', [
+      'scrapPostList',
     ]),
     ...mapGetters('user', [
       'avatar',
@@ -164,11 +204,24 @@ export default {
       if (this.copiedDescription) {
         return this.copiedDescription.length;
       }
+      return 0;
+    },
+    medalColorPicker() {
+      switch (parseInt(this.reliabilityScore / 100, 10)) {
+        case 0:
+        case 1:
+          return 'medal-bronze';
+        case 2:
+        case 3:
+          return 'medal-silver';
+        default:
+          return 'medal-gold';
+      }
     },
   },
   data() {
     return {
-      badgeStyle: {backgroundColor: '#1F74FF'},
+      badgeStyle: { backgroundColor: '#1F74FF' },
       editMode: false,
       description: '',
       copiedDescription: '',
@@ -176,11 +229,15 @@ export default {
       modalTitle: '',
       modalVisible: false,
       modalSubscribeList: [],
+      pageSwitchLoading: false,
     };
   },
   methods: {
     ...mapMutations('post', {
       initPreviewList: 'INIT_PREVIEW_LIST',
+    }),
+    ...mapMutations('scrap', {
+      initScrapPostList: 'INIT_SCRAP_POST_LIST',
     }),
     toggleEditMode() {
       this.editMode = !this.editMode;
@@ -188,9 +245,85 @@ export default {
         this.copiedDescription = this.description;
       }
     },
+    selectProfile() {
+      this.$refs.inputFile.click();
+    },
+    async changeDefaultProfile() {
+      await this.$store.dispatch('user/changeDefaultProfile', { userId: this.user.userId });
+    },
     uploadProcess(e) {
       const file = e.target.files[0];
-      if (/^image\//.test(file.type)) {
+      if (file && /^image\//.test(file.type)) {
+        // const reader = new FileReader();
+        // reader.readAsDataURL(file);
+        // reader.onload = (event) => {
+        //   // something
+        //   const image = new Image();
+        //   image.src = event.target.result;
+        //   image.onload = () => {
+        //     // resize
+        //     const canvas = document.createElement('canvas');
+        //     const maxSize = 1280;
+        //     let width = image.width;
+        //     let height = image.height;
+        //     if (width > height && width > maxSize) {
+        //       height *= maxSize / width;
+        //       width = maxSize;
+        //     } else if (height > maxSize) {
+        //       width *= maxSize / height;
+        //       height = maxSize;
+        //     }
+        //     canvas.width = width;
+        //     canvas.height = height;
+        //     canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+        //     const dataUrl = canvas.toDataURL('image/jpeg');
+        //     const BASE64 = ';base64,';
+        //
+        //     if (dataUrl.indexOf(BASE64) === -1) {
+        //       const parts = dataUrl.split(',');
+        //       const contentType = parts[0].split(':')[1];
+        //       const raw = parts[1];
+        //       const blob = new Blob([raw], {
+        //         type: contentType,
+        //       });
+        //       const formData = new FormData();
+        //       formData.append('image', blob);
+        //       const payload = {
+        //         formData,
+        //         nickName: this.user.nickName,
+        //         userId: this.user.userId,
+        //       };
+        //       this.$store.dispatch('user/updateProfileImage', payload);
+        //       this.$message.success('프로필 사진이 업데이트 되었습니다');
+        //       return;
+        //     }
+        //
+        //     const parts = dataUrl.split(BASE64);
+        //     const contentType = parts[0].split(':')[1];
+        //     const raw = window.atob(parts[1]);
+        //     const rawLength = raw.length;
+        //     const uInt8Array = new Uint8Array(rawLength);
+        //     for (let i = 0; i < rawLength; i++) {
+        //       uInt8Array[i] = raw.charCodeAt(i);
+        //     }
+        //     const blob = new Blob([uInt8Array], {
+        //       type: contentType,
+        //     });
+        //
+        //     const formData = new FormData();
+        //     formData.append('image', blob);
+        //     const payload = {
+        //       formData,
+        //       nickName: this.user.nickName,
+        //       userId: this.user.userId,
+        //     };
+        //     console.log(blob);
+        //     this.$store.dispatch('user/updateProfileImage', payload);
+        //     this.$message.success('프로필 사진이 업데이트 되었습니다');
+        //   };
+        // };
+
+
         const formData = new FormData();
         formData.append('image', file);
         const payload = {
@@ -241,7 +374,7 @@ export default {
       this.modalVisible = true;
     },
     routeProfilePage(userId) {
-      this.$router.replace({name: 'ProfilePage', params: {userId}});
+      this.$router.replace({ name: 'ProfilePage', params: { userId } });
       this.modalVisible = false;
     },
     async dataUpdate() {
@@ -249,10 +382,11 @@ export default {
         ? this.$store.state.user.user.description
         : this.$store.state.anotherUser.info.description;
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/isSubscribe', {reader: this.user.userId, reporter: this.info.userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'reporters', userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'locals', userId});
+      await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
+      await this.$store.dispatch('anotherUser/fetchUserReliabilityScore', { userId });
     },
     async subscribeReporter() {
       const payload = {
@@ -261,7 +395,7 @@ export default {
       };
       await this.$store.dispatch('anotherUser/subscribeReporter', payload);
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
     },
     async cancelSubscribeReporter() {
       const payload = {
@@ -270,15 +404,11 @@ export default {
       };
       await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
     },
     copiedDescriptionChange(e) {
       this.copiedDescription = e;
     },
-  },
-  async created() {
-    await this.initPreviewList();
-    await this.dataUpdate();
   },
 };
 </script>
@@ -296,12 +426,7 @@ export default {
       @include box-shadow;
       width: 100%;
       padding: 15px 25px;
-
-      .medal-wrap {
-        .medal {
-          color: $medal-silver;
-        }
-      }
+      margin-bottom: 10px;
 
       .score-wrap {
         @include v-text-align(25px);
@@ -324,6 +449,7 @@ export default {
           transition: ease-in-out 0.2s;
 
           .avatar-zone {
+            position: relative;
             width: 100%;
             height: 100%;
 
@@ -331,34 +457,49 @@ export default {
               width: 100%;
               height: auto;
             }
-
-            .default-profile {
-              width: 100%;
-              height: 100%;
-              background-color: rgba(226, 226, 226, 0.4);
-            }
           }
+
           .upload {
             position: absolute;
             cursor: pointer;
+            visibility: hidden;
+            display: none;
             opacity: 0;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
           }
+
           .upload-text {
             @include font-size-small;
+            @include v-text-align(30px);
+            z-index: 100;
             color: #fff;
             position: absolute;
             width: 100%;
             background: rgba(151, 151, 151, 0.9);
             bottom: 0;
             text-align: center;
+            cursor: pointer;
+
+            .back-drop {
+              position: absolute;
+              top: 0;
+              display: block;
+              width: 100%;
+              height: 150px;
+              background-color: transparent;
+            }
+
+            .edit-text {
+              width: 100%;
+            }
           }
         }
+
         .profile-upload-wrapper:hover {
-          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
         }
       }
 

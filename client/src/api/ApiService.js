@@ -80,6 +80,10 @@ export default {
     return axios.get('/api/auth/login');
   },
 
+  sessionInit() {
+    return axios.delete('/api/auth/login');
+  },
+
   /**
    * 이미지 업로드
    * @returns {AxiosPromise<any>}
@@ -130,11 +134,12 @@ export default {
    * @param lastId
    * @returns {AxiosPromise<any>}
    */
-  loadLocalPreviewPostList(localName, lastId) {
+  loadLocalPreviewPostList(localName, lastId, userId) {
     return axios.get('/api/posts/local', {
       params: {
         localName: decodeURI(localName),
         lastId,
+        userId,
       },
     });
   },
@@ -207,6 +212,12 @@ export default {
    */
   loadUserPostList(userId, lastId) {
     return axios.get(`/api/posts/users/${userId}`, {
+      params: { lastId },
+    });
+  },
+
+  loadLocalPostList(localId, lastId) {
+    return axios.get(`/api/posts/users/${localId}`, {
       params: { lastId },
     });
   },
@@ -357,4 +368,71 @@ export default {
     });
   },
 
+  updatePostEmotion(contentId, userId, emotionCode) {
+    return axios.post('/api/posts/emotion', {
+      contentId, userId, emotionCode,
+    });
+  },
+
+  getUserEmotion(userId, contentId) {
+    return axios.get('/api/posts/emotion/check/is-expressed', {
+      params: { userId, contentId },
+    });
+  },
+
+  getContentEmotionList(contentId) {
+    return axios.get('/api/posts/emotions/count', {
+      params: { contentId },
+    });
+  },
+
+  insertWord(userId, word) {
+    return axios.post('api/search', {
+      userId, word,
+    });
+  },
+
+  searchLocal(word) {
+    return axios.get('api/search/local', {
+      params: { word },
+    });
+  },
+
+  searchuser(word) {
+    return axios.get('api/search/user', {
+      params: word,
+    });
+  },
+
+  searchPostTitle(word) {
+    return axios.get('api/search/post-title', {
+      params: word,
+    });
+  },
+
+  getScrappedPostList(userId, lastId) {
+    return axios.get(`/api/scrap/${userId}`, {
+      params: { lastId },
+    });
+  },
+
+  contentScrappedCheck(userId, contentId) {
+    return axios.get('/api/scrap/check/is-scraped', {
+      params: { userId, contentId },
+    });
+  },
+
+  contentScrapping(userId, contentId) {
+    return axios.post('/api/scrap', {
+      userId, contentId,
+    });
+  },
+
+  cancelContentScrapping(userId, contentId) {
+    return axios.delete('/api/scrap', {
+      params: {
+        userId, contentId,
+      },
+    });
+  },
 };

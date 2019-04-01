@@ -33,6 +33,11 @@ const actions = {
     }
     commit(types.SET_LOGIN_STATUS, sessionResult.loginStatus);
   },
+  sessionInit: async ({ commit }) => {
+    await api.sessionInit()
+      .then(results => results.data)
+      .catch(err => err);
+  },
 };
 
 export default {

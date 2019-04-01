@@ -1,0 +1,4 @@
+export const FETCH_SCRAP_LIST = 'FETCH_SCRAP_LIST';
+export const UPDATE_LAST_ID = 'UPDATE_LAST_ID';
+export const INIT_SCRAP_POST_LIST = 'INIT_SCRAP_POST_LIST';
+

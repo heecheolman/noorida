@@ -13,7 +13,14 @@
         <a-list-item-meta>
           <a slot="title" class="title">{{ item.title }}</a>
           <span slot="description">{{ item.nickName || '지역이름' }}</span>
-          <a-avatar slot="avatar" src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"/>
+          <template v-if="loadType === 'user'">
+            <a-avatar v-if="avatar" slot="avatar" :src="`http://localhost:3000/images/${avatar}`"/>
+            <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+          </template>
+          <template v-else>
+            <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
+            <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+          </template>
         </a-list-item-meta>
         <span class="timeline">{{ item.updatedAt | timeline }}</span>
       </a-list-item>
@@ -40,6 +47,9 @@ export default {
     userId: {
       type: Number,
     },
+    avatar: {
+      type: String,
+    },
   },
   watch: {
     async $route(from) {
@@ -64,6 +74,7 @@ export default {
       switch (this.loadType) {
         case 'local': return this.loadMoreLocal;
         case 'user': return this.loadMoreUser;
+        case 'scrap': return this.loadMoreScrap;
         default: return () => {};
       }
     },
@@ -80,6 +91,9 @@ export default {
     ...mapActions('post', {
       loadMoreLocal: 'loadLocalPreviewPostList',
       loadMoreUser: 'loadUserPostList',
+    }),
+    ...mapActions('scrap', {
+      loadMoreScrap: 'loadScrapPostList',
     }),
     ...mapMutations('post', {
       initPostList: 'INIT_PREVIEW_LIST',

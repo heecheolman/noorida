@@ -21,6 +21,15 @@ const mutations = {
   [types.FETCH_USER_DATA](state, payload) {
     state.user = payload;
   },
+  [types.INIT_USER_DATA](state) {
+    state.user = {};
+    state.location = {
+      lat: 0,
+      lng: 0,
+      address: '',
+      placeId: '',
+    };
+  },
   [types.UPDATE_USER_LOCATION](state, payload) {
     state.location = payload;
   },
@@ -80,6 +89,14 @@ const actions = {
         .then(result => result.data)
         .catch(err => err);
     }
+  },
+
+  async changeDefaultProfile({ commit }, payload) {
+    const { userId } = payload;
+    await api.updateProfileImage(userId, null)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_PROFILE_IMAGE_SRC, null);
   },
 };
 

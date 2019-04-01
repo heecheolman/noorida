@@ -7,6 +7,7 @@ const state = {
   reporterList: [],
   localList: [],
   isSubscribe: false,
+  reliabilityScore: 0,
 };
 
 const mutations = {
@@ -45,6 +46,9 @@ const mutations = {
   },
   [types.UPDATE_IS_SUBSCRIBE](state, payload) {
     state.isSubscribe = payload;
+  },
+  [types.UPDATE_USER_RELIABILITY_SCORE](state, payload) {
+    state.reliabilityScore = payload;
   },
 };
 
@@ -111,6 +115,13 @@ const actions = {
     commit(types.UPDATE_IS_SUBSCRIBE, resData);
   },
 
+  async fetchUserReliabilityScore({ commit }, payload) {
+    const { userId } = payload;
+    const score = await api.getReliabilityScore(userId)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_USER_RELIABILITY_SCORE, score);
+  },
 };
 
 export default {

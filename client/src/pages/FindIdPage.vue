@@ -45,51 +45,51 @@
 </template>
 
 <script>
-  export default {
-    name: 'FindIdPage',
-    beforeCreate() {
-      this.form = this.$form.createForm(this);
-    },
-    data() {
-      return {
-        validateConfig: {
-          realName: {
-            rules: [{
-              required: true, message: '이름을 입력해주세요.',
-            }],
-          },
-          email: {
-            rules: [{
-              type: 'email', message: '이메일형식이 아니에요.',
-            }, {
-              required: true, message: '이메일을 입력해주세요.',
-            }],
-          },
+export default {
+  name: 'FindIdPage',
+  beforeCreate() {
+    this.form = this.$form.createForm(this);
+  },
+  data() {
+    return {
+      validateConfig: {
+        realName: {
+          rules: [{
+            required: true, message: '이름을 입력해주세요.',
+          }],
         },
-      };
-    },
-    methods: {
-      goToBack() {
-        this.$router.push({ name: 'LoginPage' });
+        email: {
+          rules: [{
+            type: 'email', message: '이메일형식이 아니에요.',
+          }, {
+            required: true, message: '이메일을 입력해주세요.',
+          }],
+        },
       },
-      FindId(e) {
-        e.preventDefault();
-        this.form.validateFields(async (err, values) => {
-          if (!err) {
-            await this.$store.dispatch('find/findIdProcess', {
-              realName: values.realName,
-              email: values.email,
-            });
-            if (this.$store.getters['find/getFindNickname']) {
-              this.$router.replace({ name: 'ShowFoundIdPage' });
-            } else {
-              this.$message.warning('일치하는 회원정보가 없습니다.');
-            }
+    };
+  },
+  methods: {
+    goToBack() {
+      this.$router.push({ name: 'LoginPage' });
+    },
+    FindId(e) {
+      e.preventDefault();
+      this.form.validateFields(async (err, values) => {
+        if (!err) {
+          await this.$store.dispatch('find/findIdProcess', {
+            realName: values.realName,
+            email: values.email,
+          });
+          if (this.$store.getters['find/getFindNickname']) {
+            this.$router.replace({ name: 'ShowFoundIdPage' });
+          } else {
+            this.$message.warning('일치하는 회원정보가 없습니다.');
           }
-        });
-      },
+        }
+      });
     },
-  };
+  },
+};
 </script>
 
 <style lang="scss" scoped>

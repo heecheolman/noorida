@@ -14,6 +14,9 @@ const state = {
   evaluationScore: 0,
   isEvaluated: false,
   reliabilityScore: 0,
+  contentScrapState: false,
+  userEmotion: 0,
+  postEmotions: {},
 };
 
 const mutations = {
@@ -37,6 +40,7 @@ const mutations = {
     state.busy = false;
     state.lastId = -1;
     state.hasNextPost = true;
+    state.postEmotions = {};
   },
   [types.INIT_TITLE_CONTENT](state) {
     state.title = '';
@@ -63,6 +67,15 @@ const mutations = {
   [types.UPDATE_RELIABILITY_SCORE](state, payload) {
     state.reliabilityScore = payload;
   },
+  [types.UPDATE_SCRAPPED_STATE](state, payload) {
+    state.contentScrapState = payload;
+  },
+  [types.UPDATE_USER_EMOTION](state, payload) {
+    state.userEmotion = payload;
+  },
+  [types.UPDATE_POST_EMOTIONS](state, payload) {
+    state.postEmotions = { ...payload };
+  },
 };
 
 const getters = {
@@ -74,7 +87,7 @@ const actions = {
       rootState.user.user.userId,
       state.title,
       state.content,
-      rootState.user.location.address,
+      '대한민국 서울특별시 노원구 상계8동',
     )
       .then(results => results)
       .catch(err => err);
@@ -167,6 +180,56 @@ const actions = {
     const resData = await api.updatePostEmotion(contentId, userId, emotionCode)
       .then(result => result.data)
       .catch(err => err);
+  },
+
+  async getUserEmotion({ commit, rootState }, payload) {
+    const { contentId } = payload;
+    const resData = await api.getUserEmotion(rootState.user.user.userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_USER_EMOTION, resData.emotionCode);
+  },
+
+  async getEmotionList({ commit }, payload) {
+    const { contentId } = payload;
+    const resData = await api.getContentEmotionList(contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    const { like, happy, angry, sad } = resData;
+    commit(types.UPDATE_POST_EMOTIONS, {
+      like: like || 0,
+      happy: happy || 0,
+      angry: angry || 0,
+      sad: sad || 0,
+    });
+  },
+
+  async contentScrappedCheck({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.contentScrappedCheck(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_SCRAPPED_STATE, resData);
+  },
+
+  async contentScrapping({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.contentScrapping(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_SCRAPPED_STATE, true);
+    }
+  },
+
+  async cancelContentScrapping({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.cancelContentScrapping(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_SCRAPPED_STATE, false);
+    }
   },
 };
 

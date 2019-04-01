@@ -74,6 +74,7 @@ export default {
       switch (this.loadType) {
         case 'local': return this.loadMoreLocal;
         case 'user': return this.loadMoreUser;
+        case 'scrap': return this.loadMoreScrap;
         default: return () => {};
       }
     },
@@ -90,6 +91,9 @@ export default {
     ...mapActions('post', {
       loadMoreLocal: 'loadLocalPreviewPostList',
       loadMoreUser: 'loadUserPostList',
+    }),
+    ...mapActions('scrap', {
+      loadMoreScrap: 'loadScrapPostList',
     }),
     ...mapMutations('post', {
       initPostList: 'INIT_PREVIEW_LIST',

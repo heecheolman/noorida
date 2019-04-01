@@ -80,6 +80,10 @@ export default {
     return axios.get('/api/auth/login');
   },
 
+  sessionInit() {
+    return axios.delete('/api/auth/login');
+  },
+
   /**
    * 이미지 업로드
    * @returns {AxiosPromise<any>}
@@ -333,27 +337,27 @@ export default {
       params: { userId, contentId },
     });
   },
-  isBlocked(applicant, blockedUser) {
+  isBlocked(myUserId, targetUserId) {
     return axios.get('/api/block/is-blocked', {
-      params: { applicant, blockedUser },
+      params: { myUserId, targetUserId },
     });
   },
 
-  blockUser(applicant, blockedUser) {
+  blockUser(myUserId, targetUserId) {
     return axios.post('api/block', {
-      applicant, blockedUser,
+      myUserId, targetUserId,
     });
   },
 
-  blockList(applicant, blockedUser) {
+  blockList(myUserId) {
     return axios.get('api/block', {
-      params: { applicant, blockedUser },
+      params: { myUserId },
     });
   },
 
-  cancelBlock(applicant, blockedUser) {
+  cancelBlock(myUserId, targetUserId) {
     return axios.delete('api/block', {
-      params: { applicant, blockedUser },
+      params: { myUserId, targetUserId },
     });
   },
 
@@ -369,6 +373,18 @@ export default {
     });
   },
 
+  getUserEmotion(userId, contentId) {
+    return axios.get('/api/posts/emotion/check/is-expressed', {
+      params: { userId, contentId },
+    });
+  },
+
+  getContentEmotionList(contentId) {
+    return axios.get('/api/posts/emotions/count', {
+      params: { contentId },
+    });
+  },
+
   insertWord(userId, word) {
     return axios.post('api/search', {
       userId, word,
@@ -380,14 +396,42 @@ export default {
       params: { word: encodeURI(word) },
     });
   },
+  
   searchUser(word) {
     return axios.get('api/search/user', {
       params: { word: encodeURI(word) },
     });
   },
+
   searchPostTitle(word) {
     return axios.get('api/search/post-title', {
       params: { word: encodeURI(word) },
+    });
+  },
+
+  getScrappedPostList(userId, lastId) {
+    return axios.get(`/api/scrap/${userId}`, {
+      params: { lastId },
+    });
+  },
+
+  contentScrappedCheck(userId, contentId) {
+    return axios.get('/api/scrap/check/is-scraped', {
+      params: { userId, contentId },
+    });
+  },
+
+  contentScrapping(userId, contentId) {
+    return axios.post('/api/scrap', {
+      userId, contentId,
+    });
+  },
+
+  cancelContentScrapping(userId, contentId) {
+    return axios.delete('/api/scrap', {
+      params: {
+        userId, contentId,
+      },
     });
   },
 };

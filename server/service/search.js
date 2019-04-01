@@ -4,8 +4,8 @@ module.exports = {
   insertWord: async ({ userId, word }) => {
     const result = await knex('search')
       .insert({ userId, word })
-      .then(results => resutls)
-      .catch(err => err)
+      .then(results => results)
+      .catch(err => err);
     return result;
   },
 

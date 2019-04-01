@@ -1,6 +1,10 @@
 const knex = require('./service.config');
 
 module.exports = {
+  /**
+   * 게시글 작성
+   */
+
   publishNews: async ({ userId, title, content, address }) => {
     const localId = await knex('local')
       .where('localName', address)
@@ -29,7 +33,12 @@ module.exports = {
     return result;
   },
 
+  /**
+   * 지역 소식 미리보기 list
+   */
+
   loadPreviewLocalNewsList: async ({ localName, lastId }) => {
+    const userId = 1;
     const LIMIT = 15;
     const extractedData = await knex('local')
       .where({ localName })
@@ -66,6 +75,7 @@ module.exports = {
           .then(results => results)
           .catch(err => err);
 
+
         /* 초기일시 lastId 기준 처리 */
         lastId = lastId === -1 ? 0 : lastId;
 
@@ -78,6 +88,10 @@ module.exports = {
     }
     return {};
   },
+
+  /**
+   * 유저가 작성한 게시글 list
+   */
 
   loadUserPostList: async ({ userId, lastId }) => {
     const LIMIT = 15;
@@ -103,6 +117,12 @@ module.exports = {
     };
   },
 
+  /**
+   * 지역관련 포스트  list
+   * localId 필요
+   * 검색 페이지 에서 사용 하면 됨
+   */
+
   loadLocalPostList: async ({ localId, lastId }) => {
     const LIMIT = 15;
     const opr = lastId < 0
@@ -110,13 +130,19 @@ module.exports = {
       : '<';
 
     const result = await knex('contents')
-      .select('*')
-      .where('localId', localId)
-      .where('contentId', opr, lastId)
-      .orderBy('createdAt', 'desc')
-      .limit(LIMIT)
+      .select('users.userId',
+        'users.nickName',
+        'users.avatar',
+        'contents.contentId',
+        'contents.title',
+        'contents.content',
+        'local.localName')
+      .where('local.localId', localId)
+      .join('users', 'users.userId', '=', 'contents.userId')
+      .join('local', 'local.localId', '=', 'contents.localId')
       .then(results => results)
       .catch(err => err);
+
 
     lastId = lastId === -1 ? 0 : lastId;
 
@@ -163,10 +189,46 @@ module.exports = {
   },
 
   countEmotion: async ({ contentId }) => {
+    const countLike = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 1)
+      .then(results => results)
+      .catch(err => err);
+
+    const countHappy = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 2)
+      .then(results => results)
+      .catch(err => err);
+
+    const countAngry = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 3)
+      .then(results => results)
+      .catch(err => err);
+
+    const countSad = await knex('emotions')
+      .count('emotionCode')
+      .where({ contentId })
+      .where('emotionCode', 4)
+      .then(results => results)
+      .catch(err => err);
+
+    return {
+      like: Object.values(countLike[0])[0],
+      happy: Object.values(countHappy[0])[0],
+      angry: Object.values(countAngry[0])[0],
+      sad: Object.values(countSad[0])[0],
+    };
+  },
+
+  isExpressedEmotion: async ({ userId, contentId }) => {
     const result = await knex('emotions')
-      .count({ emotionCode })
-      .where(contentId)
-      .groupBy(emotionCode)
+      .select('emotionCode')
+      .where({ userId, contentId })
       .then(results => results)
       .catch(err => err);
     return result;

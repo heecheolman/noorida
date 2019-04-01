@@ -9,6 +9,7 @@ import comment from './modules/comment/comment';
 import anotherUser from './modules/another-user/another-user';
 import subscribe from './modules/subscribe/subscribe';
 import search from './modules/search/search';
+import scrap from './modules/scrap/scrap';
 
 Vue.use(Vuex);
 
@@ -22,6 +23,7 @@ export default new Vuex.Store({
     anotherUser,
     subscribe,
     search,
+    scrap,
   },
   state: {},
   getters: {},

@@ -8,8 +8,8 @@
           placeholder="input search text"
           enterButton
           @input="searchWordChecker"
-          v-model="searchData" ></a-input-search>
-        <!--v-model말고 다른걸로 바꿔야 할것같음-->
+          v-model="searchData"></a-input-search>
+   
         <br /><br />
       </div>
       <div>
@@ -69,7 +69,8 @@ export default {
         pane3: '게시글',
       },
       searchData: '',
-      // userId: this.$store.state.user.user.userId,
+      userId: this.$store.state.user.user.userId,
+
     };
   },
   // created () {
@@ -82,9 +83,7 @@ export default {
     //     userId: this.$store.state.user.user.userId, // 유저아이디 전송!
     //   });
     // },
-    routePage() {
-      this.$router.replace({ name: 'LocalSearchTab' });
-    },
+    
     searchWordChecker: _.debounce(
       async function () {
         const searchWord = this.searchData;
@@ -98,10 +97,6 @@ export default {
         await this.$store.dispatch('search/loadSearchPost', {
           word: trimWord,
         });
-        // const resData = this.$api.searchLocal(encodeURI(word))
-        //   .then(result => result.data)
-        //   .catch(err => err);
-        // console.log('resData: ', resData);
       }, 500,
     ),
   },
@@ -123,7 +118,7 @@ export default {
     font-size: 18px;
   }
   /*.tab-design{*/
-    /*width: 100px;*/
+  /*width: 100px;*/
   /*}*/
 
   .design-box{

@@ -51,6 +51,12 @@ router.get('/login', async (req, res) => {
   }
 });
 
+router.delete('/login', async (req, res) => {
+  const { session } = req;
+  delete mapper[session.key];
+  res.json('ok');
+});
+
 router.post('/login', async (req, res) => {
   const { nickName, password } = req.body;
   const result = await loginService.login({ nickName, password })

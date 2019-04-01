@@ -106,20 +106,75 @@
             <ul class="subscribe-wrap">
               <li v-for="(user, index) in modalSubscribeList"
                   :key="index"
-                  class="sub-item text-center"
+                  class="sub-item flex-container flex-row"
                   @click="routeProfilePage(user.userId)">
-                <span class="sub-item-text">{{ user.nickName }}</span>
+                <a-avatar v-if="user.avatar" slot="avatar"
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+                <div class="sub-item-text text-center">{{ user.nickName }}</div>
               </li>
             </ul>
           </a-modal>
         </div>
+        <div v-if="!isMe" class="flex-container flex-end" style="padding-right: 10px;">
+          <a-button size="small" @click="blockVisible = true">차단</a-button>
+          <a-modal v-model="blockVisible"
+                   title="리포터 차단하기"
+                   okText="차단"
+                   cancelText="취소"
+                   @ok="userBlockProcess()"
+                   :confirm-loading="modalLoading">
+            <div class="modal-container">
+              <div class="margin--bottom-20">
+                차단할 리포터는 <span style="color: #1F74FF;">{{ info.nickName }}</span> 입니다.
+              </div>
+              <p class="info-text">해당 리포터를 차단하게되면, 관련된 뉴스들을 볼 수 없게됩니다.<br>차단하시겠습니까?</p>
+
+              <p class="info-text">차단 후 이전 페이지로 돌아갑니다.</p>
+            </div>
+          </a-modal>
+        </div>
       </div>
-      <div class="post-list-section">
-        <virtual-list :postList="previewPostList"
-                      :load-type="'user'"
-                      :userId="isMe ? user.userId : info.userId "
-                      :avatar="profilePath"/>
-      </div>
+      <a-tabs defaultActiveKey="1" type="card">
+        <a-tab-pane tab="게시물" key="1">
+          <div class="post-list-section">
+            <virtual-list :postList="previewPostList"
+                          :load-type="'user'"
+                          :userId="isMe ? user.userId : info.userId "
+                          :avatar="profilePath"/>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane v-if="isMe" tab="스크랩한 게시물" key="2">
+          <div class="post-list-section">
+            <virtual-list :postList="scrapPostList"
+                          :load-type="'scrap'"></virtual-list>
+          </div>
+        </a-tab-pane>
+        <a-tab-pane v-if="isMe" tab="차단목록" key="3">
+          <ul class="block-list-wrap">
+            <li v-for="(user, index) in blockedUserList"
+                :key="index" class="user-list-item flex-container flex-between-sort flex-row">
+              <div class="block-avatar-wrap">
+                <a-avatar v-if="user.avatar"
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                <a-avatar v-else icon="user"></a-avatar>
+              </div>
+              <div class="block-nickname-wrap text-center">
+                {{ user.nickName }}
+              </div>
+              <div class="block-action-wrap">
+                <a-popconfirm title="차단을 해제하시겠습니까?"
+                              okText="해제"
+                              cancelText="취소"
+                              @confirm="cancelBlock(user.userId)"
+                              placement="topRight">
+                  <a-button size="small">차단 해제</a-button>
+                </a-popconfirm>
+              </div>
+            </li>
+          </ul>
+        </a-tab-pane>
+      </a-tabs>
     </a-spin>
   </div>
 </template>
@@ -152,6 +207,11 @@ export default {
   },
   async created() {
     await this.initPreviewList();
+    if (this.isMe) {
+      await this.initScrapPostList();
+      await this.initBlockedUserList();
+      await this.$store.dispatch('user/fetchBlockUserList');
+    }
     await this.dataUpdate();
   },
   computed: {
@@ -165,9 +225,13 @@ export default {
     ]),
     ...mapState('user', [
       'user',
+      'blockedUserList',
     ]),
     ...mapState('post', [
       'previewPostList',
+    ]),
+    ...mapState('scrap', [
+      'scrapPostList',
     ]),
     ...mapGetters('user', [
       'avatar',
@@ -192,15 +256,20 @@ export default {
     },
     medalColorPicker() {
       switch (parseInt(this.reliabilityScore / 100, 10)) {
-        case 0: case 1: return 'medal-bronze';
-        case 2: case 3: return 'medal-silver';
-        default: return 'medal-gold';
+        case 0:
+        case 1:
+          return 'medal-bronze';
+        case 2:
+        case 3:
+          return 'medal-silver';
+        default:
+          return 'medal-gold';
       }
     },
   },
   data() {
     return {
-      badgeStyle: {backgroundColor: '#1F74FF'},
+      badgeStyle: { backgroundColor: '#1F74FF' },
       editMode: false,
       description: '',
       copiedDescription: '',
@@ -209,11 +278,20 @@ export default {
       modalVisible: false,
       modalSubscribeList: [],
       pageSwitchLoading: false,
+      blockVisible: false,
+      modalLoading: false,
     };
   },
   methods: {
     ...mapMutations('post', {
       initPreviewList: 'INIT_PREVIEW_LIST',
+    }),
+    ...mapMutations('scrap', {
+      initScrapPostList: 'INIT_SCRAP_POST_LIST',
+    }),
+    ...mapMutations('user', {
+      initBlockedUserList: 'INIT_BLOCKED_USER_LIST',
+      deleteBlockedUserListElement: 'DELETE_BLOCKED_USER_LIST_ELEMENT',
     }),
     toggleEditMode() {
       this.editMode = !this.editMode;
@@ -230,89 +308,85 @@ export default {
     uploadProcess(e) {
       const file = e.target.files[0];
       if (file && /^image\//.test(file.type)) {
-
-        /**
-         * 클라이언트사이드 이미지 최적화
-         */
-
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = event => {
-          // something
-          const image = new Image();
-          image.src = event.target.result;
-          image.onload = imageEvent => {
-            // resize
-            const canvas = document.createElement('canvas');
-            const maxSize = 1280;
-            let width = image.width;
-            let height = image.height;
-            if (width > height && width > maxSize) {
-              height *= maxSize / width;
-              width = maxSize;
-            } else if (height > maxSize){
-              width *= maxSize / height;
-              height = maxSize;
-            }
-            canvas.width = width;
-            canvas.height = height;
-            canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-            const dataUrl = canvas.toDataURL('image/jpeg');
-            const BASE64 = ';base64,';
-
-            if (dataUrl.indexOf(BASE64) === -1) {
-              const parts = dataUrl.split(',');
-              const contentType = parts[0].split(':')[1];
-              const raw = parts[1];
-              const blob = new Blob([raw], {
-                type: contentType,
-              });
-              const formData = new FormData();
-              formData.append('image', blob);
-              const payload = {
-                formData,
-                nickName: this.user.nickName,
-                userId: this.user.userId,
-              };
-              this.$store.dispatch('user/updateProfileImage', payload);
-              this.$message.success('프로필 사진이 업데이트 되었습니다');
-              return;
-            }
-
-            const parts = dataUrl.split(BASE64);
-            const contentType = parts[0].split(':')[1];
-            const raw = window.atob(parts[1]);
-            const rawLength = raw.length;
-            const uInt8Array = new Uint8Array(rawLength);
-            for (let i = 0; i < rawLength; i++) {
-              uInt8Array[i] = raw.charCodeAt(i);
-            }
-            const blob = new Blob([uInt8Array], {
-              type: contentType,
-            });
-
-            const formData = new FormData();
-            formData.append('image', blob);
-            const payload = {
-              formData,
-              nickName: this.user.nickName,
-              userId: this.user.userId,
-            };
-            this.$store.dispatch('user/updateProfileImage', payload);
-            this.$message.success('프로필 사진이 업데이트 되었습니다');
-          };
-        };
-
-
-        // const formData = new FormData();
-        // formData.append('image', file);
-        // const payload = {
-        //   formData,
-        //   nickName: this.user.nickName,
-        //   userId: this.user.userId,
+        // const reader = new FileReader();
+        // reader.readAsDataURL(file);
+        // reader.onload = (event) => {
+        //   // something
+        //   const image = new Image();
+        //   image.src = event.target.result;
+        //   image.onload = () => {
+        //     // resize
+        //     const canvas = document.createElement('canvas');
+        //     const maxSize = 1280;
+        //     let width = image.width;
+        //     let height = image.height;
+        //     if (width > height && width > maxSize) {
+        //       height *= maxSize / width;
+        //       width = maxSize;
+        //     } else if (height > maxSize) {
+        //       width *= maxSize / height;
+        //       height = maxSize;
+        //     }
+        //     canvas.width = width;
+        //     canvas.height = height;
+        //     canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+        //     const dataUrl = canvas.toDataURL('image/jpeg');
+        //     const BASE64 = ';base64,';
+        //
+        //     if (dataUrl.indexOf(BASE64) === -1) {
+        //       const parts = dataUrl.split(',');
+        //       const contentType = parts[0].split(':')[1];
+        //       const raw = parts[1];
+        //       const blob = new Blob([raw], {
+        //         type: contentType,
+        //       });
+        //       const formData = new FormData();
+        //       formData.append('image', blob);
+        //       const payload = {
+        //         formData,
+        //         nickName: this.user.nickName,
+        //         userId: this.user.userId,
+        //       };
+        //       this.$store.dispatch('user/updateProfileImage', payload);
+        //       this.$message.success('프로필 사진이 업데이트 되었습니다');
+        //       return;
+        //     }
+        //
+        //     const parts = dataUrl.split(BASE64);
+        //     const contentType = parts[0].split(':')[1];
+        //     const raw = window.atob(parts[1]);
+        //     const rawLength = raw.length;
+        //     const uInt8Array = new Uint8Array(rawLength);
+        //     for (let i = 0; i < rawLength; i++) {
+        //       uInt8Array[i] = raw.charCodeAt(i);
+        //     }
+        //     const blob = new Blob([uInt8Array], {
+        //       type: contentType,
+        //     });
+        //
+        //     const formData = new FormData();
+        //     formData.append('image', blob);
+        //     const payload = {
+        //       formData,
+        //       nickName: this.user.nickName,
+        //       userId: this.user.userId,
+        //     };
+        //     console.log(blob);
+        //     this.$store.dispatch('user/updateProfileImage', payload);
+        //     this.$message.success('프로필 사진이 업데이트 되었습니다');
+        //   };
         // };
-        // this.$store.dispatch('user/updateProfileImage', payload);
-        // this.$message.success('프로필 사진이 업데이트 되었습니다');
+
+
+        const formData = new FormData();
+        formData.append('image', file);
+        const payload = {
+          formData,
+          nickName: this.user.nickName,
+          userId: this.user.userId,
+        };
+        this.$store.dispatch('user/updateProfileImage', payload);
+        this.$message.success('프로필 사진이 업데이트 되었습니다');
       }
     },
     async updateDescription() {
@@ -354,7 +428,7 @@ export default {
       this.modalVisible = true;
     },
     routeProfilePage(userId) {
-      this.$router.replace({name: 'ProfilePage', params: {userId}});
+      this.$router.replace({ name: 'ProfilePage', params: { userId } });
       this.modalVisible = false;
     },
     async dataUpdate() {
@@ -362,10 +436,10 @@ export default {
         ? this.$store.state.user.user.description
         : this.$store.state.anotherUser.info.description;
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/isSubscribe', {reader: this.user.userId, reporter: this.info.userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'reporters', userId});
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'locals', userId});
+      await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
       await this.$store.dispatch('anotherUser/fetchUserReliabilityScore', { userId });
     },
     async subscribeReporter() {
@@ -375,7 +449,7 @@ export default {
       };
       await this.$store.dispatch('anotherUser/subscribeReporter', payload);
       const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {fetchType: 'readers', userId});
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
     },
     async cancelSubscribeReporter() {
       const payload = {
@@ -389,9 +463,29 @@ export default {
     copiedDescriptionChange(e) {
       this.copiedDescription = e;
     },
+    async cancelBlock(targetUserId) {
+      const payload = { targetUserId };
+      await this.$store.dispatch('user/cancelBlock', payload);
+      await this.$store.dispatch('user/fetchBlockUserList');
+      this.deleteBlockedUserListElement(targetUserId);
+      this.$message.success('차단해제 완료');
+    },
+    async userBlockProcess() {
+      this.modalLoading = true;
+      const payload = {
+        myUserId: this.user.userId,
+        targetUserId: this.info.userId,
+      };
+      await this.$store.dispatch('user/blockUserProcess', payload);
+      this.modalLoading = false;
+      this.blockVisible = false;
+      this.$message.success(`${this.info.nickName} 님을 차단했습니다.`);
+      this.$router.replace({ name: 'LocalNewsTab' });
+    },
   },
 };
 </script>
+
 
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/mixin';
@@ -406,6 +500,7 @@ export default {
       @include box-shadow;
       width: 100%;
       padding: 15px 25px;
+      margin-bottom: 10px;
 
       .score-wrap {
         @include v-text-align(25px);
@@ -415,6 +510,12 @@ export default {
           @include font-weight-5;
           color: $info;
         }
+      }
+
+      .info-text {
+        margin-top: 10px;
+        @include font-size-normal;
+        color: $info;
       }
 
       .avatar-wrap {
@@ -437,6 +538,7 @@ export default {
               height: auto;
             }
           }
+
           .upload {
             position: absolute;
             cursor: pointer;
@@ -448,6 +550,7 @@ export default {
             width: 100%;
             height: 100%;
           }
+
           .upload-text {
             @include font-size-small;
             @include v-text-align(30px);
@@ -468,13 +571,15 @@ export default {
               height: 150px;
               background-color: transparent;
             }
+
             .edit-text {
               width: 100%;
             }
           }
         }
+
         .profile-upload-wrapper:hover {
-          box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
         }
       }
 
@@ -535,6 +640,18 @@ export default {
         }
       }
     }
+
+    .block-list-wrap {
+      margin: 0;
+      padding: 0 0 20px 0;
+
+      .user-list-item {
+        width: 100%;
+        height: 50px;
+        padding: 0 20px;
+        border-bottom: 1px solid #d7d7d7;
+      }
+    }
   }
 
   .ant-modal-body {
@@ -548,11 +665,20 @@ export default {
       overflow-y: scroll;
 
       .sub-item {
-        @include v-text-align(40px);
+        display: flex;
+        align-items: center;
+        @include v-text-align(50px);
         width: 100%;
         border-bottom: 1px solid #e2e2e2;
+        cursor: pointer;
+        transition: .1s ease-in;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.02);
+        }
 
         .sub-item-text {
+          width: 100%;
           @include font-size-normal;
           color: $info;
         }

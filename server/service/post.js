@@ -36,9 +36,7 @@ module.exports = {
   /**
    * 지역 소식 미리보기 list
    */
-
   loadPreviewLocalNewsList: async ({ localName, lastId , userId}) => {
-
     const LIMIT = 15;
     const extractedData = await knex('local')
       .where({ localName })
@@ -78,6 +76,7 @@ module.exports = {
             'contents.title',
             'contents.content',
             'contents.updatedAt',
+            'contents.views',
             'local.localName',
           )
           .where('local.localId', extLocalId)
@@ -143,6 +142,7 @@ module.exports = {
     const opr = lastId < 0
       ? '>'
       : '<';
+
     const result = await knex('contents')
       .select('users.userId',
         'users.nickName',
@@ -183,6 +183,7 @@ module.exports = {
   },
 
   emotion: async ({ userId, contentId, emotionCode }) => {
+
     const extractedRow = await knex('emotions')
       .select('emotionId')
       .where({ userId, contentId })
@@ -201,11 +202,11 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
     return result;
-  },
+    },
 
   countEmotion: async ({ contentId }) => {
 
-    const countLike = await knex('emotions')
+   const countLike = await knex('emotions')
       .count('emotionCode')
       .where({ contentId })
       .where('emotionCode', 1)
@@ -233,11 +234,13 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
-    return { "like": Object.values(countHappy[0])[0],
+
+    return { "like": Object.values(countLike[0])[0],
       "happy": Object.values(countHappy[0])[0],
       "angry": Object.values(countAngry[0])[0],
       "sad": Object.values(countSad[0])[0],
     };
+
   },
 
   isExpressedEmotion: async ({ userId, contentId }) => {
@@ -276,5 +279,28 @@ module.exports = {
       .catch(err => err);
     return result.length !== 0;
   },
+  insertViews: async ({ userId, contentId }) => {
+    const result = await knex('view')
+      .insert({ userId, contentId })
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
 
+  views: async ({ contentId }) => {
+    const viewsData = await knex('view')
+      .count('*')
+      .where({ contentId })
+      .then(results => results)
+      .catch (err => err);
+
+    const updateViews = await knex('contents')
+      .update('views',Object.values(viewsData[0])[0])
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+
+    return updateViews;
+
+  }
 };

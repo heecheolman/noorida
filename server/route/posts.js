@@ -23,6 +23,7 @@ router.get('/local', async (req, res) => {
     .catch(err => err);
 
   res.json(result);
+  console.log(result);
 });
 
 /**
@@ -140,7 +141,6 @@ router.get('/evaluation/:userId', async (req, res) => {
  * 게시글 평가 여부 확인
  */
 
-
 router.get('/evaluation/check/is-evaluated', async (req, res) => {
   const { userId, contentId } = req.query;
   const result = await postService.isEvaluated({ userId, contentId })
@@ -152,4 +152,21 @@ router.get('/evaluation/check/is-evaluated', async (req, res) => {
     res.json(false);
   }
 });
+
+router.post('/views', async (req, res) => {
+  const { userId, contentId } = req.body;
+  const result = await postService.insertViews({ userId, contentId })
+    .then(results => results)
+    .catch(err => err);
+  return res.json('ok');
+});
+
+router.get('/views', async (req, res) => {
+  const { contentId } = req.query;
+  const result = await postService.views({ contentId })
+    .then (results => results)
+    .catch( err => err);
+  return result;
+});
+
 module.exports = router;

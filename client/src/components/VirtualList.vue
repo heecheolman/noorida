@@ -12,7 +12,12 @@
 
         <a-list-item-meta>
           <a slot="title" class="title">{{ item.title }}</a>
-          <span slot="description">{{ item.nickName || '지역이름' }}</span>
+          <div slot="description" class="description">
+            {{ item.nickName }}
+            <span class="view">
+              <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.views }}
+            </span>
+          </div>
           <template v-if="loadType === 'user'">
             <a-avatar v-if="avatar" slot="avatar" :src="`http://localhost:3000/images/${avatar}`"/>
             <a-avatar v-else slot="avatar" icon="user"></a-avatar>
@@ -141,6 +146,23 @@ export default {
           .ant-list-item-meta-description {
             @include font-size-xx-small;
             line-height: 22px;
+
+            .description {
+              display: flex;
+              align-items: center;
+              width: 100%;
+
+              .view {
+                display: flex;
+                align-items: center;
+                padding: 0 5px;
+                height: 17px;
+                border-radius: 15px;
+                background-color: #fff;
+                border: 1px solid rgba(215, 215, 215, 0.4);
+                margin-right: 4px;
+              }
+            }
           }
         }
       }

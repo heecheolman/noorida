@@ -112,14 +112,22 @@ module.exports = {
       .where('userId', userId)
       .where('contentId', opr, lastId)
       .orderBy('createdAt', 'desc')
+      .join('local', 'local.localId', '=', 'contents.localId')
       .limit(LIMIT)
       .then(results => results)
       .catch(err => err);
 
-    lastId = lastId === -1 ? 0 : lastId;
+    const nickName = await knex('users')
+      .select('nickName')
+      .where({ userId })
+      .then(nickNameData => JSON.parse(JSON.stringify(nickNameData))[0].nickName)
+      .catch(e => e);
 
+    /* 닉네임 추가 */
+    const extendResult = JSON.parse(JSON.stringify(result)).map(post => ({ ...post, nickName }));
+    lastId = lastId === -1 ? 0 : lastId;
     return {
-      result,
+      result: extendResult,
       lastId: result.length ? result[result.length - 1].contentId : lastId,
       hasNextPost: result.length === LIMIT,
     };

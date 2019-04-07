@@ -463,18 +463,18 @@ export default {
     copiedDescriptionChange(e) {
       this.copiedDescription = e;
     },
-    async cancelBlock(targetUserId) {
-      const payload = { targetUserId };
+    async cancelBlock(targetId) {
+      const payload = { targetId };
       await this.$store.dispatch('user/cancelBlock', payload);
       await this.$store.dispatch('user/fetchBlockUserList');
-      this.deleteBlockedUserListElement(targetUserId);
+      this.deleteBlockedUserListElement(targetId);
       this.$message.success('차단해제 완료');
     },
     async userBlockProcess() {
       this.modalLoading = true;
       const payload = {
         myUserId: this.user.userId,
-        targetUserId: this.info.userId,
+        targetId: this.info.userId,
       };
       await this.$store.dispatch('user/blockUserProcess', payload);
       this.modalLoading = false;

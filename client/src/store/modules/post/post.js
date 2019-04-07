@@ -78,8 +78,7 @@ const mutations = {
   },
 };
 
-const getters = {
-};
+const getters = {};
 
 const actions = {
   async uploadProcess({ rootState }) {
@@ -87,7 +86,7 @@ const actions = {
       rootState.user.user.userId,
       state.title,
       state.content,
-      '대한민국 서울특별시 노원구 상계8동',
+      rootState.user.location.address,
     )
       .then(results => results)
       .catch(err => err);
@@ -96,7 +95,7 @@ const actions = {
   async loadLocalPreviewPostList({ commit, state, rootState }) {
     if (state.hasNextPost) {
       state.loading = true;
-      const resData = await api.loadLocalPreviewPostList(rootState.user.location.address, state.lastId)
+      const resData = await api.loadLocalPreviewPostList(rootState.user.location.address, state.lastId, rootState.user.user.userId)
         .then(results => results.data)
         .catch(err => err);
 
@@ -231,6 +230,14 @@ const actions = {
       commit(types.UPDATE_SCRAPPED_STATE, false);
     }
   },
+
+  async insertViewCount({ commit }, payload) {
+    const { userId, contentId } = payload;
+    const resData = await api.insertView(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+  },
+
 };
 
 export default {

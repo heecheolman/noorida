@@ -41,7 +41,7 @@ module.exports = {
     const result = await knex('subscriptionLocal')
       .select('local.localName', 'subscriptionLocal.localId')
       .where('subscriptionLocal.reader', userId)
-      .join('local', 'local.Id', '=', 'subscriptionLocal.localId')
+      .join('local', 'local.localId', '=', 'subscriptionLocal.localId')
       .then(results => results)
       .catch(err => err);
     return result;

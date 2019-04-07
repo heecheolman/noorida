@@ -2,17 +2,27 @@
   <a-list :loading="loading">
 
     <virtual-scroller :items="postList"
-                      :item-height="73"
+                      :item-height="95"
                       class="scroller"
                       v-infinite-scroll="loadCallbackPicker"
                       :infinite-scroll-disabled="busy"
-                      :infinite-scroll-distance="10">
+                      :infinite-scroll-distance="20">
 
       <a-list-item slot-scope="{ item }" @click="routeDetailPage(item.contentId)">
 
         <a-list-item-meta>
           <a slot="title" class="title">{{ item.title }}</a>
-          <span slot="description">{{ item.nickName || '지역이름' }}</span>
+          <div slot="description" class="description">
+            <div class="description-row" style="justify-content: space-between">
+              {{ item.nickName }}
+              <span class="view">
+              <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.views }}
+              </span>
+            </div>
+            <div class="description-row">
+              {{ item.localName }}
+            </div>
+          </div>
           <template v-if="loadType === 'user'">
             <a-avatar v-if="avatar" slot="avatar" :src="`http://localhost:3000/images/${avatar}`"/>
             <a-avatar v-else slot="avatar" icon="user"></a-avatar>
@@ -141,6 +151,30 @@ export default {
           .ant-list-item-meta-description {
             @include font-size-xx-small;
             line-height: 22px;
+
+            .description {
+              display: flex;
+              justify-content: center;
+              flex-direction: column;
+              width: 100%;
+
+              &-row {
+                width: 100%;
+                height: auto;
+                display: flex;
+                align-items: center;
+
+                .view {
+                  display: flex;
+                  align-items: center;
+                  height: 17px;
+                  /*border-radius: 15px;*/
+                  /*background-color: #fff;*/
+                  /*border: 1px solid rgba(215, 215, 215, 0.4);*/
+                  margin-left: 4px;
+                }
+              }
+            }
           }
         }
       }

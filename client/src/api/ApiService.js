@@ -11,7 +11,6 @@ export default {
   /**
    * 이메일과 토큰을 이용해 해당 이메일에 대한 토큰값이 맞는지 확인
    * @param email
-   * @param token
    * @returns {AxiosPromise<any>}
    */
   confirmToken(email, token) {
@@ -134,11 +133,12 @@ export default {
    * @param lastId
    * @returns {AxiosPromise<any>}
    */
-  loadLocalPreviewPostList(localName, lastId) {
+  loadLocalPreviewPostList(localName, lastId, userId) {
     return axios.get('/api/posts/local', {
       params: {
         localName: decodeURI(localName),
         lastId,
+        userId,
       },
     });
   },
@@ -337,15 +337,15 @@ export default {
       params: { userId, contentId },
     });
   },
-  isBlocked(myUserId, targetUserId) {
+  isBlocked(myUserId, targetId) {
     return axios.get('/api/block/is-blocked', {
-      params: { myUserId, targetUserId },
+      params: { myUserId, targetId },
     });
   },
 
-  blockUser(myUserId, targetUserId) {
+  blockUser(myUserId, targetId) {
     return axios.post('api/block', {
-      myUserId, targetUserId,
+      myUserId, targetId,
     });
   },
 
@@ -355,9 +355,9 @@ export default {
     });
   },
 
-  cancelBlock(myUserId, targetUserId) {
+  cancelBlock(myUserId, targetId) {
     return axios.delete('api/block', {
-      params: { myUserId, targetUserId },
+      params: { myUserId, targetId },
     });
   },
 
@@ -385,18 +385,12 @@ export default {
     });
   },
 
-  insertWord(userId, word) {
-    return axios.post('api/search', {
-      userId, word,
-    });
-  },
-
   searchLocal(word) {
     return axios.get('api/search/local', {
       params: { word: encodeURI(word) },
     });
   },
-  
+
   searchUser(word) {
     return axios.get('api/search/user', {
       params: { word: encodeURI(word) },
@@ -408,6 +402,7 @@ export default {
       params: { word: encodeURI(word) },
     });
   },
+
 
   getScrappedPostList(userId, lastId) {
     return axios.get(`/api/scrap/${userId}`, {
@@ -434,4 +429,17 @@ export default {
       },
     });
   },
+
+  insertView(userId, contentId) {
+    return axios.post('/api/posts/views', {
+      userId, contentId,
+    });
+  },
+  getPostViews(contentId) {
+    return axios.get('/api/posts/views/count', {
+      params: { contentId },
+    });
+  },
+
+
 };

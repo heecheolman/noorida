@@ -111,8 +111,8 @@ const actions = {
   },
 
   async blockUserProcess({ commit }, payload) {
-    const { myUserId, targetUserId } = payload;
-    await api.blockUser(myUserId, targetUserId)
+    const { myUserId, targetId } = payload;
+    await api.blockUser(myUserId, targetId)
       .then(result => result.data)
       .catch(err => err);
   },
@@ -127,8 +127,8 @@ const actions = {
   },
 
   async cancelBlock({ commit, state }, payload) {
-    const { targetUserId } = payload;
-    await api.cancelBlock(state.user.userId, targetUserId)
+    const { targetId } = payload;
+    await api.cancelBlock(state.user.userId, targetId)
       .then(result => result.data)
       .catch(err => err);
   },

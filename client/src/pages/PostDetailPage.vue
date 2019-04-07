@@ -6,6 +6,9 @@
           <div class="news-title-wrap">
             <span class="news-title">{{ detailPost.title }}</span>
           </div>
+          <div class="location-wrap">
+            <span class="location"><a-icon type="environment" theme="filled" style="margin-right: 4px; " />{{ detailPost.localName }}</span>
+          </div>
           <div class="news-created-at-container flex-container flex-between-sort flex-row">
             <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
             <span v-if="!isMe"
@@ -387,15 +390,26 @@ export default {
     overflow-y: scroll;
 
     .news-title-wrap {
-      /*display: block;*/
-      /*position: relative;*/
       width: 100%;
       height: auto;
+      border-bottom: 1px solid #d7d7d7;
+      margin-bottom: 10px;
 
       .news-title {
         @include font-size-large;
         @include v-text-align(40px);
-        color: #202124;
+        color: $primary;
+      }
+    }
+
+    .location-wrap {
+      width: 100%;
+      height: auto;
+
+      .location {
+        @include font-size-normal;
+        @include font-weight-5;
+        color: $primary;
       }
     }
 

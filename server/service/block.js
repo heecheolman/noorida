@@ -18,9 +18,9 @@ module.exports = {
   },
   blockList: async ({ myUserId }) => {
     const result = await knex('block')
-      .select('users.userId','users.nickName','users.avatar','block.targetId')
+      .select('users.userId', 'users.nickName', 'users.avatar', 'block.targetId')
       .where({ myUserId })
-      .join('users', 'user.Id','=', 'block.targetId')
+      .join('users', 'users.userId', '=', 'block.targetId')
       .then(results => results)
       .catch(err => err);
     return result;

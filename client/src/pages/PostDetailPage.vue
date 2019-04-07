@@ -214,6 +214,7 @@ export default {
   },
   async created() {
     this.loading = true;
+    await this.$store.dispatch('post/insertViewCount', { userId: this.user.userId, contentId: this.contentId });
     await this.$store.dispatch('post/fetchDetailPost', this.contentId);
     await this.$store.dispatch('post/isEvaluated', {
       userId: this.user.userId,
@@ -359,7 +360,7 @@ export default {
       this.modalLoading = true;
       const payload = {
         myUserId: this.user.userId,
-        targetUserId: this.profileCard.userId,
+        targetId: this.profileCard.userId,
       };
       await this.$store.dispatch('user/blockUserProcess', payload);
       this.modalLoading = false;

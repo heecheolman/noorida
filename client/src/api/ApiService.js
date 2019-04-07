@@ -337,15 +337,15 @@ export default {
       params: { userId, contentId },
     });
   },
-  isBlocked(myUserId, targetUserId) {
+  isBlocked(myUserId, targetId) {
     return axios.get('/api/block/is-blocked', {
-      params: { myUserId, targetUserId },
+      params: { myUserId, targetId },
     });
   },
 
-  blockUser(myUserId, targetUserId) {
+  blockUser(myUserId, targetId) {
     return axios.post('api/block', {
-      myUserId, targetUserId,
+      myUserId, targetId,
     });
   },
 
@@ -355,9 +355,9 @@ export default {
     });
   },
 
-  cancelBlock(myUserId, targetUserId) {
+  cancelBlock(myUserId, targetId) {
     return axios.delete('api/block', {
-      params: { myUserId, targetUserId },
+      params: { myUserId, targetId },
     });
   },
 
@@ -431,12 +431,12 @@ export default {
   },
 
   insertView(userId, contentId) {
-    return axios.post('api/post/views', {
+    return axios.post('/api/posts/views', {
       userId, contentId,
     });
   },
   getPostViews(contentId) {
-    return axios.get('/api/posts/views', {
+    return axios.get('/api/posts/views/count', {
       params: { contentId },
     });
   },

@@ -17,13 +17,12 @@ router.post('', async (req, res) => {
  * 지역 뉴스리스트 조회
  * */
 router.get('/local', async (req, res) => {
-  const { localName, lastId, userId  } = req.query;
+  const { localName, lastId, userId } = req.query;
   const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
     .then(results => results)
     .catch(err => err);
 
   res.json(result);
-  console.log(result);
 });
 
 /**
@@ -158,15 +157,7 @@ router.post('/views', async (req, res) => {
   const result = await postService.insertViews({ userId, contentId })
     .then(results => results)
     .catch(err => err);
-  return res.json('ok');
-});
-
-router.get('/views', async (req, res) => {
-  const { contentId } = req.query;
-  const result = await postService.views({ contentId })
-    .then (results => results)
-    .catch( err => err);
-  return result;
+  res.json('ok');
 });
 
 module.exports = router;

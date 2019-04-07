@@ -12,7 +12,9 @@ router.post('', async (req, res) => {
 });
 
 router.get('/local', async (req, res) => {
-  const { word } = req.query;
+  let { word } = req.query;
+  word = decodeURI(word);
+  
   const result = await searchService.searchLocal({ word })
     .then(results => results)
     .catch(err => err);
@@ -20,7 +22,9 @@ router.get('/local', async (req, res) => {
 });
 
 router.get('/user', async (req, res) => {
-  const { word } = req.query;
+  let { word } = req.query;
+  word = decodeURI(word);
+
   const result = await searchService.searchUser({ word })
     .then(results => results)
     .catch(err => err);
@@ -28,11 +32,13 @@ router.get('/user', async (req, res) => {
 })
 
 router.get('/post-title', async (req, res) => {
-  const { word } = req.query;
+  let { word } = req.query;
+  word = decodeURI(word);
+
   const result = await searchService.searchPostTitle({ word })
     .then(results => results)
     .catch(err => err);
   return res.json(result);
-})
+});
 
 module.exports = router;

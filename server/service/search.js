@@ -12,7 +12,7 @@ module.exports = {
   searchLocal: async ({ word }) => {
     const result = await knex('local')
       .select('localId', 'localName')
-      .where('localName', 'Like', '%word%')
+      .where('localName', 'LIKE', `%${word}%`)
       .then(results => results)
       .catch(err => err);
     return result;
@@ -21,7 +21,7 @@ module.exports = {
   searchUser: async ({ word }) => {
     const result = await knex('users')
       .select('userId', 'nickName', 'avatar')
-      .where('nickName', 'like', '%word%')
+      .where('nickName', 'LIKE', `%${word}%`)
       .then(results => results)
       .catch(err => err);
     return result;
@@ -36,11 +36,11 @@ module.exports = {
         'contents.title',
         'contents.content',
         'local.localName')
-      .where('contents.title', 'like', '%word%')
+      .where('contents.title', 'LIKE', `%${word}%`)
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
       .then(results => results)
       .catch(err => err);
     return result;
   },
-}
+};

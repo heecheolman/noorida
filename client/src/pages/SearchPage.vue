@@ -2,38 +2,48 @@
   <div class="flex-container flex-center-sort">
     <toolbar :title="'검색'" />
     <div>
-      <div class="flex-center-sort">
+      <div class="flex-center-sort ">
         <br /><br />
         <a-input-search
           placeholder="input search text"
           enterButton
           @input="searchWordChecker"
           v-model="searchData"></a-input-search>
+   
         <br /><br />
       </div>
       <div>
         <div>
-          <header style="{
-                          zIndex: 100;
+          <header :style="{
+                          zIndex: 100,
                        }">
-            <div class="flex-between-sort flex-row tab-design">
+            <div class="flex-between-sort flex-row tab-design" defaultActiveKey="1" >
               <router-link :to="{ name: 'LocalSearchTab' }"
-                           tag="button"
+                           tag="button" key="1"
                            active-class= "active"
-                           class="design-box">{{ tab.pane1 }}</router-link>
+                           class="design-box" >{{ tab.pane1 }}</router-link>
               <router-link :to="{ name: 'ReporterSearchTab' }"
-                           tag="button"
-                           class="design-box"
-                           active-class= "active">{{ tab.pane2 }}</router-link>
-              <router-link :to="{ name: 'PostSearchTab' }"
-                           tag="button"
+                           tag="button" key="2"
                            active-class= "active"
-                           class="design-box">{{ tab.pane3 }}</router-link>
+                           class="design-box">{{ tab.pane2 }}</router-link>
+              <router-link :to="{ name: 'PostSearchTab' }"
+                           tag="button" key="3"
+                           active-class= "active"
+                           class="design-box" >{{ tab.pane3 }}</router-link>
             </div>
           </header>
-          <div class="content-wrap">
+          <!---->
+          <!--<header>-->
+            <!--<a-tabs defaultActiveKey="1">-->
+              <!--<a-tab-pane tab="Tab 1" key="1"> {{ tab.pane1}} </a-tab-pane>-->
+              <!--<a-tab-pane tab="Tab 2" key="2"> {{ tab.pane2}} </a-tab-pane>-->
+              <!--<a-tab-pane tab="Tab 3" key="3"> {{ tab.pane3}} </a-tab-pane>-->
+            <!--</a-tabs>-->
+          <!--</header>-->
+          <!---->
+          <a-layout-content class="content-wrap">
             <router-view></router-view>
-          </div>
+          </a-layout-content>
         </div>
       </div>
     </div>
@@ -60,8 +70,12 @@ export default {
       },
       searchData: '',
       userId: this.$store.state.user.user.userId,
+
     };
   },
+  // created () {
+  //   LocalSearchTab[0].click();
+  // },
   methods: {
     // async onSearch() {
     //   await this.$store.dispatch('search/searchProcess', {
@@ -69,16 +83,20 @@ export default {
     //     userId: this.$store.state.user.user.userId, // 유저아이디 전송!
     //   });
     // },
+    
     searchWordChecker: _.debounce(
-      function () {
-        const userId = this.userId;
-        const word = this.searchData;
-        console.log(this.searchData);
-        console.log('userId:', userId, 'word', word);
-        const resData = this.$api.searchLocal(encodeURI(word))
-          .then(result => result.data)
-          .catch(err => err);
-        console.log('resData: ', resData);
+      async function () {
+        const searchWord = this.searchData;
+        const trimWord = searchWord.trim();
+        await this.$store.dispatch('search/loadLocalData', {
+          word: trimWord,
+        });
+        await this.$store.dispatch('search/loadUserData', {
+          word: trimWord,
+        });
+        await this.$store.dispatch('search/loadSearchPost', {
+          word: trimWord,
+        });
       }, 500,
     ),
   },
@@ -89,12 +107,12 @@ export default {
   @import './../assets/scss/mixin/typography';
 
   .content-wrap {
-    width: 100%;
+    width: 290px;
     height: calc(100vh - 70px);
     background: white;
   }
 
-  .active:hover{
+  .active:hover {
     color: white;
     background-color: #0084ff;
     font-size: 18px;
@@ -110,10 +128,10 @@ export default {
     border: none;
     outline: 0;
     width: 80px;
-    font-size: 14px;
+    font-size: 18px;
     color: #f0f0f0;
     background-color: #7cbdf8;
-    /*cursor: auto;*/
+    cursor: pointer;
     /*box-shadow: 5px 5px 5px #a8a4a4;*/
   }
 

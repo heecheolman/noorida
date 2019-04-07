@@ -387,19 +387,19 @@ export default {
 
   searchLocal(word) {
     return axios.get('api/search/local', {
-      params: { word },
+      params: { word: encodeURI(word) },
     });
   },
 
   searchUser(word) {
     return axios.get('api/search/user', {
-      params: word,
+      params: { word: encodeURI(word) },
     });
   },
 
   searchPostTitle(word) {
     return axios.get('api/search/post-title', {
-      params: word,
+      params: { word: encodeURI(word) },
     });
   },
 

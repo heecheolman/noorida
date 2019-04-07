@@ -164,15 +164,24 @@ module.exports = {
   getPost: async ({ id }) => {
     /**
      * localId 를 가져와야하는가 */
-    const result = await knex('contents')
-      .select('userId', 'createdAt', 'updatedAt', 'title', 'content', 'views')
+    let result = await knex('contents')
+      .select('userId', 'createdAt', 'updatedAt', 'title', 'content', 'views', 'localId')
       .where('contentId', id)
-      .then(results => results)
+      .then(results => JSON.parse(JSON.stringify(results))[0])
       .catch(err => err);
-
-    return result.length
-      ? JSON.parse(JSON.stringify(result))[0]
-      : null;
+    let localNameData = {};
+    if (result.hasOwnProperty('localId')) {
+      localNameData = await knex('local')
+        .select('localName')
+        .where('localId', result.localId)
+        .then(localData => JSON.parse(JSON.stringify(localData))[0])
+        .catch(e => e);
+    }
+    result = {
+      ...result,
+      ...localNameData,
+    };
+    return result;
   },
 
   emotion: async ({ userId, contentId, emotionCode }) => {

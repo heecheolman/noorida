@@ -36,7 +36,7 @@ router.get('/:id', async (req, res) => {
   if (result) {
     res.json(result);
   } else {
-    res.statusCode(500);
+    res.status(500);
   }
 });
 
@@ -49,7 +49,6 @@ router.get('/users/:userId', async (req, res) => {
   const result = await postService.loadUserPostList({ userId, lastId })
     .then(results => results)
     .catch(err => err);
-
   res.json(result);
 });
 

@@ -2,21 +2,26 @@
   <a-list :loading="loading">
 
     <virtual-scroller :items="postList"
-                      :item-height="73"
+                      :item-height="95"
                       class="scroller"
                       v-infinite-scroll="loadCallbackPicker"
                       :infinite-scroll-disabled="busy"
-                      :infinite-scroll-distance="10">
+                      :infinite-scroll-distance="20">
 
       <a-list-item slot-scope="{ item }" @click="routeDetailPage(item.contentId)">
 
         <a-list-item-meta>
           <a slot="title" class="title">{{ item.title }}</a>
           <div slot="description" class="description">
-            {{ item.nickName }}
-            <span class="view">
+            <div class="description-row" style="justify-content: space-between">
+              {{ item.nickName }}
+              <span class="view">
               <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.views }}
-            </span>
+              </span>
+            </div>
+            <div class="description-row">
+              {{ item.localName }}
+            </div>
           </div>
           <template v-if="loadType === 'user'">
             <a-avatar v-if="avatar" slot="avatar" :src="`http://localhost:3000/images/${avatar}`"/>
@@ -149,18 +154,25 @@ export default {
 
             .description {
               display: flex;
-              align-items: center;
+              justify-content: center;
+              flex-direction: column;
               width: 100%;
 
-              .view {
+              &-row {
+                width: 100%;
+                height: auto;
                 display: flex;
                 align-items: center;
-                padding: 0 5px;
-                height: 17px;
-                border-radius: 15px;
-                background-color: #fff;
-                border: 1px solid rgba(215, 215, 215, 0.4);
-                margin-right: 4px;
+
+                .view {
+                  display: flex;
+                  align-items: center;
+                  height: 17px;
+                  /*border-radius: 15px;*/
+                  /*background-color: #fff;*/
+                  /*border: 1px solid rgba(215, 215, 215, 0.4);*/
+                  margin-left: 4px;
+                }
               }
             }
           }

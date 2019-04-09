@@ -111,7 +111,6 @@ router.post('/login', async (req, res) => {
 });
 
 
-
 router.post('/find-id', async (req, res) => {
   const { realName, email } = req.body;
   const result = await findService.findId({ realName, email })

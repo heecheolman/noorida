@@ -1,6 +1,7 @@
 const knex = require('./service.config');
 
 module.exports = {
+
   getUserDataByNickname: async ({ nickName }) => {
     const result = await knex('users')
       .select('userId', 'realName', 'nickName', 'email', 'avatar', 'description')

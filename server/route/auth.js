@@ -18,10 +18,10 @@ const router = express.Router();
  */
 router.post('/join', async (req, res) => {
   const result = await joinService.insertUser(  {
-    realName: secret.encrypt(req.body.realName, key),
+    realName: secret.hashing(req.body.realName),
     nickName: req.body.nickName,
     password: secret.salting(req.body.password),
-    email: secret.encrypt(req.body.email, key),
+    email: secret.hashing(req.body.email),
   })
     .then(results => results)
     .catch(err => err);
@@ -37,26 +37,24 @@ router.post('/join', async (req, res) => {
  * 로그인
  */
 
+
 router.get('/login', async (req, res) => {
-  console.log(0);
   const { session } = req;
-  console.log(1);
   if (mapper[session.key]) {
-    const { nickName } = mapper[session.key];
-    console.log(3);
-    const result = await loginService.getUserDataByNickname({ nickName })
-      .then((results) => {
+    const { nickName, password } = mapper[session.key];
+    const result = await loginService.login({ nickName, password })
+      .then((result) => {
         return {
-          userId: results[0].userId,
-          realName: secret.decrypt(result[0].realName, key),
+          userId: result[0].userId,
+          realName: secret.hashing(result[0].realName),
           nickname: result[0].nickname,
-          email: secret.decrypt(result[0].email, key),
+          email: secret.hashing(result[0].email),
           avatar: result[0].avatar,
           description: result[0].description,
         };
       })
       .catch(err => err);
-    console.log(result);
+
     res.json({
       data: result,
       loginStatus: true,
@@ -67,7 +65,8 @@ router.get('/login', async (req, res) => {
       loginStatus: false,
     });
   }
-});
+})
+
 
 router.delete('/login', async (req, res) => {
   const { session } = req;
@@ -85,18 +84,19 @@ router.post('/login', async (req, res) => {
   if ( correct ) {
     console.log('로그인 성공!')
     const result = await loginService.getUserDataByNickname({ nickName })
-      .then((results) => {
+      .then((result) => {
         return {
-          userId: results[0].userId,
-          realName: secret.decrypt(result[0].realName, key),
+          userId: result[0].userId,
+          realName: secret.hashing(result[0].realName),
           nickname: result[0].nickname,
-          email: secret.decrypt(result[0].email, key),
+          email: secret.hashing(result[0].email),
           avatar: result[0].avatar,
           description: result[0].description,
         };
       })
       .catch(err => err);
 
+    console.log(result);
     if (result) {
       const key = uuid();
       req.session.key = key;

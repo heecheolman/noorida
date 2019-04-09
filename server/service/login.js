@@ -5,7 +5,16 @@ module.exports = {
     const result = await knex('users')
       .select('userId', 'realName', 'nickName', 'email', 'avatar', 'description')
       .where({ nickName })
-      .then(results => results)
+      .then(result => result)
+      .catch(err => err);
+    return result;
+  },
+
+  login: async ({ nickName, password }) => {
+    const result = await knex('users')
+      .select('userId', 'realName', 'nickName', 'email', 'avatar', 'description')
+      .where({ nickName, password })
+      .then(result => result)
       .catch(err => err);
     return result.length ? JSON.parse(JSON.stringify(result))[0] : null;
   },
@@ -14,9 +23,9 @@ module.exports = {
     const result = await knex('users')
       .select('password')
       .where({ nickName })
-      .then(results => results)
+      .then(result => result)
       .catch(err => err);
     return result;
-  }
+    },
 
 };

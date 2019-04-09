@@ -1,7 +1,4 @@
 const crypto = require('crypto');
-const iv = Buffer.alloc(16, 0);
-const algorithm = 'aes-192-cbc';
-
 module.exports = {
   salting: (data) => {
     const buf = crypto.randomBytes(64);
@@ -23,14 +20,16 @@ module.exports = {
   },
 
   encrypt: (data, key) => {
-    const cipher = crypto.createCipher(algorithm, key, iv);
+    const cipher = crypto.createCipher('aes192', key);
     cipher.update(data, 'utf8', 'base64');
     return cipher.final('base64');
   },
 
   decrypt: (data, key) => {
-    const decipher = crypto.createDecipher(algorithm, key, iv);
-    decipher.update(data, 'base64', 'utf8');
-    return decipher.final('utf8');
+    const decipher = crypto.createDecipher('aes192', key);
+    let clearText =  decipher.update(data, 'base64', 'utf8');
+     clearText += decipher.final('utf8');
+    return clearText ;
   },
-};
+}
+

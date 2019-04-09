@@ -4,8 +4,9 @@ const loginService = require('../service/login');
 const findService = require('../service/find');
 const PostOffice = require('./../mail-config/mail-password');
 const tokenBuilder = require('uuid/v4');
-
+const secret = require('../secret/index');
 const uuid = require('uuid/v4');
+const key = 'thisiskdkdk';
 
 let mapper = {};
 
@@ -16,11 +17,14 @@ const router = express.Router();
  * 회원가입
  */
 router.post('/join', async (req, res) => {
-  const { realName, nickName, password, email } = req.body;
-  const result = await joinService.insertUser({ realName, nickName, password, email })
+  const result = await joinService.insertUser(  {
+    realName: secret.encrypt(req.body.realName, key),
+    nickName: req.body.nickName,
+    password: secret.salting(req.body.password),
+    email: secret.encrypt(req.body.email, key),
+  })
     .then(results => results)
-    .catch(error => error);
-
+    .catch(err => err);
   if (result) {
     res.sendStatus(200);
   } else {
@@ -28,17 +32,31 @@ router.post('/join', async (req, res) => {
   }
 });
 
+
 /**
  * 로그인
  */
 
 router.get('/login', async (req, res) => {
+  console.log(0);
   const { session } = req;
+  console.log(1);
   if (mapper[session.key]) {
-    const { nickName, password } = mapper[session.key];
-    const result = await loginService.login({ nickName, password })
-      .then(results => results)
+    const { nickName } = mapper[session.key];
+    console.log(3);
+    const result = await loginService.getUserDataByNickname({ nickName })
+      .then((results) => {
+        return {
+          userId: results[0].userId,
+          realName: secret.decrypt(result[0].realName, key),
+          nickname: result[0].nickname,
+          email: secret.decrypt(result[0].email, key),
+          avatar: result[0].avatar,
+          description: result[0].description,
+        };
+      })
       .catch(err => err);
+    console.log(result);
     res.json({
       data: result,
       loginStatus: true,
@@ -59,21 +77,39 @@ router.delete('/login', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { nickName, password } = req.body;
-  const result = await loginService.login({ nickName, password })
-    .then(results => results)
+
+  const correct = await loginService.getPasswordByNickname({ nickName })
+    .then(result => secret.checkHashword(result[0].password, password))
     .catch(err => err);
 
-  if (result) {
-    const key = uuid();
-    req.session.key = key;
-    mapper[key] = { nickName, password };
-  }
+  if ( correct ) {
+    console.log('로그인 성공!')
+    const result = await loginService.getUserDataByNickname({ nickName })
+      .then((results) => {
+        return {
+          userId: results[0].userId,
+          realName: secret.decrypt(result[0].realName, key),
+          nickname: result[0].nickname,
+          email: secret.decrypt(result[0].email, key),
+          avatar: result[0].avatar,
+          description: result[0].description,
+        };
+      })
+      .catch(err => err);
 
-  res.json({
-    data: result,
-    loginStatus: !!result,
-  });
+    if (result) {
+      const key = uuid();
+      req.session.key = key;
+      mapper[key] = { nickName };
+    }
+
+    res.json({
+      data: result,
+      loginStatus: !!result,
+    });
+  }
 });
+
 
 
 router.post('/find-id', async (req, res) => {

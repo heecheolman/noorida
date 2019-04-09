@@ -15,15 +15,21 @@
           <router-link :to="{ name: 'LocalNewsTab' }"
                        tag="div"
                        active-class="active"
-                       class="tab-pane text-center">{{ tab.pane1 }}</router-link>
+                       class="tab-pane text-center">
+            <a-icon type="environment" class="tab-icon" />{{ tab.pane1 }}
+          </router-link>
           <router-link :to="{ name: 'SubscribeNewsTab' }"
                        tag="div"
                        active-class="active"
-                       class="tab-pane text-center">{{ tab.pane2 }}</router-link>
+                       class="tab-pane text-center">
+            <a-icon type="read" class="tab-icon" />{{ tab.pane2 }}
+          </router-link>
           <router-link :to="{ name: 'HotNewsTab' }"
                        tag="div"
                        active-class="active"
-                       class="tab-pane text-center">{{ tab.pane3 }}</router-link>
+                       class="tab-pane text-center">
+            <a-icon type="fire" class="tab-icon" />{{ tab.pane3 }}
+          </router-link>
         </div>
       </a-layout-header>
       <a-layout-content class="content-wrap">
@@ -158,10 +164,17 @@ export default {
 
   .tab-pane {
     @include v-text-align($header-height);
-    @include font-size-small;
-    width: 80px;
+    @include font-size-normal;
+    padding: 0 10px;
+    flex: 1;
+    max-width: 200px;
+    /*width: 80px;*/
     cursor: pointer;
     color: #0d1a26;
+
+    .tab-icon {
+      margin-right: 10px;
+    }
   }
 
   .active {

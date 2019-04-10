@@ -215,9 +215,9 @@ export default {
     });
   },
 
-  loadLocalPostList(localId, lastId) {
+  loadLocalPostList(localId, lastId, userId ) {
     return axios.get(`/api/posts/users/${localId}`, {
-      params: { lastId },
+      params: { lastId, userId },
     });
   },
 
@@ -265,7 +265,7 @@ export default {
    * reporter : 유저가 구독한 다른 유저의 고유 Id
    */
 
-  isSubscribe(reader, reporter) {
+  isSubscribeReporter(reader, reporter) {
     return axios.get('api/subscription/is-subscribed/reporter', {
       params: {
         reader,
@@ -280,7 +280,7 @@ export default {
    * localId : 유저가 구독한 지역의 고유 Id
    */
 
-  isLocalSubscribe(reader, localId) {
+  isSubscribeLocal(reader, localId) {
     return axios.get('api/subscription/is-subscribed/local', {
       params: {
         reader,

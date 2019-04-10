@@ -13,17 +13,41 @@ router.post('', async (req, res) => {
   res.json('ok');
 });
 
+
+/**
+* 뉴스 수정 */
+
+router.put('/:contentId', async (req,res) =>{
+  const { contentId, userId, title, content } = req.body;
+  const result = await postService.editNews({ contentId, userId, title, content })
+    .then(results => results)
+    .catch(err => err);
+  res.json('ok');
+});
+
+/**
+ * 뉴스 삭제 */
+
+router.put('/disabled-content/:contentId', async (req, res) => {
+  const { contentId, userId } =req.body;
+  const result = await postService.disabledNews({ contentId, userId })
+    .then(results => results)
+    .catch(err => err);
+  res.json('ok');
+});
+
 /**
  * 지역 뉴스리스트 조회
  * */
 router.get('/local', async (req, res) => {
   const { localName, lastId, userId } = req.query;
-  const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
+  const result = await postService.loadPreviewLocalNewsList({ localName,  lastId, userId })
     .then(results => results)
     .catch(err => err);
 
   res.json(result);
 });
+
 
 /**
  * 특정 id 값 조회
@@ -56,8 +80,8 @@ router.get('/users/:userId', async (req, res) => {
  * localId 가 갖는 포스트리스트들 조회
  */
 router.get('/users/:localId', async (req, res) => {
-  const { localId, lastId } = req.params;
-  const result = await postService.loadLocalPostList({ localId, lastId })
+  const { localId, lastId, userId } = req.params;
+  const result = await postService.loadLocalPostList({ localId, lastId, userId })
     .then(results => results)
     .catch(err => err);
 

@@ -215,9 +215,9 @@ export default {
     });
   },
 
-  loadLocalPostList(localId, lastId) {
+  loadLocalPostList(localId, lastId, userId ) {
     return axios.get(`/api/posts/users/${localId}`, {
-      params: { lastId },
+      params: { lastId, userId },
     });
   },
 
@@ -265,14 +265,30 @@ export default {
    * reporter : 유저가 구독한 다른 유저의 고유 Id
    */
 
-  isSubscribe(reader, reporter) {
-    return axios.get('api/subscription/is-subscribed', {
+  isSubscribeReporter(reader, reporter) {
+    return axios.get('api/subscription/is-subscribed/reporter', {
       params: {
         reader,
         reporter,
       },
     });
   },
+
+  /**
+   * 유저의 지역 구독
+   * reader : 유저 고유 Id
+   * localId : 유저가 구독한 지역의 고유 Id
+   */
+
+  isSubscribeLocal(reader, localId) {
+    return axios.get('api/subscription/is-subscribed/local', {
+      params: {
+        reader,
+        localId,
+      },
+    });
+  },
+
 
   subscriptionReporter(reader, reporter) {
     return axios.post('api/subscription/reporter', {

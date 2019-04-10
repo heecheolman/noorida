@@ -28,7 +28,7 @@ router.get('/reader', async (req, res) => {
   return res.json(result);
 });
 
-router.get('/is-subscribed', async (req, res) => {
+router.get('/is-subscribed/reporter', async (req, res) => {
   const { reader, reporter } = req.query;
   const result = await subscriptionService.isSubscribed({ reader, reporter })
     .then(results => results)
@@ -40,6 +40,17 @@ router.get('/is-subscribed', async (req, res) => {
   }
 });
 
+router.get('is-subscribed/local', async (req, res) => {
+  const { reader, localId } = req.query;
+  const result = await subscriptionService.isLocalSubscribed({ reader, localId })
+    .then(results => results)
+    .catch(err => err);
+  if (result) {
+    res.json(true);
+  } else{
+    res.json(false);
+  }
+});
 router.get('/reporter', async (req, res) => {
   const { userId } = req.query;
   const result = await subscriptionService.reporterList({ userId })

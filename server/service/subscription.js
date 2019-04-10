@@ -72,6 +72,14 @@ module.exports = {
     return result.length !== 0;
   },
 
+  isLocalSubscribed: async ({ reader, localId }) => {
+    const result = await knex('subscriptionLocal')
+      .where({ reader, localId })
+      .then(results => results)
+      .catch(err => err);
+    return result.length !== 0;
+  },
+
   countSubscription: async ({ userId }) => {
     const countReader = await knex('subscriptionReporter')
       .count('*')

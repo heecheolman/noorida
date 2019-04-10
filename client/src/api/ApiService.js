@@ -266,13 +266,29 @@ export default {
    */
 
   isSubscribe(reader, reporter) {
-    return axios.get('api/subscription/is-subscribed', {
+    return axios.get('api/subscription/is-subscribed/reporter', {
       params: {
         reader,
         reporter,
       },
     });
   },
+
+  /**
+   * 유저의 지역 구독
+   * reader : 유저 고유 Id
+   * localId : 유저가 구독한 지역의 고유 Id
+   */
+
+  isLocalSubscribe(reader, localId) {
+    return axios.get('api/subscription/is-subscribed/local', {
+      params: {
+        reader,
+        localId,
+      },
+    });
+  },
+
 
   subscriptionReporter(reader, reporter) {
     return axios.post('api/subscription/reporter', {

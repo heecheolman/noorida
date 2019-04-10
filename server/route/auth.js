@@ -17,7 +17,7 @@ const router = express.Router();
  * 회원가입
  */
 router.post('/join', async (req, res) => {
-  const result = await joinService.insertUser(  {
+  const result = await joinService.insertUser({
     realName: secret.hashing(req.body.realName),
     nickName: req.body.nickName,
     password: secret.salting(req.body.password),
@@ -42,21 +42,19 @@ router.get('/login', async (req, res) => {
   const { session } = req;
   if (mapper[session.key]) {
     const { nickName, password } = mapper[session.key];
-    const result = await loginService.login({ nickName, password })
-      .then((result) => {
-        return {
-          userId: result[0].userId,
-          realName: secret.hashing(result[0].realName),
-          nickname: result[0].nickname,
-          email: secret.hashing(result[0].email),
-          avatar: result[0].avatar,
-          description: result[0].description,
-        };
-      })
+    const results = await loginService.login({ nickName, password })
+      .then(result => ({
+        userId: result[0].userId,
+        realName: secret.hashing(result[0].realName),
+        nickname: result[0].nickname,
+        email: secret.hashing(result[0].email),
+        avatar: result[0].avatar,
+        description: result[0].description,
+      }))
       .catch(err => err);
 
     res.json({
-      data: result,
+      data: results,
       loginStatus: true,
     });
   } else {
@@ -81,31 +79,27 @@ router.post('/login', async (req, res) => {
     .then(result => secret.checkHashword(result[0].password, password))
     .catch(err => err);
 
-  if ( correct ) {
-    console.log('로그인 성공!')
-    const result = await loginService.getUserDataByNickname({ nickName })
-      .then((result) => {
-        return {
-          userId: result[0].userId,
-          realName: secret.hashing(result[0].realName),
-          nickname: result[0].nickname,
-          email: secret.hashing(result[0].email),
-          avatar: result[0].avatar,
-          description: result[0].description,
-        };
-      })
+  if (correct) {
+    const results = await loginService.getUserDataByNickname({ nickName })
+      .then(result => ({
+        userId: result[0].userId,
+        realName: secret.hashing(result[0].realName),
+        nickname: result[0].nickname,
+        email: secret.hashing(result[0].email),
+        avatar: result[0].avatar,
+        description: result[0].description,
+      }))
       .catch(err => err);
 
-    console.log(result);
-    if (result) {
+    if (results) {
       const key = uuid();
       req.session.key = key;
       mapper[key] = { nickName };
     }
 
     res.json({
-      data: result,
-      loginStatus: !!result,
+      data: results,
+      loginStatus: !!results,
     });
   }
 });
@@ -151,7 +145,7 @@ router.put('/find-password', async (req, res) => {
         console.error(err);
         res.sendStatus(500);
       } else {
-        console.log(`EMAIL SENT ${info.response}`);
+        console.log(`EMAIL SENT ${ info.response }`);
         res.sendStatus(200);
       }
     });

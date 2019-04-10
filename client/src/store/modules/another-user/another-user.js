@@ -50,6 +50,9 @@ const mutations = {
   [types.UPDATE_USER_RELIABILITY_SCORE](state, payload) {
     state.reliabilityScore = payload;
   },
+  [types.UPDATE_IS_SUBSCRIBE_LOCAL](state, payload) {
+    state.isSubscribe = payload;
+  },
 };
 
 const getters = {
@@ -82,6 +85,7 @@ const actions = {
       case 'locals': commit(types.UPDATE_LOCAL_LIST, resData); break;
       default: break;
     }
+    console.log('로컬리스트볼귀~',resData);
     /**
      * fetchType 에 따라 호출 api 를 다르게 해줌
      */
@@ -96,7 +100,26 @@ const actions = {
       commit(types.UPDATE_IS_SUBSCRIBE, true);
     }
   },
+  async subscribeLocal({ commit }, payload) {
+    const {reader, localId} = payload;
+    const resData = await api.subscriptionLocal(reader, localId)
+      .then(result => result.data)
+      .catch(err=>err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_IS_SUBSCRIBE_LOCAL, true);
+    }
 
+  },
+  async cancelSubscribeLocal({ commit }, payload) {
+    const {reader, localId} = payload;
+    const resData = await api.cancelSubscriptionLocal(reader, localId)
+      .then(result => result.data)
+      .catch(err=>err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_IS_SUBSCRIBE_LOCAL, false);
+    }
+
+  },
   async cancelSubscribeReporter({ commit }, payload) {
     const { me, another } = payload;
     const resData = await api.cancelSubscriptionReporter(me, another)

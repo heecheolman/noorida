@@ -3,7 +3,7 @@
     <toolbar :title="'검색'" />
     <div>
       <div class="flex-center-sort ">
-        <br /><br />
+        <br /><br /><br />
         <a-input-search
           placeholder="input search text"
           enterButton
@@ -14,24 +14,35 @@
       </div>
       <div>
         <div>
-          <header :style="{
-                          zIndex: 100,
-                       }">
-            <div class="flex-between-sort flex-row tab-design" defaultActiveKey="1" >
-              <router-link :to="{ name: 'LocalSearchTab' }"
-                           tag="button" key="1"
-                           active-class= "active"
-                           class="design-box" >{{ tab.pane1 }}</router-link>
-              <router-link :to="{ name: 'ReporterSearchTab' }"
-                           tag="button" key="2"
-                           active-class= "active"
-                           class="design-box">{{ tab.pane2 }}</router-link>
-              <router-link :to="{ name: 'PostSearchTab' }"
-                           tag="button" key="3"
-                           active-class= "active"
-                           class="design-box" >{{ tab.pane3 }}</router-link>
-            </div>
+          <!--<header :style="{-->
+                          <!--zIndex: 100,-->
+                       <!--}">-->
+            <!--<div class="flex-between-sort flex-row tab-design" defaultActiveKey="1" >-->
+              <!--<router-link :to="{ name: 'LocalSearchTab' }"-->
+                           <!--tag="button" key="1"-->
+                           <!--active-class= "active"-->
+                           <!--class="design-box" >{{ tab.pane1 }}</router-link>-->
+              <!--<router-link :to="{ name: 'ReporterSearchTab' }"-->
+                           <!--tag="button" key="2"-->
+                           <!--active-class= "active"-->
+                           <!--class="design-box">{{ tab.pane2 }}</router-link>-->
+              <!--<router-link :to="{ name: 'PostSearchTab' }"-->
+                           <!--tag="button" key="3"-->
+                           <!--active-class= "active"-->
+                           <!--class="design-box" >{{ tab.pane3 }}</router-link>-->
+            <!--</div>-->
+          <!--</header>-->
+
+          <header class="div-center">
+          <div class="box-size">
+            <a-tabs defaultActiveKey="1" @change="callback">
+              <a-tab-pane tab="지역" key="1"></a-tab-pane>
+              <a-tab-pane tab="리포터" key="2"></a-tab-pane>
+              <a-tab-pane tab="게시글" key="3"></a-tab-pane>
+            </a-tabs>
+          </div>
           </header>
+
           <!---->
           <!--<header>-->
             <!--<a-tabs defaultActiveKey="1">-->
@@ -73,10 +84,31 @@ export default {
 
     };
   },
-  // created () {
-  //   LocalSearchTab[0].click();
-  // },
+  async created () {
+    this.$router.replace({ name: 'LocalSearchTab' });
+
+      const initData = '';
+       await this.$store.dispatch('search/loadLocalData', {
+        word: initData,
+      });
+       await this.$store.dispatch('search/loadUserData', {
+        word: initData,
+      });
+      await this.$store.dispatch('search/loadSearchPost', {
+        word: initData,
+      });
+  },
   methods: {
+    callback (key) {
+      switch (key) {
+        case '1': this.$router.replace({ name: 'LocalSearchTab' }); break;
+        case '2': this.$router.replace({ name: 'ReporterSearchTab' }); break;
+        case '3': this.$router.replace({ name: 'PostSearchTab' }); break;
+      }
+    },
+    routeLocalTab(){
+      this.$router.replace({ name: 'LocalSearchTab' });
+    },
     // async onSearch() {
     //   await this.$store.dispatch('search/searchProcess', {
     //     searchContent: this.searchData, // 검색창에 입력받은 내용을 전송한다!
@@ -134,5 +166,10 @@ export default {
     cursor: pointer;
     /*box-shadow: 5px 5px 5px #a8a4a4;*/
   }
-
+  .box-size{
+    width: 275px;
+  }
+  .div-center{
+    text-align: center;
+  }
 </style>

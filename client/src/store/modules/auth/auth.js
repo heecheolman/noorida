@@ -16,7 +16,6 @@ const actions = {
     const loginResult = await api.login(nickName, password)
       .then(results => results.data)
       .catch(err => err);
-
     if (loginResult.loginStatus) {
       commit('user/FETCH_USER_DATA', loginResult.data, { root: true });
     }

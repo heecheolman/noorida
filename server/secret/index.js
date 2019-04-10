@@ -6,9 +6,7 @@ module.exports = {
     const digest = crypto.pbkdf2Sync(data, salt, 100000, 64, 'sha512');
     return salt + digest.toString('base64');
   },
-  hashing: (data) => {
-    return crypto.createHash('sha512').update(data).digest('base64');
-  },
+  hashing: data => crypto.createHash('sha512').update(data).digest('base64'),
 
   checkHashword: (hashword, data) => {
     const salt = hashword.slice(0, 88);
@@ -26,9 +24,9 @@ module.exports = {
 
   decrypt: (data, key) => {
     const decipher = crypto.createDecipher('aes192', key);
-    let clearText =  decipher.update(data, 'base64', 'utf8');
-     clearText += decipher.final('utf8');
-    return clearText ;
+    let clearText = decipher.update(data, 'base64', 'utf8');
+    clearText += decipher.final('utf8');
+    return clearText;
   },
-}
+};
 

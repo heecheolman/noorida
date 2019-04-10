@@ -15,9 +15,9 @@ router.post('', async (req, res) => {
 
 
 /**
-* 뉴스 수정 */
+ * 뉴스 수정 */
 
-router.put('/:contentId', async (req,res) =>{
+router.put('/:contentId', async (req, res) => {
   const { contentId, userId, title, content } = req.body;
   const result = await postService.editNews({ contentId, userId, title, content })
     .then(results => results)
@@ -29,7 +29,7 @@ router.put('/:contentId', async (req,res) =>{
  * 뉴스 삭제 */
 
 router.put('/disabled-content/:contentId', async (req, res) => {
-  const { contentId, userId } =req.body;
+  const { contentId, userId } = req.body;
   const result = await postService.disabledNews({ contentId, userId })
     .then(results => results)
     .catch(err => err);
@@ -41,10 +41,9 @@ router.put('/disabled-content/:contentId', async (req, res) => {
  * */
 router.get('/local', async (req, res) => {
   const { localName, lastId, userId } = req.query;
-  const result = await postService.loadPreviewLocalNewsList({ localName ,lastId, userId })
+  const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
     .then(results => results)
     .catch(err => err);
-
   res.json(result);
 });
 

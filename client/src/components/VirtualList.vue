@@ -32,7 +32,7 @@
             <a-avatar v-else slot="avatar" icon="user"></a-avatar>
           </template>
         </a-list-item-meta>
-        <span class="timeline">{{ item.updatedAt | timeline }}</span>
+        <span class="timeline">{{ item.createdAt | timeline }}</span>
       </a-list-item>
 
     </virtual-scroller>

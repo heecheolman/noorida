@@ -32,10 +32,10 @@ module.exports = {
     return result;
   },
 
-  disabledNews: async ({ userId, contentId  }) =>{
+  disabledNews: async ({ userId, contentId }) => {
     const result = await knex('contents')
       .where({ userId, contentId })
-      .update({ active : 'N'})
+      .update({ active: 'N' })
       .then(results => results)
       .catch(err => err);
     return result;
@@ -45,8 +45,7 @@ module.exports = {
    * 지역 소식 미리보기 list
    */
 
-loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
-
+  loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
     const LIMIT = 15;
     const extractedData = await knex('local')
       .where({ localName })
@@ -108,7 +107,6 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
   },
 
 
-
   /**
    * 지역 소식 미리보기 list
    */
@@ -156,7 +154,7 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
       .where('contents.contentId', opr, lastId)
       .andWhere('contents.active', 'Y')
       .where('contents.userId', 'in', myReporterList)
-      .orWhere('contents.localId','in', myLocalList)
+      .orWhere('contents.localId', 'in', myLocalList)
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
       .orderBy('contents.createdAt', 'desc')
@@ -335,10 +333,11 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
       .then(results => results)
       .catch(err => err);
 
-    return { "like": Object.values(countLike[0])[0],
-      "happy": Object.values(countHappy[0])[0],
-      "angry": Object.values(countAngry[0])[0],
-      "sad": Object.values(countSad[0])[0],
+    return {
+      'like': Object.values(countLike[0])[0],
+      'happy': Object.values(countHappy[0])[0],
+      'angry': Object.values(countAngry[0])[0],
+      'sad': Object.values(countSad[0])[0],
     };
 
     return {
@@ -394,7 +393,7 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
       .then(results => results)
       .catch(err => err);
 
-    if(isViewed.length == 0) {
+    if (isViewed.length == 0) {
 
       const result = await knex('view')
         .insert({ userId, contentId })

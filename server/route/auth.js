@@ -74,7 +74,6 @@ router.delete('/login', async (req, res) => {
 
 router.post('/login', async (req, res) => {
   const { nickName, password } = req.body;
-
   const correct = await loginService.getPasswordByNickname({ nickName })
     .then(result => secret.checkHashword(result[0].password, password))
     .catch(err => err);
@@ -90,7 +89,6 @@ router.post('/login', async (req, res) => {
         description: result[0].description,
       }))
       .catch(err => err);
-
     if (results) {
       const key = uuid();
       req.session.key = key;

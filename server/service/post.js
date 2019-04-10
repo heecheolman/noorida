@@ -4,7 +4,6 @@ module.exports = {
   /**
    * 게시글 작성
    */
-
   publishNews: async ({ userId, title, content, address }) => {
     const localId = await knex('local')
       .where('localName', address)
@@ -30,16 +29,6 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
-    return result;
-  },
-
-  editNews: async ({ userId, contentId ,title, content, localId }) =>{
-    const result = await knex('contents')
-      .where({ userId, contentId, localId })
-      .update({ title, content })
-      .update({ updatedAt : 'now()'})
-      .then(results => results)
-      .catch(err => err);
     return result;
   },
 
@@ -90,7 +79,7 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
             'contents.contentId',
             'contents.title',
             'contents.content',
-            'contents.updatedAt',
+            'contents.createdAt',
             'contents.views',
             'local.localName',
           )
@@ -124,7 +113,7 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
    * 지역 소식 미리보기 list
    */
 
-  loadPreviewSubsPostList: async ({ lastId, userId }) => {
+  loadPreviewSubsNewsList: async ({ lastId, userId }) => {
 
     const LIMIT = 15;
     /* 초기일시 lastId 기준 처리 */
@@ -159,7 +148,7 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
         'contents.contentId',
         'contents.title',
         'contents.content',
-        'contents.updatedAt',
+        'contents.createdAt',
         'contents.views',
         'local.localName',
       )
@@ -167,11 +156,9 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
       .where('contents.contentId', opr, lastId)
       .andWhere('contents.active', 'Y')
       .where('contents.userId', 'in', myReporterList)
-      //.orWhere('contents.localId','in', myLocalList)
+      .orWhere('contents.localId','in', myLocalList)
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
-      .join('subscriptionReporter', 'subscriptionReporter.reporter', '=', 'contents.userId')
-      .join('subscriptionLocal', 'subscriptionLocal.localId', '=', 'contents.localId')
       .orderBy('contents.createdAt', 'desc')
       .limit(LIMIT)
       .then(results => results)
@@ -252,6 +239,7 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
         'contents.contentId',
         'contents.title',
         'contents.content',
+        'contents.createdAt',
         'local.localName')
       .where('local.localId', localId)
       .where('contents.contentId', opr, lastId)
@@ -278,7 +266,7 @@ loadPreviewLocalNewsList: async ({ localName, lastId, userId }) => {
     /**
      * localId 를 가져와야하는가 */
     let result = await knex('contents')
-      .select('userId', 'createdAt', 'updatedAt', 'title', 'content', 'views', 'localId')
+      .select('userId', 'createdAt', 'title', 'content', 'views', 'localId')
       .where('contentId', id)
       .then(results => JSON.parse(JSON.stringify(results))[0])
       .catch(err => err);

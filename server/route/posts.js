@@ -41,14 +41,20 @@ router.put('/disabled-content/:contentId', async (req, res) => {
  * */
 router.get('/local', async (req, res) => {
   const { localName, lastId, userId } = req.query;
-  const result = await postService.loadPreviewLocalNewsList({ localName,  lastId, userId })
+  const result = await postService.loadPreviewLocalNewsList({ localName ,lastId, userId })
     .then(results => results)
     .catch(err => err);
 
   res.json(result);
 });
 
-
+router.get('/subs', async (req, res) => {
+  const { lastId, userId } = req.query;
+  const result = await postService.loadPreviewSubsNewsList({ lastId, userId })
+    .then(results => results)
+    .catch(err => err);
+  res.json(result);
+});
 /**
  * 특정 id 값 조회
  */

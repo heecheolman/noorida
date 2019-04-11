@@ -5,7 +5,9 @@ const state = {
   localList: [],
   reportUserList: [],
   searchPostList: [],
+  searchLocalPostList: [],
   tempSubName: '',
+  lastId: -1,
 };
 
 const getters = {
@@ -57,6 +59,30 @@ const actions = {
     console.log('포스트 리스트!', resData);
     state.loading = false;
   },
+
+  loadSearchLocalPost: async ({ commit}, payload) => {
+    state.loading = true;
+    state.searchLocalPostList = [];
+    const { localId } = payload;
+    const resData = await api.loadLocalPostList(localId, state.lastId)
+      .then(result =>result.data)
+      .catch(err=>err);
+    state.searchLocalPostList = resData;
+    console.log('검색 로컬 포스트 리스트!',resData);
+    state.loading = false;
+  },
+
+
+//   searchSubscriptionUserProcess: async ({commit}, payload) => {
+//   const { userId } = payload;
+//     const resData = await api.searchSubscriptionUser(userId)
+//       .then(result=>result.data)
+//       .catch(err=>err);
+//
+//
+// },
+
+
 
   // searchProcess: async ({ commit }, payload) => {
   //   const { searchContent, userId } = payload;

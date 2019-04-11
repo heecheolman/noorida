@@ -9,25 +9,26 @@
         <span  class="text-center design-name">{{ users.nickName }}</span>
       </div>
       <div class="button-common" >
-      <div v-if="!isMe">
-        <a-button v-show="!isSubscribe"
-                  type="primary"
-                  size="small"
-                  @click="subscribeReporter">구독하기
-        </a-button>
-        <a-button v-show="isSubscribe"
-                  size="small"
-                  @click="cancelSubscribeReporter">구독중
-        </a-button>
+        <div v-if="users.userId !== userIID">
+          <a-button v-show="!isSubscribe(users.userId)"
+                    type="primary"
+                    size="default"
+                    @click="subscribeReporter(users.userId)">구독하기
+          </a-button>
+          <a-button v-show="isSubscribe(users.userId)"
+                    size="default"
+                    @click="cancelSubscribeReporter(users.userId)">구독중
+          </a-button>
+        </div>
       </div>
-    </div>
       <!--</div>-->
     </a-list-item>
   </a-list>
+
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState , mapMutations } from 'vuex';
 import AListItem from 'ant-design-vue/es/list/Item';
 
 const PreviewPost = () => import('@/components/PreviewPost');
@@ -38,24 +39,14 @@ export default {
   name: 'ReporterSearchTab',
   data() {
     return {
-
-      // profileCard: this.$store.state.post.profileCard,
-      // inputData: this.$store.state.search.contents,
-      // address: this.$store.state.search.localName,
-      // // userName: this.$store.state.search.userName,
-      // mockList: [
-      //   { id: 1, mockNickname: 'joeminji' },
-      //   { id: 2, mockNickname: 'joyunji' },
-      //   { id: 3, mockNickname: 'hahahahaha' },
-      // ],
+        userIID: this.$store.state.user.user.userId,
     };
   },
   created() {
-    // this.initPreviewList();
-    // this.initDetailPost();
-    // this.initProfileCard();
-    // initPreviewPostList.nickName = this.userName;
-    console.log('모르는 아이디', this.$store.state.user.user.userId);
+
+    // await this.initPreviewList();
+    this.initSubscript();
+
   },
   components: {
     AListItem,
@@ -64,48 +55,61 @@ export default {
     // contents,
   },
   computed: {
+    ...mapState('user',[
+      'user',
+    ]),
     ...mapState('post', [
       'previewPostList',
       'profileCard',
     ]),
     ...mapState('anotherUser', [
       'info',
-      'localList',
-      'isSubscribe',
+      'reporterList',
     ]),
     ...mapState('search', [
       'reportUserList',
     ]),
-    isMe() {
-      return this.info.userId === this.$store.state.user.user.userId;
-    },
   },
   methods: {
-    // ...mapMutations('post', {
-    //   initPreviewList: 'INIT_PREVIEW_LIST',
+    ...mapMutations('anotherUser', {
+        initPreviewList: 'INIT_SUBSCRIBE_LIST',
     //   initDetailPost: 'INIT_DETAIL_POST',
     //   initProfileCard: 'INIT_PROFILE_CARD',
-    // }),
-    async subscribeReporter() {
-      const payload = {
-        me: this.$store.state.user.user.userId,
-        another: this.info.userId,
-      };
-      await this.$store.dispatch('anotherUser/subscribeReporter', payload);
-      const userId = this.isMe ? this.user.userId : this.info.userId;
+    }),
+    async initSubscript(){
+      let user = this.$store.state.user.user.userId;
       await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-        fetchType: 'readers', userId,
+        fetchType: 'reporters', userId : user,
       });
     },
-    async cancelSubscribeReporter() {
+    isSubscribe(userId) {
+      for (let i=0; i < this.reporterList.length; i++){
+        if (this.reporterList[i].localId === userId){
+          return true;
+        }
+      }
+      return false;
+    },
+    async subscribeReporter(paramUserId) {
       const payload = {
-        me: this.$store.state.user.user.userId,
-        another: this.info.userId,
+        me: this.user.userId,
+        another: paramUserId,
+      };
+      await this.$store.dispatch('anotherUser/subscribeReporter', payload);
+      const userId = this.user.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', {
+        fetchType: 'reporters', userId,
+      });
+    },
+    async cancelSubscribeReporter(paramUserId) {
+      const payload = {
+        me: this.user.userId,
+        another: paramUserId,
       };
       await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
-      const userId = this.isMe ? this.user.userId : this.info.userId;
+      const userId = this.user.userId;
       await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-        fetchType: 'readers', userId,
+        fetchType: 'reporters', userId,
       });
     },
     async routeUserProfile(itemUserId) {

@@ -3,7 +3,7 @@
     <div class="padding--10">
       <a-list>
         <a-list-item v-for="item in localList" :key="item.localId"
-                     @click="routeLocal(item.localId, item.localName)">
+                     @click="routeLocal(item.localId, item.localName, item.userId)">
             <a-icon type="environment" class="design-icon"/>
             <span class="design-title" >{{ item.localName }}</span>
         </a-list-item>
@@ -55,11 +55,11 @@ export default {
     //     // params: { localId },
     //   });
     // },
-    async routeLocal(itemId, itemName) {
+    async routeLocal(itemId, itemName, itemUserId) {
       console.log(`지역을 클릭함! ID는 ${itemId} 입니당!`);
       this.$router.push({
         name: 'SearchAreaPage',
-        params: { localId: itemId, localName: itemName },
+        params: { localId: itemId, localName: itemName, userId: itemUserId},
       });
     },
   },
@@ -68,10 +68,10 @@ export default {
 
 <style lang="scss" scoped>
   .design-icon{
-    font-size: 25px;
+    font-size: 23px;
     /* margin-right: 10px; */
-    padding-left: unset;
-    margin-right: 20px;
+    /* padding-left: unset; */
+    margin-right: 10px;
     margin-top: 10px;
   }
   /*.Local-card{*/
@@ -80,7 +80,8 @@ export default {
     /*height: 73px;*/
   /*}*/
   .design-title{
-    font-size: 15px;
+    font-size: 13px;
+    line-height: 3;
     /*font-weight: bold;*/
   }
   .padding--10{

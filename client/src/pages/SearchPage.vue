@@ -1,16 +1,13 @@
 <template>
-  <div class="flex-container flex-center-sort">
+  <div class="search-page-container flex-container flex-center-sort">
     <toolbar :title="'검색'" />
     <div>
       <div class="flex-center-sort ">
-        <br /><br />
         <a-input-search
-          placeholder="input search text"
+          placeholder="검색어를 입력하세요"
           enterButton
           @input="searchWordChecker"
           v-model="searchData"></a-input-search>
-   
-        <br /><br />
       </div>
       <div>
         <div>
@@ -83,11 +80,10 @@ export default {
     //     userId: this.$store.state.user.user.userId, // 유저아이디 전송!
     //   });
     // },
-    
+
     searchWordChecker: _.debounce(
       async function () {
-        const searchWord = this.searchData;
-        const trimWord = searchWord.trim();
+        const trimWord = this.searchData.trim();
         await this.$store.dispatch('search/loadLocalData', {
           word: trimWord,
         });
@@ -106,33 +102,36 @@ export default {
 <style lang="scss" scoped>
   @import './../assets/scss/mixin/typography';
 
-  .content-wrap {
-    width: 290px;
-    height: calc(100vh - 70px);
-    background: white;
-  }
+  .search-page-container {
+    padding-top: 40px;
 
-  .active:hover {
-    color: white;
-    background-color: #0084ff;
-    font-size: 18px;
-  }
-  /*.tab-design{*/
-  /*width: 100px;*/
-  /*}*/
+    .content-wrap {
+      width: 290px;
+      height: calc(100vh - 70px);
+      background: white;
+    }
 
-  .design-box{
-    height: 80px;
-    margin: 8px;
-    border-radius: 12px;
-    border: none;
-    outline: 0;
-    width: 80px;
-    font-size: 18px;
-    color: #f0f0f0;
-    background-color: #7cbdf8;
-    cursor: pointer;
-    /*box-shadow: 5px 5px 5px #a8a4a4;*/
-  }
+    .active:hover {
+      color: white;
+      background-color: #0084ff;
+      font-size: 18px;
+    }
+    /*.tab-design{*/
+    /*width: 100px;*/
+    /*}*/
 
+    .design-box{
+      height: 80px;
+      margin: 8px;
+      border-radius: 12px;
+      border: none;
+      outline: 0;
+      width: 80px;
+      font-size: 18px;
+      color: #f0f0f0;
+      background-color: #7cbdf8;
+      cursor: pointer;
+      /*box-shadow: 5px 5px 5px #a8a4a4;*/
+    }
+  }
 </style>

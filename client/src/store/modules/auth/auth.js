@@ -19,7 +19,6 @@ const actions = {
     if (loginResult.loginStatus) {
       commit('user/FETCH_USER_DATA', loginResult.data, { root: true });
     }
-
     commit(types.SET_LOGIN_STATUS, loginResult.loginStatus);
   },
   sessionLoginProcess: async ({ commit }) => {

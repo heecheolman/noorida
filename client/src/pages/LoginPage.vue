@@ -4,7 +4,6 @@
       <div class="login-box">
         <h1 class="title text-center">누리다</h1>
         <div class="input-box flex-container flex-center-sort flex-column">
-
           <a-form :form="form"
                   @submit="handleSubmit">
             <a-form-item>

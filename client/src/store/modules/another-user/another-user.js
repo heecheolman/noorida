@@ -109,7 +109,7 @@ const actions = {
 
   async isSubscribe({ commit }, payload) {
     const { reader, reporter } = payload;
-    const resData = await api.isSubscribe(reader, reporter)
+    const resData = await api.isSubscribeReporter(reader, reporter)
       .then(result => result.data)
       .catch(err => err);
     commit(types.UPDATE_IS_SUBSCRIBE, resData);

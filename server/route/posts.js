@@ -28,7 +28,7 @@ router.put('/:contentId', async (req, res) => {
 /**
  * 뉴스 삭제 */
 
-router.put('/disabled-content/:contentId', async (req, res) => {
+router.put('/disabled-content', async (req, res) => {
   const { contentId, userId } = req.body;
   const result = await postService.disabledNews({ contentId, userId })
     .then(results => results)

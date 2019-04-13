@@ -112,7 +112,6 @@ module.exports = {
    */
 
   loadPreviewSubsNewsList: async ({ lastId, userId }) => {
-
     const LIMIT = 15;
     /* 초기일시 lastId 기준 처리 */
     const opr = lastId < 0

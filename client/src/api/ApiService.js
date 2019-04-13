@@ -227,7 +227,7 @@ export default {
     });
   },
 
-  loadLocalPostList(localId, lastId, userId ) {
+  loadLocalPostList(localId, lastId, userId) {
     return axios.get(`/api/posts/users/${localId}`, {
       params: { lastId, userId },
     });
@@ -468,6 +468,9 @@ export default {
       params: { contentId },
     });
   },
-
-
+  fetchUserSubPostList(userId, lastId) {
+    return axios.get('/api/posts/subs', {
+      params: { userId, lastId },
+    });
+  },
 };

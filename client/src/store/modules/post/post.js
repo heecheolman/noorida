@@ -17,6 +17,12 @@ const state = {
   contentScrapState: false,
   userEmotion: 0,
   postEmotions: {},
+
+  subPreviewPostList: [],
+  subLastId: -1,
+  subHasNextPost: true,
+  subLoading: false,
+  subBusy: false,
 };
 
 const mutations = {
@@ -75,6 +81,17 @@ const mutations = {
   },
   [types.UPDATE_POST_EMOTIONS](state, payload) {
     state.postEmotions = { ...payload };
+  },
+  [types.INIT_SUB_PREVIEW_POST_LIST](state) {
+    state.subPreviewPostList = [];
+    state.subLastId = -1;
+    state.subHasNextPost = true;
+  },
+  [types.FETCH_SUB_PREVIEW_POST_LIST](state, payload) {
+    state.subPreviewPostList = state.subPreviewPostList.concat(payload);
+  },
+  [types.UPDATE_SUB_LAST_ID](state, payload) {
+    state.subLastId = payload;
   },
 };
 
@@ -245,6 +262,26 @@ const actions = {
       .catch(err => err);
   },
 
+  async loadSubPreviewPostList({ commit, state, rootState }) {
+    if (state.subHasNextPost) {
+      state.subLoading = true;
+      const resData = await api.fetchUserSubPostList(rootState.user.user.userId, state.subLastId)
+        .then(result => result.data)
+        .catch(err => err);
+      if (!resData.result) {
+        resData.result = [];
+      }
+
+      if (resData.result.length) {
+        commit(types.FETCH_SUB_PREVIEW_POST_LIST, resData.result);
+        commit(types.UPDATE_SUB_LAST_ID, resData.lastId);
+        state.subHasNextPost = resData.hasNextPost;
+      } else {
+        state.subBusy = true;
+      }
+      state.subLoading = false;
+    }
+  },
 };
 
 export default {

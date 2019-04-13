@@ -63,7 +63,7 @@ router.delete('/login', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { nickName, password } = req.body;
   const correct = await loginService.getPasswordByNickname({ nickName })
-    .then(result => secret.checkHashword(result[0].password, password))
+    .then(result => (result.length ? secret.checkHashword(result[0].password, password) : false))
     .catch(err => err);
 
   if (correct) {
@@ -85,9 +85,13 @@ router.post('/login', async (req, res) => {
 
     res.json({
       data: results,
-      loginStatus: !!results,
+      loginStatus: true,
     });
   }
+  res.json({
+    data: {},
+    loginStatus: false,
+  });
 });
 
 

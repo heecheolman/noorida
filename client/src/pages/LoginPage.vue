@@ -52,10 +52,17 @@
   </div>
 </template>
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'LoginPage',
   beforeCreate() {
     this.form = this.$form.createForm(this);
+  },
+  computed: {
+    ...mapState('auth', [
+      'loginLoading',
+    ]),
   },
   data() {
     return {
@@ -74,7 +81,6 @@ export default {
           }],
         },
       },
-      loginLoading: false,
     };
   },
   methods: {
@@ -82,12 +88,12 @@ export default {
       e.preventDefault();
       this.form.validateFields(async (err, values) => {
         if (!err) {
-          this.loginLoading = true;
+          this.$store.state.auth.loginLoading = true;
           await this.$store.dispatch('auth/loginProcess', {
             nickName: values.nickName,
             password: values.password,
           });
-          this.loginLoading = false;
+          this.$store.state.auth.loginLoading = false;
           if (this.$store.state.auth.loginStatus) {
             this.$router.push({ name: 'LocalNewsTab' });
           } else {

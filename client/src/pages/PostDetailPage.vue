@@ -6,8 +6,26 @@
           <div class="news-title-wrap">
             <span class="news-title">{{ detailPost.title }}</span>
           </div>
-          <div class="location-wrap">
-            <span class="location"><a-icon type="environment" theme="filled" style="margin-right: 4px; " />{{ detailPost.localName }}</span>
+          <div class="location-wrap flex-container flex-between-sort">
+            <span class="location">
+              <a-icon type="environment"
+                      theme="filled"
+                      style="margin-right: 4px; "/>{{ detailPost.localName }}
+            </span>
+            <a-popover title="게시글을 삭제하시겠습니까?"
+                       placement="topRight"
+                       trigger="click"
+                       v-model="deletePopvoerVisible"
+                       v-if="isMe">
+              <div slot="content" class="flex-container flex-between-sort">
+                <a-button size="small" @click="deletePopvoerVisible=false">취소</a-button>
+                <a-button size="small" type="primary" @click="deleteNews">삭제</a-button>
+              </div>
+              <a-button type="dashed"
+                        @click="deletePopvoerVisible=false">
+                <a-icon type="delete"/>
+              </a-button>
+            </a-popover>
           </div>
           <div class="news-created-at-container flex-container flex-between-sort flex-row">
             <span class="created-at">{{ detailPost.createdAt | absoluteDate }}</span>
@@ -269,6 +287,7 @@ export default {
       decCheckedList: [],
       decEtcContent: '',
       modalLoading: false,
+      deletePopvoerVisible: false,
     };
   },
   methods: {
@@ -370,6 +389,16 @@ export default {
       this.blockVisible = false;
       this.$message.success(`${this.profileCard.nickName} 님을 차단했습니다.`);
       this.$router.replace({ name: 'LocalNewsTab' });
+    },
+
+    async deleteNews() {
+      const payload = {
+        userId: this.user.userId,
+        contentId: this.contentId,
+      };
+      await this.$store.dispatch('post/deleteNews', payload);
+      this.$message.success('삭제되었습니다');
+      this.$router.push({ name: 'LocalNewsTab' });
     },
   },
 };

@@ -92,6 +92,13 @@ const actions = {
       .catch(err => err);
   },
 
+  async deleteNews({ commit }, payload) {
+    const { contentId, userId } = payload;
+    const resData = await api.deleteNews(userId, contentId)
+      .then(result => result.data)
+      .catch(err => err);
+  },
+
   async loadLocalPreviewPostList({ commit, state, rootState }) {
     if (state.hasNextPost) {
       state.loading = true;

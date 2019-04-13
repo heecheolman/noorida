@@ -187,6 +187,7 @@ module.exports = {
       .select('*')
       .where('userId', userId)
       .where('contentId', opr, lastId)
+      .where('active', 'Y')
       .orderBy('createdAt', 'desc')
       .join('local', 'local.localId', '=', 'contents.localId')
       .limit(LIMIT)

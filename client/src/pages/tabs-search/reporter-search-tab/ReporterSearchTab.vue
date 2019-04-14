@@ -1,15 +1,13 @@
 <template>
   <a-list class="padding--10">
-    <!--<a-list-item :key="data.id" v-for="data in reportUserList">-->
     <a-list-item v-for="users in reportUserList" :key="users.userId" >
       <div @click="routeUserProfile(users.userId)">
-        <a-avatar v-if="profileCard.avatar" :src="`http://localhost:3000/images/${profileCard.avatar}`"></a-avatar>
+        <a-avatar v-if="users.avatar" :src="`http://localhost:3000/images/${users.avatar}`"></a-avatar>
         <a-avatar v-else icon="user"></a-avatar>
-        <!--<span  class="text-center">{{ data.reportNickname }}</span>-->
         <span  class="text-center design-name">{{ users.nickName }}</span>
       </div>
       <div class="button-common" >
-        <div v-if="users.userId !== userIID">
+        <div v-if="users.userId !== myUserID">
           <a-button v-show="!isSubscribe(users.userId)"
                     type="primary"
                     size="default"
@@ -21,41 +19,23 @@
           </a-button>
         </div>
       </div>
-      <!--</div>-->
     </a-list-item>
   </a-list>
 
 </template>
 
 <script>
-import { mapState , mapMutations } from 'vuex';
-import AListItem from 'ant-design-vue/es/list/Item';
-
-const PreviewPost = () => import('@/components/PreviewPost');
-const VirtualList = () => import('@/components/VirtualList');
-// const contents = () => import('@/pages/tabs-search/local-search-tab');
+import { mapState } from 'vuex';
 
 export default {
   name: 'ReporterSearchTab',
   data() {
     return {
-        userIID: this.$store.state.user.user.userId,
+      myUserID: this.$store.state.user.user.userId,
     };
   },
-  created() {
-
-    // await this.initPreviewList();
-    this.initSubscript();
-
-  },
-  components: {
-    AListItem,
-    PreviewPost,
-    VirtualList,
-    // contents,
-  },
   computed: {
-    ...mapState('user',[
+    ...mapState('user', [
       'user',
     ]),
     ...mapState('post', [
@@ -70,21 +50,19 @@ export default {
       'reportUserList',
     ]),
   },
+  created() {
+    this.initSubscribeUser();
+  },
   methods: {
-    ...mapMutations('anotherUser', {
-        initPreviewList: 'INIT_SUBSCRIBE_LIST',
-    //   initDetailPost: 'INIT_DETAIL_POST',
-    //   initProfileCard: 'INIT_PROFILE_CARD',
-    }),
-    async initSubscript(){
-      let user = this.$store.state.user.user.userId;
+    async initSubscribeUser() {
+      const userId = this.user.userId;
       await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-        fetchType: 'reporters', userId : user,
+        fetchType: 'reporters',userId,
       });
     },
     isSubscribe(userId) {
-      for (let i=0; i < this.reporterList.length; i++){
-        if (this.reporterList[i].localId === userId){
+      for (let i = 0; i < this.reporterList.length; i++) {
+        if (this.reporterList[i].userId === userId) {
           return true;
         }
       }
@@ -119,7 +97,6 @@ export default {
           params: { userId: itemUserId },
         });
       }
-      console.log('프로필 페이지로 이동할것');
     },
   },
 };
@@ -134,7 +111,6 @@ export default {
   }
   .design-icon{
     font-size: 30px;
-    /* margin-right: 10px; */
     padding-left: unset;
     margin-right: 20px;
   }

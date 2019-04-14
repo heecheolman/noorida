@@ -215,8 +215,8 @@ export default {
     });
   },
 
-  loadLocalPostList(localId, lastId, userId ) {
-    return axios.get(`/api/posts/users/${localId}`, {
+  loadLocalPostList(localId, lastId, userId) {
+    return axios.get(`/api/posts/area/${localId}`, {
       params: { lastId, userId },
     });
   },
@@ -316,9 +316,9 @@ export default {
     });
   },
 
-  localList(userId) {
+  localList(userId, localId) {
     return axios.get('api/subscription/local', {
-      params: { userId },
+      params: { userId, localId },
     });
   },
   cancelSubscriptionReporter(reader, reporter) {
@@ -328,7 +328,7 @@ export default {
   },
 
   cancelSubscriptionLocal(reader, localId) {
-    return axios.delete('api/subscription/reporter', {
+    return axios.delete('api/subscription/local', {
       params: { reader, localId },
     });
   },

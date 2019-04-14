@@ -69,7 +69,9 @@ module.exports = {
           .catch(err => err);
 
         let blockedUserList = [];
+
         subQuery.forEach(ele => blockedUserList.push(ele.targetId));
+
 
         const result = await knex('contents')
           .select(
@@ -93,6 +95,7 @@ module.exports = {
           .then(results => results)
           .catch(err => err);
 
+
         /* 초기일시 lastId 기준 처리 */
         lastId = lastId === -1 ? 0 : lastId;
 
@@ -112,6 +115,7 @@ module.exports = {
    */
 
   loadPreviewSubsNewsList: async ({ lastId, userId }) => {
+
 
     const LIMIT = 15;
     /* 초기일시 lastId 기준 처리 */
@@ -137,7 +141,6 @@ module.exports = {
 
     let myLocalList = [];
     subQueryLocal.forEach(ele => myLocalList.push(ele.localId));
-    console.log(myLocalList);
 
     const result = await knex('contents')
       .distinct(
@@ -214,7 +217,6 @@ module.exports = {
    * localId 필요
    * 검색 페이지 에서 사용 하면 됨
    */
-
   loadLocalPostList: async ({ localId, lastId, userId }) => {
     const LIMIT = 15;
     const opr = lastId < 0

@@ -1,15 +1,10 @@
 <template>
   <div>
     <toolbar :title="'검색'" />
-    <div class="">
+    <div class="margin--10">
       <div class="design-card text-center">
-        <!--{{ LOCAL_NAME }}-->
         {{ localNameTag }}
       </div>
-      <!--<div class="button-common">-->
-        <!--<a-button >구독</a-button>-->
-      <!--</div>-->
-
       <div class="button-common">
         <a-button v-show="!isSubscribeLocal"
                   type="primary"
@@ -21,53 +16,34 @@
                   @click="cancelSubscribeLocal">구독중
         </a-button>
       </div>
-
-
-
-
-
-
-
-
-      <!--<div class="margin&#45;&#45;10">-->
-        <!--<virtual-list :post-list="previewPostList"-->
-                      <!--:load-type="'local'"/>-->
-      <!--</div>-->
-
-
-    <a-list :loading="loading">
-      <div class="padding--10">
-        <a-list-item v-for="item in searchLocalPostList" :key="item.contentId" class="box-size"
-                     @click="routeDetailPage(item.contentId)">
-          <a-list-item-meta>
-            <a slot="title" class="title">{{ item.title }}</a>
-            <!--<span slot="description" class="title-nickname">{{ item.nickName || '지역이름' }}</span>-->
-            <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
-            <a-avatar v-else slot="avatar" icon="user"></a-avatar>
-          </a-list-item-meta>
-        </a-list-item>
-      </div>
-    </a-list>
-
-
+      <a-list :loading="loading">
+        <div class="padding--10">
+          <a-list-item v-for="item in searchLocalPostList.result"
+                       :key="item.contentId" class="box-size"
+                       @click="routeDetailPage(item.contentId)">
+            <a-list-item-meta>
+              <a slot="title" class="title">{{ item.title }}</a>
+              <span slot="description" class="title-nickname">{{ item.nickName }}</span>
+              <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
+              <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+            </a-list-item-meta>
+          </a-list-item>
+        </div>
+      </a-list>
     </div>
-
   </div>
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState } from 'vuex';
 
 const Toolbar = () => import('@/components/Toolbar');
-// const PreviewPost = () => import('@/components/PreviewPost');
-const VirtualList = () => import('@/components/VirtualList');
+
 
 export default {
   name: 'SearchAreaPage',
   components: {
     Toolbar,
-    // PreviewPost,
-    VirtualList,
   },
   props: {
     localId: {
@@ -81,83 +57,55 @@ export default {
     },
   },
   computed: {
-    ...mapState('post', [
-      // 'previewPostList',
-    ]),
-    ...mapState('anotherUser', [
-      'localList',
-      // 'isSubscribe',
-    ]),
     ...mapState('search', [
-      // 'loadLocalData',
-      // 'localList',
       'searchLocalPostList',
       'loading',
+    ]),
+    ...mapState('anotherUser', [
+      'isSubscribeLocal',
     ]),
   },
   data() {
     return {
       address: this.$store.state.user.address,
       localNameTag: '',
+      myUserId: this.$store.state.user.user.userId,
     };
   },
   async created() {
-    //this.localNameTag = this.localName.substring(this.localName.length - 4); // 이거 고칠필요 있음!!!
-    this.localNameTag = this.localName.substring(this.localName.lastIndexOf(" ")); // 이거 고칠필요 있음!!!
+    this.initIsSubscribeLocal();
+    this.localNameTag = this.localName.substring(this.localName.lastIndexOf(' '));
     await this.$store.dispatch('search/loadSearchLocalPost', {
       localId: this.localId,
-      // userId:  this.$store.state.user.user.userId,
+      userId: this.myUserId,
     });
-    this.initSubscriptLocal();
   },
   methods: {
-    ...mapMutations('post', {
-      // initPreviewList: 'INIT_PREVIEW_LIST',
-      // initDetailPost: 'INIT_DETAIL_POST',
-      // initProfileCard: 'INIT_PROFILE_CARD',
-    }),
-    // isSubscribe() {
-    //   for (let i=0; i < this.localList.length; i++){
-    //     if (this.localList[i].reader === userId){
-    //
-    //       return true;
-    //     }
-    //   }
-    //   return false;
-    //   },
-    async initSubscriptLocal(){
-      let user = this.$store.state.user.user.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-        fetchType: 'locals', userId : user,
+    async initIsSubscribeLocal() {
+      await this.$store.dispatch('anotherUser/isSubscribeLocal', {
+        reader: this.myUserId,
+        localId: this.localId,
       });
     },
-    isSubscribeLocal() {
-      for (let i=0; i < this.localList.length; i++){
-        if (this.localList[i].localId === this.localId){
-          return true;
-        }
-      }
-      return false;
-    },
-    async subscribeLocal(){
-      let user = this.$store.state.user.user.userId;
+    async subscribeLocal() {
       await this.$store.dispatch('anotherUser/subscribeLocal', {
-        reader: user,
+        reader: this.myUserId,
         localId: this.localId,
-      });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-        fetchType: 'locals', userId: user,
       });
     },
-    async cancelSubscribeLocal(){
-      let user = this.$store.state.user.user.userId;
+    async cancelSubscribeLocal() {
       await this.$store.dispatch('anotherUser/cancelSubscribeLocal', {
-        reader: user,
+        reader: this.myUserId,
         localId: this.localId,
       });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-        fetchType: 'locals', userId: user,
-      });
+    },
+    routeDetailPage(contentId) {
+      if (contentId) {
+        this.$router.push({
+          name: 'PostDetailPage',
+          params: { contentId },
+        });
+      }
     },
   },
 };

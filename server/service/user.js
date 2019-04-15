@@ -1,4 +1,5 @@
 const knex = require('./service.config');
+const secret = require('../secret/index');
 
 module.exports = {
   getUserProfileCard: async ({ id }) => {
@@ -33,4 +34,24 @@ module.exports = {
       .catch(err => err);
     return result;
   },
+// 회원 탈퇴
+  withdraw: async ({ userId, nickName ,password }) => {
+
+    const correct = await knex('users')
+      .select('*')
+      .where({ userId, nickName })
+      .then(result => (result.length ? secret.checkHashword(result[0].password, password) : false))
+      .catch(err => err);
+
+    if (correct) {
+      const result = await knex('users')
+        .update('active','N')
+        .where({ userId })
+        .then(results => results)
+        .catch(err => err);
+
+      return result;
+    }
+    return {};
+  }
 };

@@ -394,6 +394,12 @@ export default {
       filename,
     });
   },
+// 회원 탈퇴  api
+  withdraw(userId, nickName, password) {
+    return axios.put('/api/users/disabled-user', {
+      userId, nickName, password,
+    });
+  },
 
   updatePostEmotion(contentId, userId, emotionCode) {
     return axios.post('/api/posts/emotion', {
@@ -419,15 +425,15 @@ export default {
     });
   },
 
-  searchUser(word) {
+  searchUser(word, userId) {
     return axios.get('api/search/user', {
-      params: { word: encodeURI(word) },
+      params: { word: encodeURI(word), userId },
     });
   },
 
-  searchPostTitle(word) {
+  searchPostTitle(word, userId) {
     return axios.get('api/search/post-title', {
-      params: { word: encodeURI(word) },
+      params: { word: encodeURI(word), userId },
     });
   },
 

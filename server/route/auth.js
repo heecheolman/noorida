@@ -41,20 +41,8 @@ router.post('/join', async (req, res) => {
 router.get('/login', async (req, res) => {
   const { session } = req;
   if (mapper[session.key]) {
-    const { nickName, password } = mapper[session.key];
-    const results = await loginService.login({ nickName, password })
-      .then(result => ({
-        userId: result[0].userId,
-        realName: secret.hashing(result[0].realName),
-        nickname: result[0].nickname,
-        email: secret.hashing(result[0].email),
-        avatar: result[0].avatar,
-        description: result[0].description,
-      }))
-      .catch(err => err);
-
     res.json({
-      data: results,
+      data: mapper[session.key],
       loginStatus: true,
     });
   } else {
@@ -63,7 +51,7 @@ router.get('/login', async (req, res) => {
       loginStatus: false,
     });
   }
-})
+});
 
 
 router.delete('/login', async (req, res) => {
@@ -75,16 +63,16 @@ router.delete('/login', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { nickName, password } = req.body;
   const correct = await loginService.getPasswordByNickname({ nickName })
-    .then(result => secret.checkHashword(result[0].password, password))
+    .then(result => (result.length ? secret.checkHashword(result[0].password, password) : false))
     .catch(err => err);
 
   if (correct) {
     const results = await loginService.getUserDataByNickname({ nickName })
       .then(result => ({
         userId: result[0].userId,
-        realName: secret.hashing(result[0].realName),
+        realName: result[0].realName,
         nickname: result[0].nickname,
-        email: secret.hashing(result[0].email),
+        email: result[0].email,
         avatar: result[0].avatar,
         description: result[0].description,
       }))
@@ -92,14 +80,18 @@ router.post('/login', async (req, res) => {
     if (results) {
       const key = uuid();
       req.session.key = key;
-      mapper[key] = { nickName };
+      mapper[key] = results;
     }
 
     res.json({
       data: results,
-      loginStatus: !!results,
+      loginStatus: true,
     });
   }
+  res.json({
+    data: {},
+    loginStatus: false,
+  });
 });
 
 

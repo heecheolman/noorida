@@ -3,6 +3,7 @@ import api from './../../../api/ApiService';
 
 const state = {
   loginStatus: false,
+  loginLoading: false,
 };
 const mutations = {
   [types.SET_LOGIN_STATUS](state, payload) {
@@ -19,10 +20,10 @@ const actions = {
     if (loginResult.loginStatus) {
       commit('user/FETCH_USER_DATA', loginResult.data, { root: true });
     }
-
     commit(types.SET_LOGIN_STATUS, loginResult.loginStatus);
   },
-  sessionLoginProcess: async ({ commit }) => {
+  sessionLoginProcess: async ({ commit, state }) => {
+    state.loginLoading = true;
     const sessionResult = await api.sessionLogin()
       .then(results => results.data)
       .catch(err => err);
@@ -31,11 +32,7 @@ const actions = {
       commit('user/FETCH_USER_DATA', sessionResult.data, { root: true });
     }
     commit(types.SET_LOGIN_STATUS, sessionResult.loginStatus);
-  },
-  sessionInit: async ({ commit }) => {
-    await api.sessionInit()
-      .then(results => results.data)
-      .catch(err => err);
+    state.loginLoading = false;
   },
 };
 

@@ -10,13 +10,11 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 
-const PreviewPost = () => import('@/components/PreviewPost');
 const VirtualList = () => import('@/components/VirtualList');
 
 export default {
   name: 'LocalNewsTab',
   components: {
-    PreviewPost,
     VirtualList,
   },
   computed: {
@@ -43,11 +41,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-  .local-info {
-    width: 100%;
-    height: 40px;
-    top: 0;
-  }
-</style>

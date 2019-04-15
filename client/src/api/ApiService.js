@@ -128,6 +128,18 @@ export default {
   },
 
   /**
+   * 뉴스 삭제
+   * @param userId
+   * @param contentId
+   * @returns {AxiosPromise<any>}
+   */
+  deleteNews(userId, contentId) {
+    return axios.put('/api/posts/disabled-content', {
+      userId, contentId,
+    });
+  },
+
+  /**
    * 지역이름과, 받아올 마지막 id 값을 넘겨주면 포스트를 가져옴
    * @param localName
    * @param lastId
@@ -456,6 +468,9 @@ export default {
       params: { contentId },
     });
   },
-
-
+  fetchUserSubPostList(userId, lastId) {
+    return axios.get('/api/posts/subs', {
+      params: { userId, lastId },
+    });
+  },
 };

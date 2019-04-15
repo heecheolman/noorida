@@ -13,22 +13,10 @@ router.post('', async (req, res) => {
   res.json('ok');
 });
 
-
-/**
- * 뉴스 수정 */
-
-router.put('/:contentId', async (req, res) => {
-  const { contentId, userId, title, content } = req.body;
-  const result = await postService.editNews({ contentId, userId, title, content })
-    .then(results => results)
-    .catch(err => err);
-  res.json('ok');
-});
-
 /**
  * 뉴스 삭제 */
 
-router.put('/disabled-content/:contentId', async (req, res) => {
+router.put('/disabled-content', async (req, res) => {
   const { contentId, userId } = req.body;
   const result = await postService.disabledNews({ contentId, userId })
     .then(results => results)

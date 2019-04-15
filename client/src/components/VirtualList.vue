@@ -85,6 +85,7 @@ export default {
         case 'local': return this.loadMoreLocal;
         case 'user': return this.loadMoreUser;
         case 'scrap': return this.loadMoreScrap;
+        case 'sub': return this.loadMoreSub;
         default: return () => {};
       }
     },
@@ -101,6 +102,7 @@ export default {
     ...mapActions('post', {
       loadMoreLocal: 'loadLocalPreviewPostList',
       loadMoreUser: 'loadUserPostList',
+      loadMoreSub: 'loadSubPreviewPostList',
     }),
     ...mapActions('scrap', {
       loadMoreScrap: 'loadScrapPostList',

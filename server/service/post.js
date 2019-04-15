@@ -115,8 +115,6 @@ module.exports = {
    */
 
   loadPreviewSubsNewsList: async ({ lastId, userId }) => {
-
-
     const LIMIT = 15;
     /* 초기일시 lastId 기준 처리 */
     const opr = lastId < 0
@@ -190,6 +188,7 @@ module.exports = {
       .select('*')
       .where('userId', userId)
       .where('contentId', opr, lastId)
+      .where('active', 'Y')
       .orderBy('createdAt', 'desc')
       .join('local', 'local.localId', '=', 'contents.localId')
       .limit(LIMIT)

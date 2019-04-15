@@ -12,20 +12,22 @@ router.post('', async (req, res) => {
 });
 
 router.get('/local', async (req, res) => {
+  const userId = req.params;
   let { word } = req.query;
   word = decodeURI(word);
   
-  const result = await searchService.searchLocal({ word })
+  const result = await searchService.searchLocal({ word, userId })
     .then(results => results)
     .catch(err => err);
   return res.json(result);
 });
 
 router.get('/user', async (req, res) => {
+  const userId = req.params;
   let { word } = req.query;
   word = decodeURI(word);
 
-  const result = await searchService.searchUser({ word })
+  const result = await searchService.searchUser({ word, userId })
     .then(results => results)
     .catch(err => err);
   return res.json(result);

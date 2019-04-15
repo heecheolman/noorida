@@ -419,15 +419,15 @@ export default {
     });
   },
 
-  searchUser(word) {
+  searchUser(word, userId) {
     return axios.get('api/search/user', {
-      params: { word: encodeURI(word) },
+      params: { word: encodeURI(word), userId },
     });
   },
 
-  searchPostTitle(word) {
+  searchPostTitle(word, userId) {
     return axios.get('api/search/post-title', {
-      params: { word: encodeURI(word) },
+      params: { word: encodeURI(word), userId },
     });
   },
 

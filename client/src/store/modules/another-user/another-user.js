@@ -7,6 +7,8 @@ const state = {
   reporterList: [],
   localList: [],
   isSubscribe: false,
+  isSubscribeReporter: false,
+  isSubscribeLocal: false,
   reliabilityScore: 0,
 };
 
@@ -49,6 +51,9 @@ const mutations = {
   },
   [types.UPDATE_USER_RELIABILITY_SCORE](state, payload) {
     state.reliabilityScore = payload;
+  },
+  [types.UPDATE_IS_SUBSCRIBE_LOCAL](state, payload) {
+    state.isSubscribeLocal = payload;
   },
 };
 
@@ -96,7 +101,24 @@ const actions = {
       commit(types.UPDATE_IS_SUBSCRIBE, true);
     }
   },
-
+  async subscribeLocal({ commit }, payload) {
+    const { reader, localId } = payload;
+    const resData = await api.subscriptionLocal(reader, localId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_IS_SUBSCRIBE_LOCAL, true);
+    }
+  },
+  async cancelSubscribeLocal({ commit }, payload) {
+    const { reader, localId } = payload;
+    const resData = await api.cancelSubscriptionLocal(reader, localId)
+      .then(result => result.data)
+      .catch(err => err);
+    if (resData === 'ok') {
+      commit(types.UPDATE_IS_SUBSCRIBE_LOCAL, false);
+    }
+  },
   async cancelSubscribeReporter({ commit }, payload) {
     const { me, another } = payload;
     const resData = await api.cancelSubscriptionReporter(me, another)
@@ -113,6 +135,14 @@ const actions = {
       .then(result => result.data)
       .catch(err => err);
     commit(types.UPDATE_IS_SUBSCRIBE, resData);
+  },
+
+  async isSubscribeLocal({ commit }, payload) {
+    const { reader, localId } = payload;
+    const resData = await api.isSubscribeLocal(reader, localId)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_IS_SUBSCRIBE_LOCAL, resData);
   },
 
   async fetchUserReliabilityScore({ commit }, payload) {

@@ -394,6 +394,12 @@ export default {
       filename,
     });
   },
+// 회원 탈퇴  api
+  withdraw(userId, nickName, password) {
+    return axios.put('/api/users/disabled-user', {
+      userId, nickName, password,
+    });
+  },
 
   updatePostEmotion(contentId, userId, emotionCode) {
     return axios.post('/api/posts/emotion', {

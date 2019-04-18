@@ -15,48 +15,21 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
-
-// const PreviewPost = () => import('@/components/PreviewPost');
-// const VirtualList = () => import('@/components/VirtualList');
-// const contents = () => import('@/pages/tabs-search/local-search-tab');
+import { mapState } from 'vuex';
 
 export default {
   name: 'PostSearchTab',
   data() {
     return {
-      // inputData: this.$store.state.search.contents,
-      // address: this.$store.state.search.localName,
-      // userName: this.$store.state.search.userName,
+
     };
-  },
-  created() {
-    // this.initPreviewList();
-    // this.initDetailPost();
-    // this.initProfileCard();
-    // initPreviewPostList.nickName = this.userName;
-    // async {
-    //   const word = '충청남도 천안시 서북구 성환읍 성월리';
-    //   await this.$store.dispatch('search/loadSearchPost', {
-    //     word: word,
-    //   });
-  },
-  components: {
-    // PreviewPost,
-    // VirtualList,
   },
   computed: {
     ...mapState('search', [
       'searchPostList',
-      'loading',
     ]),
   },
   methods: {
-    ...mapMutations('post', {
-      // initPreviewList: 'INIT_PREVIEW_LIST',
-      // initDetailPost: 'INIT_DETAIL_POST',
-      // initProfileCard: 'INIT_PROFILE_CARD',
-    }),
     routeDetailPage(contentId) {
       if (contentId) {
         this.$router.push({
@@ -73,7 +46,6 @@ export default {
 <style lang="scss" scoped>
   .title{
     font-size: 15px;
-    /*font-weight: bold;*/
   }
   .title-nickname{
     font-size: 13px;

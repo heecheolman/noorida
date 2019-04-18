@@ -46,6 +46,7 @@ module.exports = {
       .catch(err => err);
     return result;
   },
+
   cancelSubscriptionReporter: async ({ reader, reporter }) => {
     const result = await knex('subscriptionReporter')
       .where({ reader, reporter })

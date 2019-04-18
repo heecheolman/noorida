@@ -40,7 +40,7 @@ router.get('/is-subscribed/reporter', async (req, res) => {
   }
 });
 
-router.get('is-subscribed/local', async (req, res) => {
+router.get('/is-subscribed/local', async (req, res) => {
   const { reader, localId } = req.query;
   const result = await subscriptionService.isLocalSubscribed({ reader, localId })
     .then(results => results)

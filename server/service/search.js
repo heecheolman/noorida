@@ -18,16 +18,36 @@ module.exports = {
     return result;
   },
 
-  searchUser: async ({ word }) => {
+  searchUser: async ({ word, userId }) => {
+    const subQuery = await knex('block')
+      .where('myUserId', userId)
+      .select('targetId')
+      .then(rowData => JSON.parse(JSON.stringify(rowData)))
+      .catch(err => err);
+
+    let blockedUserList = [];
+    subQuery.forEach(ele => blockedUserList.push(ele.targetId));
+
     const result = await knex('users')
       .select('userId', 'nickName', 'avatar')
       .where('nickName', 'LIKE', `%${word}%`)
+      .where('userId','not in', blockedUserList)
       .then(results => results)
       .catch(err => err);
     return result;
   },
 
-  searchPostTitle: async ({ word }) => {
+  searchPostTitle: async ({ word, userId }) => {
+
+    const subQuery = await knex('block')
+      .where('myUserId', userId)
+      .select('targetId')
+      .then(rowData => JSON.parse(JSON.stringify(rowData)))
+      .catch(err => err);
+
+    let blockedUserList = [];
+    subQuery.forEach(ele => blockedUserList.push(ele.targetId));
+
     const result = await knex('contents')
       .select('users.userId',
         'users.nickName',
@@ -37,6 +57,7 @@ module.exports = {
         'contents.content',
         'local.localName')
       .where('contents.title', 'LIKE', `%${word}%`)
+      .where('contents.Id','not in', blockedUserList)
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
       .then(results => results)

@@ -13,6 +13,7 @@ router.post('', async (req, res) => {
   res.json('ok');
 });
 
+
 /**
  * 뉴스 삭제 */
 
@@ -38,6 +39,14 @@ router.get('/local', async (req, res) => {
 router.get('/subs', async (req, res) => {
   const { lastId, userId } = req.query;
   const result = await postService.loadPreviewSubsNewsList({ lastId, userId })
+    .then(results => results)
+    .catch(err => err);
+  res.json(result);
+});
+
+router.get('/hot-topic', async (req, res) => {
+  const { localId } = req.query;
+  const result = await postService.loadPreviewHotNewsList({ localId })
     .then(results => results)
     .catch(err => err);
   res.json(result);

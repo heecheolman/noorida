@@ -154,6 +154,17 @@ export default {
       },
     });
   },
+
+  /**
+   * 지역별 Hot -Topic 리스트
+   */
+  loadHotPreviewPostList(localId) {
+    return axios.get('/api/posts/hot-topic', {
+      params: {
+        localId,
+      },
+    });
+  },
   /**
    * 아이디 찾기
    * @param realName

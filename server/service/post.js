@@ -29,6 +29,16 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
+    const maxContentId = await knex('contents')
+      .max('contentId')
+      .then(results => Object.values(results[0])[0])
+      .catch(err => err);
+
+    const insertHottopic = await knex('hottopic')
+      .insert({ contentId: maxContentId })
+      .then(results => results)
+      .catch(err => err);
+
     return result;
   },
 
@@ -68,7 +78,7 @@ module.exports = {
           .then(rowData => JSON.parse(JSON.stringify(rowData)))
           .catch(err => err);
 
-        let blockedUserList = [];
+        const blockedUserList = [];
         subQuery.forEach(ele => blockedUserList.push(ele.targetId));
 
         const result = await knex('contents')
@@ -124,7 +134,7 @@ module.exports = {
       .then(rowData => JSON.parse(JSON.stringify(rowData)))
       .catch(err => err);
 
-    let myReporterList = [];
+    const myReporterList = [];
     subQueryReporter.forEach(ele => myReporterList.push(ele.reporter));
 
 
@@ -134,9 +144,10 @@ module.exports = {
       .then(rowData => JSON.parse(JSON.stringify(rowData)))
       .catch(err => err);
 
-    let myLocalList = [];
+    const myLocalList = [];
     subQueryLocal.forEach(ele => myLocalList.push(ele.localId));
     console.log(myLocalList);
+
 
     const result = await knex('contents')
       .distinct(
@@ -169,6 +180,37 @@ module.exports = {
       lastId: result.length ? result[result.length - 1].contentId : lastId,
       hasNextPost: result.length === LIMIT,
     };
+  },
+
+  loadPreviewHotNewsList: async ({ localId }) => {
+    const LIMIT = 10;
+
+
+    const result = await knex('contents')
+      .select(
+        'users.nickName',
+        'users.avatar',
+        'contents.contentId',
+        'contents.title',
+        'contents.content',
+        'contents.createdAt',
+        'contents.views',
+        'local.localName',
+      )
+      .where('local.localId', localId)
+      .where('contents.active', 'Y')
+      .join('users', 'users.userId', '=', 'contents.userId')
+      .join('local', 'local.localId', '=', 'contents.localId')
+      .join('hottopic', 'hottopic.contentId', '=', 'contents.contentId')
+      .orderBy('hottopic.sum', 'desc')
+      .orderBy('hottopic.view', 'desc')
+      .orderBy('hottopic.score', 'desc')
+      .orderBy('hottopic.comment', 'desc')
+      .limit(LIMIT)
+      .then(results => results)
+      .catch(err => err);
+
+    return result;
   },
 
 
@@ -227,7 +269,7 @@ module.exports = {
       .then(rowData => JSON.parse(JSON.stringify(rowData)))
       .catch(err => err);
 
-    let blockedUserList = [];
+    const blockedUserList = [];
     subQuery.forEach(ele => blockedUserList.push(ele.targetId));
 
     const result = await knex('contents')
@@ -334,13 +376,6 @@ module.exports = {
       .catch(err => err);
 
     return {
-      'like': Object.values(countLike[0])[0],
-      'happy': Object.values(countHappy[0])[0],
-      'angry': Object.values(countAngry[0])[0],
-      'sad': Object.values(countSad[0])[0],
-    };
-
-    return {
       like: Object.values(countLike[0])[0],
       happy: Object.values(countHappy[0])[0],
       angry: Object.values(countAngry[0])[0],
@@ -362,6 +397,34 @@ module.exports = {
       .insert({ userId, contentId, score })
       .then(results => results)
       .catch(err => err);
+
+    const sumResult = await knex('evaluation')
+      .where({ contentId })
+      .sum('score')
+      .then(results => Object.values(results[0])[0])
+      .catch(err => err);
+
+    console.log(sumResult);
+
+    const updateHotResult = await knex('hottopic')
+      .update('score', sumResult)
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+
+    const sumData = await knex('hottopic')
+      .select('sum')
+      .where({ contentId })
+      .then(results => Object.values(results[0])[0])
+      .catch(err => err);
+
+    const updateSum = await knex('hottopic')
+      .update('sum', sumData + score)
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+
+
     return result;
   },
   // 자신이 작성한 게시글에 대한 평가 점수의 총합
@@ -386,20 +449,17 @@ module.exports = {
   },
 
   insertViews: async ({ userId, contentId }) => {
-
     const isViewed = await knex('view')
       .select('*')
       .where({ userId, contentId })
       .then(results => results)
       .catch(err => err);
 
-    if (isViewed.length == 0) {
-
+    if (isViewed.length === 0) {
       const result = await knex('view')
         .insert({ userId, contentId })
         .then(results => results)
         .catch(err => err);
-
     }
 
     /**
@@ -414,6 +474,23 @@ module.exports = {
       .catch(err => err);
     const updateResult = await knex('contents')
       .update('views', viewCount)
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+    const updateHotResult = await knex('hottopic')
+      .update('view', viewCount)
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+
+    const sumData = await knex('hottopic')
+      .select('sum')
+      .where({ contentId })
+      .then(results => Object.values(results[0])[0])
+      .catch(err => err);
+
+    const updateSum = await knex('hottopic')
+      .update('sum', sumData + 1)
       .where({ contentId })
       .then(results => results)
       .catch(err => err);

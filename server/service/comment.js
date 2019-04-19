@@ -1,12 +1,37 @@
 const knex = require('./service.config');
 
 module.exports = {
-  comment: async ({ contentId, userId, commentContent }) => {
+  insertComment: async ({ contentId, userId, commentContent }) => {
     const result = await knex('comments')
       .insert({ contentId, userId, commentContent })
       .then(results => results)
       .catch(err => err);
-    return result;
+
+    const commentCount = await knex('comments')
+      .count('*')
+      .where({ contentId })
+      .then(results => Object.values(results[0])[0])
+      .catch(err => err);
+
+    const updateResult = await knex('hottopic')
+      .update('comment', commentCount)
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+
+    const sumData = await knex('hottopic')
+      .select('sum')
+      .where({ contentId })
+      .then(results => Object.values(results[0])[0])
+      .catch(err => err);
+    
+    const updateSum = await knex('hottopic')
+      .update('sum', sumData + 1)
+      .where({ contentId })
+      .then(results => results)
+      .catch(err => err);
+
+    return updateResult;
   },
 
   commentList: async ({ contentId, lastId }) => {
@@ -43,7 +68,7 @@ module.exports = {
     };
   },
 
-  editComment: async ({ commentId, userId, commentContent }) =>{
+  editComment: async ({ commentId, userId, commentContent }) => {
     const result = await knex('comments')
       .update({ commentContent })
       .where({ commentId, userId })

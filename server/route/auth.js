@@ -6,7 +6,7 @@ const PostOffice = require('./../mail-config/mail-password');
 const tokenBuilder = require('uuid/v4');
 const secret = require('../secret/index');
 const uuid = require('uuid/v4');
-const key = 'thisiskdkdk';
+const key = 'keyValue';
 
 let mapper = {};
 
@@ -15,13 +15,14 @@ const router = express.Router();
 
 /**
  * 회원가입
+ *
  */
 router.post('/join', async (req, res) => {
   const result = await joinService.insertUser({
-    realName: secret.hashing(req.body.realName),
+    realName: secret.encrypt(req.body.realName, key),
     nickName: req.body.nickName,
     password: secret.salting(req.body.password),
-    email: secret.hashing(req.body.email),
+    email: secret.encrypt(req.body.email, key),
   })
     .then(results => results)
     .catch(err => err);
@@ -70,13 +71,14 @@ router.post('/login', async (req, res) => {
     const results = await loginService.getUserDataByNickname({ nickName })
       .then(result => ({
         userId: result[0].userId,
-        realName: result[0].realName,
-        nickname: result[0].nickname,
-        email: result[0].email,
+        realName: secret.decrypt(result[0].realName, key),
+        nickname: result[0].nickName,
+        email: secret.decrypt(result[0].email, key),
         avatar: result[0].avatar,
         description: result[0].description,
       }))
       .catch(err => err);
+
     if (results) {
       const key = uuid();
       req.session.key = key;
@@ -87,11 +89,15 @@ router.post('/login', async (req, res) => {
       data: results,
       loginStatus: true,
     });
+
+
+  } else {
+    res.json({
+      data: {},
+      loginStatus: false,
+    });
   }
-  res.json({
-    data: {},
-    loginStatus: false,
-  });
+
 });
 
 
@@ -135,7 +141,7 @@ router.put('/find-password', async (req, res) => {
         console.error(err);
         res.sendStatus(500);
       } else {
-        console.log(`EMAIL SENT ${ info.response }`);
+        console.log(`EMAIL SENT ${info.response}`);
         res.sendStatus(200);
       }
     });

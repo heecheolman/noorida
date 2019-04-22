@@ -29,15 +29,11 @@ router.put('/disabled-content', async (req, res) => {
  * 지역 뉴스리스트 조회
  * */
 router.get('/local', async (req, res) => {
-  // const { localName, lastId, userId } = req.query;
-
-  const { lastId, userId} = req.query;
-  const localId = 1 ;
-  // const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
-  const result = await postService.loadLocalPostList({ localId, lastId, userId })
+  const { localName, lastId, userId } = req.query;
+  const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
     .then(results => results)
     .catch(err => err);
-  res.json(result)
+  res.json(result);
 });
 router.get('/subs', async (req, res) => {
   const { lastId, userId } = req.query;
@@ -86,7 +82,7 @@ router.get('/users/:userId', async (req, res) => {
  */
 router.get('/area/:localId', async (req, res) => {
   const { localId } = req.params;
-  const { lastId, userId} = req.query;
+  const { lastId, userId } = req.query;
   const result = await postService.loadLocalPostList({ localId, lastId, userId })
     .then(results => results)
     .catch(err => err);

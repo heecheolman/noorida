@@ -9,15 +9,10 @@
       <div class="button-common">
         <a-button >구독</a-button>
       </div>
-
-
-
       <div class="margin--10">
         <virtual-list :post-list="previewPostList"
                       :load-type="'local'"/>
       </div>
-
-
       <a-list :loading="loading">
         <div class="padding--10">
           <a-list-item v-for="item in searchPostList" :key="item.contentId" class="box-size"
@@ -39,54 +34,55 @@
 </template>
 
 <script>
-  import { mapState, mapMutations } from 'vuex';
-  const Toolbar = () => import('@/components/Toolbar');
-  const VirtualList = () => import('@/components/VirtualList');
-  export default {
-    name: 'SearchAreaPage',
-    components: {
-      Toolbar,
-      VirtualList,
+import { mapState, mapMutations } from 'vuex';
+
+const Toolbar = () => import('@/components/Toolbar');
+const VirtualList = () => import('@/components/VirtualList');
+export default {
+  name: 'SearchAreaPage',
+  components: {
+    Toolbar,
+    VirtualList,
+  },
+  props: {
+    localId: {
+      type: Number,
     },
-    props: {
-      localId: {
-        type: Number,
-      },
-      localName: {
-        type: String,
-      },
+    localName: {
+      type: String,
     },
-    computed: {
-      ...mapState('post', [
-        'previewPostList',
-      ]),
-      ...mapState('search', [
-        'loadLocalData',
-        'localList',
-        'searchPostList',
-      ]),
-    },
-    data() {
-      return {
-        loading: true,
-        address: this.$store.state.user.address,
-        localNameTag: '',
-      };
-    },
-    async created() {
-      this.localNameTag = this.localName.substring(this.localName.length - 4); // 이거 고칠필요 있음!!!
-      await this.$store.dispatch('search/loadSearchPost', {
-        word: this.localName,
-      });
-    },
-    methods: {
-      ...mapMutations('post', {
-        initPreviewList: 'INIT_PREVIEW_LIST',
-        initDetailPost: 'INIT_DETAIL_POST',
-        initProfileCard: 'INIT_PROFILE_CARD',
-      }),
-    },
-  };
+  },
+  computed: {
+    ...mapState('post', [
+      'previewPostList',
+    ]),
+    ...mapState('search', [
+      'loadLocalData',
+      'localList',
+      'searchPostList',
+    ]),
+  },
+  data() {
+    return {
+      loading: true,
+      address: this.$store.state.user.address,
+      localNameTag: '',
+    };
+  },
+  async created() {
+    this.localNameTag = this.localName.substring(this.localName.length - 4); // 이거 고칠필요 있음!!!
+    await this.$store.dispatch('search/loadSearchPost', {
+      word: this.localName,
+    });
+  },
+  methods: {
+    ...mapMutations('post', {
+      initPreviewList: 'INIT_PREVIEW_LIST',
+      initDetailPost: 'INIT_DETAIL_POST',
+      initProfileCard: 'INIT_PROFILE_CARD',
+    }),
+  },
+};
 </script>
 
 <style scoped>

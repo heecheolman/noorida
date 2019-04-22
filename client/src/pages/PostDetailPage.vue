@@ -156,6 +156,7 @@
         <div class="margin--bottom-10">
           <h4>신고 종류</h4>
           <a-checkbox-group :options="declarationOptions"
+                            @change="onChange"
                             v-model="decCheckedList"></a-checkbox-group>
         </div>
         <a-textarea v-model="decEtcContent" :disabled="!etcChecked"></a-textarea>
@@ -399,6 +400,20 @@ export default {
       await this.$store.dispatch('post/deleteNews', payload);
       this.$message.success('삭제되었습니다');
       this.$router.push({ name: 'LocalNewsTab' });
+    },
+
+    onChange(checkedValues) {
+      if (checkedValues.length >= 2) {
+        this.declarationOptions = this.declarationOptions.map((option) => {
+          if (!checkedValues.includes(option.value)) {
+            return { ...option, disabled: true };
+          }
+          return { ...option };
+        });
+      } else {
+        this.declarationOptions = this.declarationOptions
+          .map(option => ({ ...option, disabled: false }));
+      }
     },
   },
 };

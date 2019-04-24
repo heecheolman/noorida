@@ -184,4 +184,12 @@ router.post('/views', async (req, res) => {
   res.json('ok');
 });
 
+router.post('/report-post', async (req, res) => {
+  const { myUserId, targetPost, reportCode, text } = req.body;
+  const result = await postService.reportPost({ myUserId, targetPost, reportCode, text})
+    .then(results => results)
+    .catch(err => err);
+  return res.json('ok');
+});
+
 module.exports = router;

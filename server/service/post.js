@@ -501,4 +501,48 @@ module.exports = {
 
     return isViewed;
   },
+
+  reportPost: async ({ myUserId, targetPost, reportCode, text }) => {
+
+  const isReported = await knex('report')
+    .select('*')
+    .where({ myUserId, targetPost})
+    .then(results => results)
+    .catch(err => err);
+
+  let result ='';
+
+  const codeData = reportCode;
+
+  if(isReported.length == 0) {
+
+    switch (reportCode.length) {
+      case 1:
+      result =  await knex('report')
+          .insert({ myUserId, targetPost, reportCode: codeData })
+          .then(results => results)
+          .catch(err => err);
+       break;
+
+      case 2:
+        const reportCode = codeData.charAt(0);
+        const secondCode = codeData.charAt(1);
+        result = await knex('report')
+          .insert({ myUserId, targetPost, reportCode, secondCode })
+          .then(results => results)
+          .catch(err => err);
+        break;
+    }
+
+    if (codeData.includes('5')) {
+      const insertText = await knex('report')
+        .update({ text })
+        .where({ myUserId, targetPost })
+        .then(results => results)
+        .catch(err => err);
+    }
+  }
+
+    return result;
+  },
 };

@@ -489,4 +489,10 @@ export default {
       params: { userId, lastId },
     });
   },
+
+  reportPost(myUserId, targetPost, reportCode,text) {
+    return axios.post('api/posts/report-post',{
+      myUserId, targetPost, reportCode, text,
+    });
+  },
 };

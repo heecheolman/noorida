@@ -243,7 +243,6 @@ export default {
       params: { lastId, userId },
     });
   },
-
   writeComment(contentId, userId, commentContent) {
     return axios.post('/api/comments', {
       contentId,

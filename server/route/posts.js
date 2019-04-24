@@ -29,12 +29,8 @@ router.put('/disabled-content', async (req, res) => {
  * 지역 뉴스리스트 조회
  * */
 router.get('/local', async (req, res) => {
-  // const { localName, lastId, userId } = req.query;
-
-  const { lastId, userId} = req.query;
-  const localId = 1 ;
-  // const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
-  const result = await postService.loadLocalPostList({ localId, lastId, userId })
+  const { localName, lastId, userId } = req.query;
+  const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
     .then(results => results)
     .catch(err => err);
   res.json(result)
@@ -82,6 +78,7 @@ router.get('/users/:userId', async (req, res) => {
 });
 
 /**
+ *
  * localId 가 갖는 포스트리스트들 조회
  */
 router.get('/area/:localId', async (req, res) => {
@@ -92,7 +89,6 @@ router.get('/area/:localId', async (req, res) => {
     .catch(err => err);
   res.json(result);
 });
-
 /**
  * 게시글에 감정 표현
  * 이미 표현 하였으면 emotionCode 만 update

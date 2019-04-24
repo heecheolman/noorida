@@ -146,7 +146,7 @@ module.exports = {
 
     const myLocalList = [];
     subQueryLocal.forEach(ele => myLocalList.push(ele.localId));
-    console.log(myLocalList);
+
 
 
     const result = await knex('contents')
@@ -269,8 +269,12 @@ module.exports = {
       .then(rowData => JSON.parse(JSON.stringify(rowData)))
       .catch(err => err);
 
-    const blockedUserList = [];
-    subQuery.forEach(ele => blockedUserList.push(ele.targetId));
+
+    let blockedUserList = [];
+
+    for (let i in subQuery) {
+      blockedUserList[i] = subQuery[i];
+    }
 
     const result = await knex('contents')
       .select('users.userId',
@@ -404,7 +408,7 @@ module.exports = {
       .then(results => Object.values(results[0])[0])
       .catch(err => err);
 
-    console.log(sumResult);
+
 
     const updateHotResult = await knex('hottopic')
       .update('score', sumResult)

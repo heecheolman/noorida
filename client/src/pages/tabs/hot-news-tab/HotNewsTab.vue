@@ -34,47 +34,42 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex';
-  // import infiniteScroll from 'vue-infinite-scroll';
-  const VirtualList = () => import('@/components/VirtualList');
-  import api from '@/api/ApiService';
+import { mapState } from 'vuex';
+const VirtualList = () => import('@/components/VirtualList');
 
-  export default {
-    name: 'HotNewsTab',
-    // directives: { infiniteScroll },
-    components: {
-      VirtualList,
-      api,
-    },
-    data() {
-      return {
+export default {
+  name: 'HotNewsTab',
+  components: {
+    VirtualList,
+  },
+  data() {
+    return {
 
-      };
-    },
-    async created() {
-      /////////////// localId를 임의적으로 그냥 넣어줬어요!!!!ㅠㅠㅠㅠㅠ
-      const localId = '1';
-      await this.$store.dispatch('hot/hotTopicProcess', {
-        localId : localId,
-      });
+    };
+  },
+  async created() {
+    const localId = '2';
+    await this.$store.dispatch('hot/hotTopicProcess', {
+      localId : localId,
+    });
 
+  },
+  computed: {
+    ...mapState('hot',[
+      'hotList',
+    ]),
+  },
+  methods: {
+    routeDetailPage(contentId) {
+      if (contentId) {
+        this.$router.push({
+          name: 'PostDetailPage',
+          params: { contentId },
+        });
+      }
     },
-    computed: {
-      ...mapState('hot',[
-        'hotList',
-      ]),
-    },
-    methods: {
-      routeDetailPage(contentId) {
-        if (contentId) {
-          this.$router.push({
-            name: 'PostDetailPage',
-            params: { contentId },
-          });
-        }
-      },
-    },
-  };
+  },
+};
 </script>
 <style lang="scss" scoped>
   .design-card{

@@ -6,6 +6,7 @@ const PostOffice = require('./../mail-config/mail-password');
 const rn = require('random-number');
 const secret = require('../secret/index');
 const uuid = require('uuid/v4');
+
 const key = 'keyValue';
 
 let mapper = {};
@@ -101,9 +102,7 @@ router.post('/login', async (req, res) => {
       loginStatus: false,
     });
   }
-
 });
-
 
 router.post('/find-id', async (req, res) => {
   const { realName, email } = req.body;

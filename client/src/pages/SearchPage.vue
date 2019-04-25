@@ -30,58 +30,58 @@
 </template>
 
 <script>
-const Toolbar = () => import('@/components/Toolbar');
-import _ from 'lodash';
+  const Toolbar = () => import('@/components/Toolbar');
+  import _ from 'lodash';
 
-export default {
-  name: 'SearchPage',
-  components: {
-    Toolbar,
-  },
-  data() {
-    return {
-      searchData: '',
-      userId: this.$store.state.user.user.userId,
-    };
-  },
-  async created() {
-    this.$router.replace({ name: 'LocalSearchTab' });
-    const initData = '';
-    await this.$store.dispatch('search/loadLocalData', {
-      word: initData,
-    });
-    await this.$store.dispatch('search/loadUserData', {
-      word: initData,
-    });
-    await this.$store.dispatch('search/loadSearchPost', {
-      word: initData,
-    });
-  },
-  methods: {
-    callback(key) {
-      switch (key) {
-        case '1': this.$router.replace({ name: 'LocalSearchTab' }); break;
-        case '2': this.$router.replace({ name: 'ReporterSearchTab' }); break;
-        case '3': this.$router.replace({ name: 'PostSearchTab' }); break;
-      }
+  export default {
+    name: 'SearchPage',
+    components: {
+      Toolbar,
     },
+    data() {
+      return {
+        searchData: '',
+        userId: this.$store.state.user.user.userId,
+      };
+    },
+    async created() {
+      this.$router.replace({ name: 'LocalSearchTab' });
+      // const initData = '';
+      // await this.$store.dispatch('search/loadLocalData', {
+      //   word: initData,
+      // });
+      // await this.$store.dispatch('search/loadUserData', {
+      //   word: initData,
+      // });
+      // await this.$store.dispatch('search/loadSearchPost', {
+      //   word: initData,
+      // });
+    },
+    methods: {
+      callback(key) {
+        switch (key) {
+          case '1': this.$router.replace({ name: 'LocalSearchTab' }); break;
+          case '2': this.$router.replace({ name: 'ReporterSearchTab' }); break;
+          case '3': this.$router.replace({ name: 'PostSearchTab' }); break;
+        }
 
-    searchWordChecker: _.debounce(
-      async function () {
-        const trimWord = this.searchData.trim();
-        await this.$store.dispatch('search/loadLocalData', {
-          word: trimWord,
-        });
-        await this.$store.dispatch('search/loadUserData', {
-          word: trimWord,
-        });
-        await this.$store.dispatch('search/loadSearchPost', {
-          word: trimWord,
-        });
-      }, 500,
-    ),
-  },
-};
+      },
+      searchWordChecker: _.debounce(
+        async function () {
+          const trimWord = this.searchData.trim();
+          await this.$store.dispatch('search/loadLocalData', {
+            word: trimWord,
+          });
+          await this.$store.dispatch('search/loadUserData', {
+            word: trimWord,
+          });
+          await this.$store.dispatch('search/loadSearchPost', {
+            word: trimWord,
+          });
+        }, 500,
+      ),
+    },
+  };
 </script>
 
 <style lang="scss" scoped>

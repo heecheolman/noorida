@@ -243,7 +243,6 @@ export default {
       params: { lastId, userId },
     });
   },
-
   writeComment(contentId, userId, commentContent) {
     return axios.post('/api/comments', {
       contentId,
@@ -488,6 +487,12 @@ export default {
   fetchUserSubPostList(userId, lastId) {
     return axios.get('/api/posts/subs', {
       params: { userId, lastId },
+    });
+  },
+
+  reportPost(myUserId, targetPost, reportCode,text) {
+    return axios.post('api/posts/report-post',{
+      myUserId, targetPost, reportCode, text,
     });
   },
 };

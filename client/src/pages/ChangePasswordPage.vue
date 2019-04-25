@@ -117,7 +117,7 @@ export default {
               okText: '확인',
               centered: true,
             });
-            this.$router.replace({ name: 'MainPage' });
+            this.$router.replace({ name: 'LocalNewsTab' });
           } else {
             this.$message.warning('잘못된 정보입니다. 다시 입력해주세요');
           }

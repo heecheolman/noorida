@@ -107,7 +107,9 @@ router.post('/login', async (req, res) => {
 
 router.post('/find-id', async (req, res) => {
   const { realName, email } = req.body;
-  const result = await findService.findId({ realName, email })
+  const encryptedRealName = secret.encrypt(realName, key);
+  const encryptedEmail = secret.encrypt(email, key);
+  const result = await findService.findId({ realName: encryptedRealName, email: encryptedEmail })
     .then(results => results)
     .catch(err => err);
 

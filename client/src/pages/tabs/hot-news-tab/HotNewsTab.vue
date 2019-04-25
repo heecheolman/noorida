@@ -21,8 +21,8 @@
               <div class="description-row" style="justify-content: space-between">
                 {{ item.localName }}
                 <span class="view">
-                     <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.view }}
-                    </span>
+                     <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.views }}
+                </span>
               </div>
             </div>
 

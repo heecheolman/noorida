@@ -16,6 +16,7 @@ const ProfilePage = () => import('../pages/ProfilePage');
 const ShowFoundIdPage = () => import('../pages/ShowFoundIdPage');
 const SearchPage = () => import('../pages/SearchPage');
 const SearchAreaPage = () => import('../pages/SearchAreaPage');
+const WithdrawalPage = () => import('../pages/WithdrawalPage');
 
 /*  Tabs  */
 const LocalNewsTab = () => import('../pages/tabs/local-news-tab/LocalNewsTab');
@@ -109,10 +110,10 @@ export default new Router({
           path: 'local',
           name: 'LocalNewsTab',
           component: LocalNewsTab,
-          async beforeEnter(to, from, next) {
-            await store.dispatch('user/updateLocation');
-            next();
-          },
+          // async beforeEnter(to, from, next) {
+          //   await store.dispatch('user/updateLocation');
+          //   next();
+          // },
         },
         { path: 'subscribe', name: 'SubscribeNewsTab', component: SubscribeNewsTab },
         { path: 'hot', name: 'HotNewsTab', component: HotNewsTab },
@@ -143,6 +144,11 @@ export default new Router({
         await store.dispatch('post/getEmotionList', { contentId: to.params.contentId });
         next();
       },
+    },
+    {
+      path: 'withdrawal',
+      name: 'WithdrawalPage',
+      component: WithdrawalPage,
     },
     {
       path: '*',

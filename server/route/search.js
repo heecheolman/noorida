@@ -30,6 +30,8 @@ router.get('/user', async (req, res) => {
   const result = await searchService.searchUser({ word, userId })
     .then(results => results)
     .catch(err => err);
+
+  console.log(result)
   return res.json(result);
 })
 

@@ -146,7 +146,7 @@ module.exports = {
 
     const myLocalList = [];
     subQueryLocal.forEach(ele => myLocalList.push(ele.localId));
-    console.log(myLocalList);
+
 
 
     const result = await knex('contents')
@@ -269,8 +269,12 @@ module.exports = {
       .then(rowData => JSON.parse(JSON.stringify(rowData)))
       .catch(err => err);
 
-    const blockedUserList = [];
-    subQuery.forEach(ele => blockedUserList.push(ele.targetId));
+
+    let blockedUserList = [];
+
+    for (let i in subQuery) {
+      blockedUserList[i] = subQuery[i];
+    }
 
     const result = await knex('contents')
       .select('users.userId',
@@ -404,7 +408,7 @@ module.exports = {
       .then(results => Object.values(results[0])[0])
       .catch(err => err);
 
-    console.log(sumResult);
+
 
     const updateHotResult = await knex('hottopic')
       .update('score', sumResult)
@@ -496,5 +500,49 @@ module.exports = {
       .catch(err => err);
 
     return isViewed;
+  },
+
+  reportPost: async ({ myUserId, targetPost, reportCode, text }) => {
+
+  const isReported = await knex('report')
+    .select('*')
+    .where({ myUserId, targetPost})
+    .then(results => results)
+    .catch(err => err);
+
+  let result ='';
+
+  const codeData = reportCode;
+
+  if(isReported.length == 0) {
+
+    switch (reportCode.length) {
+      case 1:
+      result =  await knex('report')
+          .insert({ myUserId, targetPost, reportCode: codeData })
+          .then(results => results)
+          .catch(err => err);
+       break;
+
+      case 2:
+        const reportCode = codeData.charAt(0);
+        const secondCode = codeData.charAt(1);
+        result = await knex('report')
+          .insert({ myUserId, targetPost, reportCode, secondCode })
+          .then(results => results)
+          .catch(err => err);
+        break;
+    }
+
+    if (codeData.includes('5')) {
+      const insertText = await knex('report')
+        .update({ text })
+        .where({ myUserId, targetPost })
+        .then(results => results)
+        .catch(err => err);
+    }
+  }
+
+    return result;
   },
 };

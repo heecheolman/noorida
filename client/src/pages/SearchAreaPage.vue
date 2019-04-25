@@ -17,7 +17,7 @@
         </a-button>
       </div>
       <a-list :loading="loading">
-        <div class="padding--10">
+        <div class="list-wrap padding--10">
           <a-list-item v-for="item in searchLocalPostList.result"
                        :key="item.contentId" class="box-size"
                        @click="routeDetailPage(item.contentId)">
@@ -108,7 +108,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .margin--10{
     margin: 15px;
   }
@@ -125,4 +125,4 @@ export default {
   .button-common{
     text-align: center;
   }
-  </style>
+</style>

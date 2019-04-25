@@ -1,12 +1,14 @@
 const crypto = require('crypto');
+
 const algorithm = 'aes256';
 
 
 module.exports = {
   salting: (data) => {
+    const stringifyData = data.toString();
     const buf = crypto.randomBytes(64);
     const salt = buf.toString('base64');
-    const digest = crypto.pbkdf2Sync(data, salt, 100000, 64, 'sha512');
+    const digest = crypto.pbkdf2Sync(stringifyData, salt, 100000, 64, 'sha512');
     return salt + digest.toString('base64');
   },
 

@@ -78,7 +78,7 @@
               <div>
                 <a-button v-if="!certified"
                           type="default" style="font-size: 10px;"
-                          :disabled="!!form.getFieldError('email') || token.length !== 36"
+                          :disabled="!!form.getFieldError('email') || token.length < 6"
                           :loading="tokenLoading"
                           @click="confirmToken()">확인</a-button>
 

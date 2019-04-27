@@ -35,6 +35,7 @@
 
 <script>
 import { mapState } from 'vuex';
+
 const VirtualList = () => import('@/components/VirtualList');
 
 export default {
@@ -49,10 +50,7 @@ export default {
   },
   async created() {
     const localId = '2';
-    await this.$store.dispatch('hot/hotTopicProcess', {
-      localId : localId,
-    });
-
+    await this.$store.dispatch('hot/hotTopicProcess', { localId });
   },
   computed: {
     ...mapState('hot',[

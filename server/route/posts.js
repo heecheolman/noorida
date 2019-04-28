@@ -193,4 +193,11 @@ router.post('/report-post', async (req, res) => {
   return res.json('ok');
 });
 
+router.get('/report-post/:myUserId/check/:targetPost', async (req, res) => {
+  const { myUserId, targetPost } = req.params;
+  const result = await postService.isReported({ myUserId, targetPost })
+    .then(results => JSON.parse(JSON.stringify(results)))
+    .catch((err => err));
+  res.json(!!result.length);
+});
 module.exports = router;

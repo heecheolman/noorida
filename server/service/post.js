@@ -532,7 +532,15 @@ module.exports = {
           .catch(err => err);
       }
     }
-
     return result;
+  },
+
+  isReported: async ({ myUserId, targetPost }) => {
+    const isReported = await knex('report')
+      .select('reportId')
+      .where({ myUserId, targetPost })
+      .then(result => result)
+      .catch(err => err);
+    return isReported;
   },
 };

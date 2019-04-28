@@ -495,4 +495,8 @@ export default {
       myUserId, targetPost, reportCode, text,
     });
   },
+
+  isReported(myUserId, targetPost) {
+    return axios.get(`/api/posts/report-post/${myUserId}/check/${targetPost}`);
+  },
 };

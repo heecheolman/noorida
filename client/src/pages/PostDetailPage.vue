@@ -86,7 +86,15 @@
           </div>
           <h4 class="feedback-info text-center" v-if="isEvaluated">이미 신뢰도를 평가하셨습니다.</h4>
           <div v-if="!isMe" class="flex-container flex-center-sort">
-            <a-popconfirm title="게시글이나 유저에대한 신고나 차단"
+            <a-popconfirm v-if="isReported"
+                          title="게시글 차단"
+                          okText="차단하기"
+                          cancelText="취소"
+                          @confirm="blockVisible = true">
+              <a-button :size="'small'">차단</a-button>
+            </a-popconfirm>
+            <a-popconfirm v-else
+                          title="게시글이나 유저에대한 신고나 차단"
                           okText="신고하기"
                           cancelText="차단하기"
                           @confirm="decVisible = true"
@@ -220,6 +228,7 @@ export default {
       'contentScrapState',
       'userEmotion',
       'postEmotions',
+      'isReported',
     ]),
     isScrapped() {
       if (typeof this.contentScrapState === 'boolean') {
@@ -245,6 +254,7 @@ export default {
     if (!this.isMe) {
       await this.$store.dispatch('post/getUserEmotion', { userId: this.user.userId, contentId: this.contentId });
       await this.$store.dispatch('post/getEmotionList', { contentId: this.contentId });
+      await this.$store.dispatch('post/isReported', { myUserId: this.user.userId, targetPost: this.contentId });
     }
     await this.$store.dispatch('post/getUserReliabilityScore');
     await this.$store.dispatch('post/contentScrappedCheck', { userId: this.user.userId, contentId: this.contentId });

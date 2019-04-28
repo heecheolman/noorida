@@ -110,10 +110,10 @@ export default new Router({
           path: 'local',
           name: 'LocalNewsTab',
           component: LocalNewsTab,
-          // async beforeEnter(to, from, next) {
-          //   await store.dispatch('user/updateLocation');
-          //   next();
-          // },
+          async beforeEnter(to, from, next) {
+            await store.dispatch('user/updateLocation');
+            next();
+          },
         },
         { path: 'subscribe', name: 'SubscribeNewsTab', component: SubscribeNewsTab },
         { path: 'hot', name: 'HotNewsTab', component: HotNewsTab },

@@ -28,6 +28,7 @@ export default new Vuex.Store({
     scrap,
     hot,
     withdrawal,
+
   },
   state: {},
   getters: {},

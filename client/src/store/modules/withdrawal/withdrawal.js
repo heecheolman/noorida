@@ -17,13 +17,13 @@ const actions = {
       .then(result => result.data)
       .catch(err => err);
     console.log('빅히트 개새야',resData);
-    if (!resData){
-      state.withdrawalSuccess = false;
-      console.log('탈퇴 실패!!!!',resData);
-      console.log(state.withdrawalSuccess);
-    } else {
+    if (resData){
       state.withdrawalSuccess = true;
       console.log('탈퇴성공~',resData);
+    } else {
+      state.withdrawalSuccess = false;
+      console.log('탈퇴 실패!!!!',resData);
+
     }
   },
 

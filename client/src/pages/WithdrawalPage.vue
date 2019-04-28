@@ -6,7 +6,7 @@
 
       <div >
         <div>
-          <a-input v-model="confirmNickname" @click="confirmNickname()"
+          <a-input v-model="confirmNickname"
                  placeholder='닉네임' >
           <!--v-decorator="['confirmNickName', this.nickName]"-->
                    <!--message="sdfsdfsdf" >-->
@@ -31,9 +31,9 @@
           <div class="flex-container">
             <a-button type="primary"
                       class="common-button"
-                      @click="routeLoginPage()">뒤로</a-button>
+                      @click="goToBack()">뒤로</a-button>
             <a-button type="primary"
-                      @click="realWithdrawal()"
+                      @click="boolName()"
                       class="common-button">탈 퇴</a-button>
 
           </div>
@@ -63,12 +63,12 @@
                @cancel="decVisible = false"
                @ok="withdrawalProcess()" >
         <div>
-          <span>{{this.myNickName}} 님!</span>
+          <span>{{this.myNickName}} 님! <br/></span>
           <br />
-          <p class="box-size">탈퇴 버튼을 누르시면 사진, 댓글, 좋아요 및 구독관계등을 포함한
-          모든 데이터가 영구적으로 삭제되어 복구할 수 없습니다.
-
-          정말 탈퇴 하시겠습니까?
+          <p>탈퇴 버튼을 누르시면 사진, 댓글, 좋아요 및 구독관계등을 포함한
+            모든 데이터가 영구적으로 삭제되어 복구할 수 없습니다.
+          <br />
+            정말 탈퇴 하시겠습니까?
           </p>
         </div>
       </a-modal>
@@ -107,7 +107,8 @@
         myNickName: this.$store.state.user.user.nickname,
         decVisible: false ,
         trueWithdrawal: false ,
-        wrongInfo: false,
+        // wrongInfo: false,
+        boolNickName: false,
 
       }
     },
@@ -117,12 +118,21 @@
       ]),
     },
     methods : {
+      boolName() {
+        if (this.myNickName === this.confirmNickname){
+          this.decVisible = true;
+        } else {
+          this.decVisible = false;
+          this.$message.warning('잘못된 닉네임 입니다.');
+        }
+      },
      async withdrawalProcess() {   //이걸 누르면 탈퇴처리가 됨!!!!!!!!!!!!!
        await this.$store.dispatch('withdrawal/withdrawalProcess', {
          userId: this.$store.state.user.user.userId,
-         nickName: this.myNickName,
+         nickName: this.confirmNickname,
          password:  this.confirmPassWord,
        });
+       console.log('false이어야함!!',this.withdrawalSuccess);
        if( this.withdrawalSuccess === true) {
          this.decVisible = false;
          this.trueWithdrawal = true;
@@ -134,17 +144,22 @@
         //다 되면 ok를 뷰페이지에다가 보내줌 이거 데이터에다가 withdrawlok: false, 해주고
         //여기다 true값을 주어서 탈퇴가 완료됨을 알려주고 이거야??? 그럼 탈퇴가 되셨네요~~~추카추카~~하먄 끝~~
 
-
       },
+
+
       realWithdrawal() {  // 탈퇴버튼을 클릭함 리얼 탈퇴페이지를 보여주기위해서이다~~~그냥 tru냐폴스냐만 !!
         this.decVisible = true;
       },
       // logTest() {
       //   console.log('트루나 폴스냐!!이걸 누르면 무조건 폴스여야함',this.decVisible);
       // },
+      goToBack() {
+        console.log('뒤로가기');
+        // this.$router.push({ name: 'MainPage'});
+      },
       goToLoginPage() {
         console.log('로그인 페이지로 이동함~~');
-        this.$router.push({ name: 'LoginPage' });
+        // this.$router.push({ name: 'LoginPage' });
       },
       // confirmNickname() {
       //   if (this.conf === this.nickName) {
@@ -233,8 +248,8 @@
       width: 50%;
       margin: 5px;
     }
-    .box-size {
-      width: 80%;
+   a-model .text-warning {
+      color: red;
     }
   }
 </style>

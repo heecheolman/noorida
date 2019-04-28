@@ -50,8 +50,8 @@ module.exports = {
         .then(results => results)
         .catch(err => err);
 
-      return result;
+      return true;
     }
-    return {};
-  }
+    return false;
+  },
 };

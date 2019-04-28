@@ -1,107 +1,93 @@
 <template>
   <a-list class="padding--10">
-    <!--<a-list-item :key="data.id" v-for="data in reportUserList">-->
     <a-list-item v-for="users in reportUserList" :key="users.userId" >
       <div @click="routeUserProfile(users.userId)">
-        <a-avatar v-if="profileCard.avatar" :src="`http://localhost:3000/images/${profileCard.avatar}`"></a-avatar>
+        <a-avatar v-if="users.avatar" :src="`http://localhost:3000/images/${users.avatar}`"></a-avatar>
         <a-avatar v-else icon="user"></a-avatar>
-        <!--<span  class="text-center">{{ data.reportNickname }}</span>-->
         <span  class="text-center design-name">{{ users.nickName }}</span>
       </div>
       <div class="button-common" >
-        <div v-if="!isMe">
-          <a-button v-show="!isSubscribe"
+        <div v-if="users.userId !== myUserID">
+          <a-button v-show="!isSubscribe(users.userId)"
                     type="primary"
-                    size="small"
-                    @click="subscribeReporter">구독하기
+                    size="default"
+                    @click="subscribeReporter(users.userId)">구독하기
           </a-button>
-          <a-button v-show="isSubscribe"
-                    size="small"
-                    @click="cancelSubscribeReporter">구독중
+          <a-button v-show="isSubscribe(users.userId)"
+                    size="default"
+                    @click="cancelSubscribeReporter(users.userId)">구독중
           </a-button>
         </div>
       </div>
-      <!--</div>-->
     </a-list-item>
   </a-list>
+
 </template>
 
 <script>
   import { mapState } from 'vuex';
-  import AListItem from 'ant-design-vue/es/list/Item';
-  const VirtualList = () => import('@/components/VirtualList');
-  // const contents = () => import('@/pages/tabs-search/local-search-tab');
+
   export default {
     name: 'ReporterSearchTab',
     data() {
       return {
-        // profileCard: this.$store.state.post.profileCard,
-        // inputData: this.$store.state.search.contents,
-        // address: this.$store.state.search.localName,
-        // // userName: this.$store.state.search.userName,
-        // mockList: [
-        //   { id: 1, mockNickname: 'joeminji' },
-        //   { id: 2, mockNickname: 'joyunji' },
-        //   { id: 3, mockNickname: 'hahahahaha' },
-        // ],
+        myUserID: this.$store.state.user.user.userId,
       };
     },
-    created() {
-      // this.initPreviewList();
-      // this.initDetailPost();
-      // this.initProfileCard();
-      // initPreviewPostList.nickName = this.userName;
-      console.log('모르는 아이디', this.$store.state.user.user.userId);
-    },
-    components: {
-      AListItem,
-      PreviewPost,
-      VirtualList,
-      // contents,
-    },
     computed: {
+      ...mapState('user', [
+        'user',
+      ]),
       ...mapState('post', [
         'previewPostList',
         'profileCard',
       ]),
       ...mapState('anotherUser', [
         'info',
-        'localList',
-        'isSubscribe',
+        'reporterList',
       ]),
       ...mapState('search', [
         'reportUserList',
       ]),
-      isMe() {
-        return this.info.userId === this.$store.state.user.user.userId;
-      },
+    },
+    created() {
+      this.initSubscribeUser();
     },
     methods: {
-      // ...mapMutations('post', {
-      //   initPreviewList: 'INIT_PREVIEW_LIST',
-      //   initDetailPost: 'INIT_DETAIL_POST',
-      //   initProfileCard: 'INIT_PROFILE_CARD',
-      // }),
-      async subscribeReporter() {
-        const payload = {
-          me: this.$store.state.user.user.userId,
-          another: this.info.userId,
-        };
-        await this.$store.dispatch('anotherUser/subscribeReporter', payload);
-        const userId = this.isMe ? this.user.userId : this.info.userId;
+      async initSubscribeUser() {
+        const userId = this.user.userId;
         await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-          fetchType: 'readers', userId,
+          fetchType: 'reporters',userId,
         });
       },
-      async cancelSubscribeReporter() {
+      isSubscribe(userId) {
+        for (let i = 0; i < this.reporterList.length; i++) {
+          if (this.reporterList[i].userId === userId) {
+            return true;
+          }
+        }
+        return false;
+      },
+      async subscribeReporter(paramUserId) {
         const payload = {
-          me: this.$store.state.user.user.userId,
-          another: this.info.userId,
+          me: this.user.userId,
+          another: paramUserId,
+        };
+        await this.$store.dispatch('anotherUser/subscribeReporter', payload);
+        const userId = this.user.userId;
+        await this.$store.dispatch('anotherUser/fetchSubscribeList', {
+          fetchType: 'reporters', userId,
+        });
+      },
+      async cancelSubscribeReporter(paramUserId) {
+        const payload = {
+          me: this.user.userId,
+          another: paramUserId,
         };
         await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
-        const userId = this.isMe ? this.user.userId : this.info.userId;
+        const userId = this.user.userId;
         await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-          fetchType: 'readers', userId,
+          fetchType: 'reporters', userId,
         });
       },
       async routeUserProfile(itemUserId) {
@@ -111,7 +97,6 @@
             params: { userId: itemUserId },
           });
         }
-        console.log('프로필 페이지로 이동할것');
       },
     },
   };
@@ -126,7 +111,6 @@
   }
   .design-icon{
     font-size: 30px;
-    /* margin-right: 10px; */
     padding-left: unset;
     margin-right: 20px;
   }

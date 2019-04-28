@@ -19,6 +19,7 @@ module.exports = {
   },
 
   searchUser: async ({ word, userId }) => {
+
     const subQuery = await knex('block')
       .where('myUserId', userId)
       .select('targetId')
@@ -26,7 +27,10 @@ module.exports = {
       .catch(err => err);
 
     let blockedUserList = [];
-    subQuery.forEach(ele => blockedUserList.push(ele.targetId));
+
+    for (let i in subQuery) {
+      blockedUserList[i] = subQuery[i];
+    }
 
     const result = await knex('users')
       .select('userId', 'nickName', 'avatar')
@@ -46,7 +50,10 @@ module.exports = {
       .catch(err => err);
 
     let blockedUserList = [];
-    subQuery.forEach(ele => blockedUserList.push(ele.targetId));
+
+    for (let i in subQuery) {
+      blockedUserList[i] = subQuery[i];
+    }
 
     const result = await knex('contents')
       .select('users.userId',

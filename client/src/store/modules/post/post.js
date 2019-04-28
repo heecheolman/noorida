@@ -282,6 +282,13 @@ const actions = {
       state.subLoading = false;
     }
   },
+
+  async reportPost({ commit }, payload) {
+    const { myUserId, targetPost, reportCode, text } = payload;
+    const resData = await api.reportPost(myUserId, targetPost, reportCode, text)
+      .then(result => result)
+      .catch(err => err);
+  },
 };
 
 export default {

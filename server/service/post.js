@@ -148,7 +148,6 @@ module.exports = {
     subQueryLocal.forEach(ele => myLocalList.push(ele.localId));
 
 
-
     const result = await knex('contents')
       .distinct(
         'users.nickName',
@@ -409,7 +408,6 @@ module.exports = {
       .catch(err => err);
 
 
-
     const updateHotResult = await knex('hottopic')
       .update('score', sumResult)
       .where({ contentId })
@@ -503,45 +501,37 @@ module.exports = {
   },
 
   reportPost: async ({ myUserId, targetPost, reportCode, text }) => {
-
-  const isReported = await knex('report')
-    .select('*')
-    .where({ myUserId, targetPost})
-    .then(results => results)
-    .catch(err => err);
-
-  let result ='';
-
-  const codeData = reportCode;
-
-  if(isReported.length == 0) {
-
-    switch (reportCode.length) {
-      case 1:
-      result =  await knex('report')
-          .insert({ myUserId, targetPost, reportCode: codeData })
-          .then(results => results)
-          .catch(err => err);
-       break;
-
-      case 2:
-        const reportCode = codeData.charAt(0);
-        const secondCode = codeData.charAt(1);
-        result = await knex('report')
-          .insert({ myUserId, targetPost, reportCode, secondCode })
-          .then(results => results)
-          .catch(err => err);
-        break;
+    const isReported = await knex('report')
+      .select('*')
+      .where({ myUserId, targetPost })
+      .then(results => results)
+      .catch(err => err);
+    let result = '';
+    const [firstCode, secondCode] = [...reportCode];
+    let insertQuery = {
+      myUserId,
+      targetPost,
+      reportCode: firstCode,
+    };
+    if (secondCode) {
+      insertQuery = {
+        ...insertQuery,
+        secondCode,
+      };
     }
-
-    if (codeData.includes('5')) {
-      const insertText = await knex('report')
-        .update({ text })
-        .where({ myUserId, targetPost })
+    if (!isReported.length) {
+      result = await knex('report')
+        .insert(insertQuery)
         .then(results => results)
         .catch(err => err);
+      if (reportCode.includes('5')) {
+        await knex('report')
+          .update({ text })
+          .where({ myUserId, targetPost })
+          .then(results => results)
+          .catch(err => err);
+      }
     }
-  }
 
     return result;
   },

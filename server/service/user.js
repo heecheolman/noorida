@@ -34,22 +34,19 @@ module.exports = {
       .catch(err => err);
     return result;
   },
-// 회원 탈퇴
-  withdraw: async ({ userId, nickName ,password }) => {
 
+  withdraw: async ({ userId, nickName, password }) => {
     const correct = await knex('users')
       .select('*')
       .where({ userId, nickName })
       .then(result => (result.length ? secret.checkHashword(result[0].password, password) : false))
       .catch(err => err);
-
     if (correct) {
       const result = await knex('users')
-        .update('active','N')
+        .update('active', 'N')
         .where({ userId })
         .then(results => results)
         .catch(err => err);
-
       return true;
     }
     return false;

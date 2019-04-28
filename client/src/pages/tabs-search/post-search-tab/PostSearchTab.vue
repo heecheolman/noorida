@@ -42,7 +42,6 @@ export default {
 };
 </script>
 
-
 <style lang="scss" scoped>
   .title{
     font-size: 15px;

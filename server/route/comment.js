@@ -6,7 +6,7 @@ const router = express.Router();
  * 댓글 생성 */
 router.post('', async (req, res) => {
   const { contentId, userId, commentContent } = req.body;
-  const result = await commentService.comment({ contentId, userId, commentContent })
+  const result = await commentService.insertComment({ contentId, userId, commentContent })
     .then(results => results)
     .catch(err => err);
   res.json('ok');

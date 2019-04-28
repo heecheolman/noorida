@@ -1,16 +1,22 @@
 const express = require('express');
-const tokenBuilder = require('uuid/v4');
+const rn = require('random-number');
 const PostOffice = require('./../mail-config/mail-config');
 const certService = require('./../service/cert');
 
 const router = express.Router();
+
+const rnConfig = {
+  min: 111111,
+  max: 999999,
+  integer: true,
+};
 
 /**
  * 인증을 위한 이메일 전송
  */
 router.post('/mail', async (req, res) => {
   const requestEmail = req.body.email;
-  const token = tokenBuilder();
+  const token = rn(rnConfig);
   await certService.upsertUserToken({ tmpEmail: requestEmail, tmpToken: token })
     .then(results => results)
     .catch(error => error);

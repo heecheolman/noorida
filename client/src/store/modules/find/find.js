@@ -22,7 +22,7 @@ const actions = {
 
     if (data && !(data instanceof Error)) {
       commit(types.FIND_PASSWORD_SUCCESS, true);
-      await api.insertTmpPassword(payload.email);
+      await api.insertTmpPassword(email);
     } else {
       commit(types.FIND_PASSWORD_SUCCESS, false);
     }

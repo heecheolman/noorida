@@ -88,7 +88,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   uploadImage(formData, nickName = '') {
-    return axios.post(`/api/upload/image?nickName=${nickName}`, formData, {
+    return axios.post(`/api/upload/image?nickName=${ nickName }`, formData, {
       timeout: 5000,
     });
   },
@@ -98,7 +98,7 @@ export default {
    * google geolocation api
    */
   getLocation() {
-    return axios.post(`${env.geoLocation.baseUrl}?key=${env.key}`);
+    return axios.post(`${ env.geoLocation.baseUrl }?key=${ env.key }`);
   },
 
   /**
@@ -106,7 +106,7 @@ export default {
    * google reverse geocoding api
    */
   getParsedLocalName(lat, lng) {
-    return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
+    return axios.get(`${ env.geoCoding.baseUrl }?latlng=${ lat },${ lng }&key=${ env.key }`);
   },
 
 
@@ -205,7 +205,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getPostContent(id) {
-    return axios.get(`/api/posts/${id}`);
+    return axios.get(`/api/posts/${ id }`);
   },
 
   /**
@@ -214,7 +214,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getUserProfileCard(id) {
-    return axios.get(`/api/users/${id}/profile-card`);
+    return axios.get(`/api/users/${ id }/profile-card`);
   },
 
   /**
@@ -223,7 +223,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getUser(id) {
-    return axios.get(`/api/users/${id}`);
+    return axios.get(`/api/users/${ id }`);
   },
 
   /**
@@ -233,13 +233,13 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   loadUserPostList(userId, lastId) {
-    return axios.get(`/api/posts/users/${userId}`, {
+    return axios.get(`/api/posts/users/${ userId }`, {
       params: { lastId },
     });
   },
 
   loadLocalPostList(localId, lastId, userId) {
-    return axios.get(`/api/posts/area/${localId}`, {
+    return axios.get(`/api/posts/area/${ localId }`, {
       params: { lastId, userId },
     });
   },
@@ -276,7 +276,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   updateDescription(userId, description) {
-    return axios.put(`/api/users/${userId}/description`, {
+    return axios.put(`/api/users/${ userId }/description`, {
       description,
     });
   },
@@ -368,7 +368,7 @@ export default {
     });
   },
   getReliabilityScore(userId) {
-    return axios.get(`api/posts/evaluation/${userId}`);
+    return axios.get(`api/posts/evaluation/${ userId }`);
   },
   isEvaluated(userId, contentId) {
     return axios.get('/api/posts/evaluation/check/is-evaluated', {
@@ -400,7 +400,7 @@ export default {
   },
 
   updateProfileImage(userId, filename) {
-    return axios.put(`/api/users/${userId}/avatar`, {
+    return axios.put(`/api/users/${ userId }/avatar`, {
       filename,
     });
   },
@@ -449,7 +449,7 @@ export default {
 
 
   getScrappedPostList(userId, lastId) {
-    return axios.get(`/api/scrap/${userId}`, {
+    return axios.get(`/api/scrap/${ userId }`, {
       params: { lastId },
     });
   },
@@ -490,9 +490,13 @@ export default {
     });
   },
 
-  reportPost(myUserId, targetPost, reportCode,text) {
-    return axios.post('api/posts/report-post',{
+  reportPost(myUserId, targetPost, reportCode, text) {
+    return axios.post('api/posts/report-post', {
       myUserId, targetPost, reportCode, text,
     });
+  },
+
+  isReported(myUserId, targetPost) {
+    return axios.get(`/api/posts/report-post/${myUserId}/check/${targetPost}`);
   },
 };

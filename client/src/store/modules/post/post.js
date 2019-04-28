@@ -23,6 +23,7 @@ const state = {
   subHasNextPost: true,
   subLoading: false,
   subBusy: false,
+  isReported: false,
 };
 
 const mutations = {
@@ -60,6 +61,7 @@ const mutations = {
   },
   [types.INIT_DETAIL_POST](state) {
     state.detailPost = {};
+    state.isReported = false;
   },
   [types.INIT_PROFILE_CARD](state) {
     state.profileCard = {};
@@ -92,6 +94,9 @@ const mutations = {
   },
   [types.UPDATE_SUB_LAST_ID](state, payload) {
     state.subLastId = payload;
+  },
+  [types.UPDATE_IS_REPORTED](state, payload) {
+    state.isReported = payload;
   },
 };
 
@@ -281,6 +286,21 @@ const actions = {
       }
       state.subLoading = false;
     }
+  },
+
+  async reportPost({ commit }, payload) {
+    const { myUserId, targetPost, reportCode, text } = payload;
+    const resData = await api.reportPost(myUserId, targetPost, reportCode, text)
+      .then(result => result)
+      .catch(err => err);
+  },
+
+  async isReported({ commit }, payload) {
+    const { myUserId, targetPost } = payload;
+    const isReported = await api.isReported(myUserId, targetPost)
+      .then(result => result.data)
+      .catch(err => err);
+    commit(types.UPDATE_IS_REPORTED, isReported);
   },
 };
 

@@ -1,24 +1,22 @@
 import api from '@/api/ApiService';
 
 const state = {
-    hotList: [] ,
-  };
+  hotList: [],
+};
 
-const getters = {
-};
-const mutations = {
-};
+const getters = {};
+const mutations = {};
 
 const actions = {
-  async hotTopicProcess({ commit }, payload ) {
+  async hotTopicProcess({ commit }, payload) {
     const { localId } = payload;
     const resData = await api.loadHotPreviewPostList(localId)
       .then(result => result.data)
       .catch(err => err);
 
     state.hotList = resData;
-    for (let i = 0 ; i < state.hotList.length; i++) {
-      state.hotList[i].rank = i + 1 ;
+    for (let i = 0; i < state.hotList.length; i++) {
+      state.hotList[i].rank = i + 1;
     }
   },
 

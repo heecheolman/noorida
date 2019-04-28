@@ -25,81 +25,81 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex';
+import { mapState } from 'vuex';
 
-  export default {
-    name: 'ReporterSearchTab',
-    data() {
-      return {
-        myUserID: this.$store.state.user.user.userId,
+export default {
+  name: 'ReporterSearchTab',
+  data() {
+    return {
+      myUserID: this.$store.state.user.user.userId,
+    };
+  },
+  computed: {
+    ...mapState('user', [
+      'user',
+    ]),
+    ...mapState('post', [
+      'previewPostList',
+      'profileCard',
+    ]),
+    ...mapState('anotherUser', [
+      'info',
+      'reporterList',
+    ]),
+    ...mapState('search', [
+      'reportUserList',
+    ]),
+  },
+  created() {
+    this.initSubscribeUser();
+  },
+  methods: {
+    async initSubscribeUser() {
+      const userId = this.user.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', {
+        fetchType: 'reporters',userId,
+      });
+    },
+    isSubscribe(userId) {
+      for (let i = 0; i < this.reporterList.length; i++) {
+        if (this.reporterList[i].userId === userId) {
+          return true;
+        }
+      }
+      return false;
+    },
+    async subscribeReporter(paramUserId) {
+      const payload = {
+        me: this.user.userId,
+        another: paramUserId,
       };
+      await this.$store.dispatch('anotherUser/subscribeReporter', payload);
+      const userId = this.user.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', {
+        fetchType: 'reporters', userId,
+      });
     },
-    computed: {
-      ...mapState('user', [
-        'user',
-      ]),
-      ...mapState('post', [
-        'previewPostList',
-        'profileCard',
-      ]),
-      ...mapState('anotherUser', [
-        'info',
-        'reporterList',
-      ]),
-      ...mapState('search', [
-        'reportUserList',
-      ]),
+    async cancelSubscribeReporter(paramUserId) {
+      const payload = {
+        me: this.user.userId,
+        another: paramUserId,
+      };
+      await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
+      const userId = this.user.userId;
+      await this.$store.dispatch('anotherUser/fetchSubscribeList', {
+        fetchType: 'reporters', userId,
+      });
     },
-    created() {
-      this.initSubscribeUser();
-    },
-    methods: {
-      async initSubscribeUser() {
-        const userId = this.user.userId;
-        await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-          fetchType: 'reporters',userId,
+    async routeUserProfile(itemUserId) {
+      if (itemUserId) {
+        this.$router.push({
+          name: 'ProfilePage',
+          params: { userId: itemUserId },
         });
-      },
-      isSubscribe(userId) {
-        for (let i = 0; i < this.reporterList.length; i++) {
-          if (this.reporterList[i].userId === userId) {
-            return true;
-          }
-        }
-        return false;
-      },
-      async subscribeReporter(paramUserId) {
-        const payload = {
-          me: this.user.userId,
-          another: paramUserId,
-        };
-        await this.$store.dispatch('anotherUser/subscribeReporter', payload);
-        const userId = this.user.userId;
-        await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-          fetchType: 'reporters', userId,
-        });
-      },
-      async cancelSubscribeReporter(paramUserId) {
-        const payload = {
-          me: this.user.userId,
-          another: paramUserId,
-        };
-        await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
-        const userId = this.user.userId;
-        await this.$store.dispatch('anotherUser/fetchSubscribeList', {
-          fetchType: 'reporters', userId,
-        });
-      },
-      async routeUserProfile(itemUserId) {
-        if (itemUserId) {
-          this.$router.push({
-            name: 'ProfilePage',
-            params: { userId: itemUserId },
-          });
-        }
-      },
+      }
     },
-  };
+  },
+};
 </script>
 
 <style lang="scss" scoped>

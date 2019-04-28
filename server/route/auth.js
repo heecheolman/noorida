@@ -3,13 +3,18 @@ const joinService = require('../service/join');
 const loginService = require('../service/login');
 const findService = require('../service/find');
 const PostOffice = require('./../mail-config/mail-password');
-const tokenBuilder = require('uuid/v4');
+const rn = require('random-number');
 const secret = require('../secret/index');
 const uuid = require('uuid/v4');
+
 const key = 'keyValue';
 
 let mapper = {};
-
+const rnConfig = {
+  min: 111111,
+  max: 999999,
+  integer: true,
+};
 
 const router = express.Router();
 
@@ -97,13 +102,13 @@ router.post('/login', async (req, res) => {
       loginStatus: false,
     });
   }
-
 });
-
 
 router.post('/find-id', async (req, res) => {
   const { realName, email } = req.body;
-  const result = await findService.findId({ realName, email })
+  const encryptedRealName = secret.encrypt(realName, key);
+  const encryptedEmail = secret.encrypt(email, key);
+  const result = await findService.findId({ realName: encryptedRealName, email: encryptedEmail })
     .then(results => results)
     .catch(err => err);
 
@@ -116,7 +121,17 @@ router.post('/find-id', async (req, res) => {
 
 router.post('/find-password', async (req, res) => {
   const { realName, nickName, email } = req.body;
-  const result = await findService.findPassword({ realName, nickName, email })
+  if (!realName && !nickName && !email) {
+    res.json(false);
+  }
+  // 암호화된 정보 전달
+  const encryptedRealName = secret.encrypt(realName, key);
+  const encryptedEmail = secret.encrypt(email, key);
+  const result = await findService.findPassword({
+    realName: encryptedRealName,
+    nickName,
+    email: encryptedEmail,
+  })
     .then(results => results)
     .catch(err => err);
 
@@ -129,9 +144,14 @@ router.post('/find-password', async (req, res) => {
 
 router.put('/find-password', async (req, res) => {
   const email = req.body.email;
-  const tmpPassword = tokenBuilder();
+  const tmpPassword = rn(rnConfig);
+  const encryptedEmail = secret.encrypt(email, key);
+  const saltedPassword = secret.salting(tmpPassword);
 
-  const result = await findService.insertTmpPassword({ email, tmpPassword })
+  const result = await findService.insertTmpPassword({
+    email: encryptedEmail,
+    tmpPassword: saltedPassword,
+  })
     .then(results => results)
     .catch(err => err);
 

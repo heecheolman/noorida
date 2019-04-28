@@ -86,7 +86,15 @@
           </div>
           <h4 class="feedback-info text-center" v-if="isEvaluated">이미 신뢰도를 평가하셨습니다.</h4>
           <div v-if="!isMe" class="flex-container flex-center-sort">
-            <a-popconfirm title="게시글이나 유저에대한 신고나 차단"
+            <a-popconfirm v-if="isReported"
+                          title="게시글 차단"
+                          okText="차단하기"
+                          cancelText="취소"
+                          @confirm="blockVisible = true">
+              <a-button :size="'small'">차단</a-button>
+            </a-popconfirm>
+            <a-popconfirm v-else
+                          title="게시글이나 유저에대한 신고나 차단"
                           okText="신고하기"
                           cancelText="차단하기"
                           @confirm="decVisible = true"
@@ -156,6 +164,7 @@
         <div class="margin--bottom-10">
           <h4>신고 종류</h4>
           <a-checkbox-group :options="declarationOptions"
+                            @change="onChange"
                             v-model="decCheckedList"></a-checkbox-group>
         </div>
         <a-textarea v-model="decEtcContent" :disabled="!etcChecked"></a-textarea>
@@ -219,6 +228,7 @@ export default {
       'contentScrapState',
       'userEmotion',
       'postEmotions',
+      'isReported',
     ]),
     isScrapped() {
       if (typeof this.contentScrapState === 'boolean') {
@@ -230,7 +240,7 @@ export default {
       return this.user.userId === this.detailPost.userId;
     },
     etcChecked() {
-      return this.decCheckedList.indexOf('기타') !== -1;
+      return this.decCheckedList.indexOf('5') !== -1;
     },
   },
   async created() {
@@ -244,6 +254,7 @@ export default {
     if (!this.isMe) {
       await this.$store.dispatch('post/getUserEmotion', { userId: this.user.userId, contentId: this.contentId });
       await this.$store.dispatch('post/getEmotionList', { contentId: this.contentId });
+      await this.$store.dispatch('post/isReported', { myUserId: this.user.userId, targetPost: this.contentId });
     }
     await this.$store.dispatch('post/getUserReliabilityScore');
     await this.$store.dispatch('post/contentScrappedCheck', { userId: this.user.userId, contentId: this.contentId });
@@ -278,11 +289,11 @@ export default {
       decVisible: false,
       blockVisible: false,
       declarationOptions: [
-        { label: '명예훼손', value: '명예훼손' },
-        { label: '선정성', value: '선정성' },
-        { label: '욕설', value: '욕설' },
-        { label: '허위사실 유포', value: '허위사실 유포' },
-        { label: '기타', value: '기타' },
+        { label: '명예훼손', value: '1' },
+        { label: '선정성', value: '2' },
+        { label: '욕설', value: '3' },
+        { label: '허위사실 유포', value: '4' },
+        { label: '기타', value: '5' },
       ],
       decCheckedList: [],
       decEtcContent: '',
@@ -369,13 +380,14 @@ export default {
         this.$message.success('스크랩목록에 추가되었습니다.');
       }
     },
-    declarationPostProcess() {
+    async declarationPostProcess() {
       const payload = {
-        target: this.contentId,
-        decCheckedList: this.decCheckedList,
-        decEtcContent: this.decEtcContent,
+        myUserId: this.user.userId,
+        targetPost: this.contentId,
+        reportCode: this.decCheckedList.join(''),
+        text: this.decEtcContent,
       };
-      console.log(payload);
+      await this.$store.dispatch('post/reportPost', payload);
       this.decVisible = false;
     },
     async userBlockProcess() {
@@ -399,6 +411,20 @@ export default {
       await this.$store.dispatch('post/deleteNews', payload);
       this.$message.success('삭제되었습니다');
       this.$router.push({ name: 'LocalNewsTab' });
+    },
+
+    onChange(checkedValues) {
+      if (checkedValues.length >= 2) {
+        this.declarationOptions = this.declarationOptions.map((option) => {
+          if (!checkedValues.includes(option.value)) {
+            return { ...option, disabled: true };
+          }
+          return { ...option };
+        });
+      } else {
+        this.declarationOptions = this.declarationOptions
+          .map(option => ({ ...option, disabled: false }));
+      }
     },
   },
 };

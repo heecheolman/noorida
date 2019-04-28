@@ -35,77 +35,77 @@
 </template>
 
 <script>
-  import { mapState } from 'vuex';
-  const Toolbar = () => import('@/components/Toolbar');
-  export default {
-    name: 'SearchAreaPage',
-    components: {
-      Toolbar,
+import { mapState } from 'vuex';
+const Toolbar = () => import('@/components/Toolbar');
+export default {
+  name: 'SearchAreaPage',
+  components: {
+    Toolbar,
+  },
+  props: {
+    localId: {
+      type: Number,
     },
-    props: {
-      localId: {
-        type: Number,
-      },
-      localName: {
-        type: String,
-      },
-      userId: {
-        type: Number,
-      },
+    localName: {
+      type: String,
     },
-    computed: {
-      ...mapState('search', [
-        'searchLocalPostList',
-        'loading',
-      ]),
-      ...mapState('anotherUser', [
-        'isSubscribeLocal',
-      ]),
+    userId: {
+      type: Number,
     },
-    data() {
-      return {
-        address: this.$store.state.user.address,
-        localNameTag: '',
-        myUserId: this.$store.state.user.user.userId,
-      };
-    },
-    async created() {
-      this.initIsSubscribeLocal();
-      this.localNameTag = this.localName.substring(this.localName.lastIndexOf(' '));
-      await this.$store.dispatch('search/loadSearchLocalPost', {
+  },
+  computed: {
+    ...mapState('search', [
+      'searchLocalPostList',
+      'loading',
+    ]),
+    ...mapState('anotherUser', [
+      'isSubscribeLocal',
+    ]),
+  },
+  data() {
+    return {
+      address: this.$store.state.user.address,
+      localNameTag: '',
+      myUserId: this.$store.state.user.user.userId,
+    };
+  },
+  async created() {
+    this.initIsSubscribeLocal();
+    this.localNameTag = this.localName.substring(this.localName.lastIndexOf(' '));
+    await this.$store.dispatch('search/loadSearchLocalPost', {
+      localId: this.localId,
+      userId: this.myUserId,
+    });
+  },
+  methods: {
+    async initIsSubscribeLocal() {
+      await this.$store.dispatch('anotherUser/isSubscribeLocal', {
+        reader: this.myUserId,
         localId: this.localId,
-        userId: this.myUserId,
       });
     },
-    methods: {
-      async initIsSubscribeLocal() {
-        await this.$store.dispatch('anotherUser/isSubscribeLocal', {
-          reader: this.myUserId,
-          localId: this.localId,
-        });
-      },
-      async subscribeLocal() {
-        await this.$store.dispatch('anotherUser/subscribeLocal', {
-          reader: this.myUserId,
-          localId: this.localId,
-        });
-      },
-      async cancelSubscribeLocal() {
-        await this.$store.dispatch('anotherUser/cancelSubscribeLocal', {
-          reader: this.myUserId,
-          localId: this.localId,
-        });
-      },
-      routeDetailPage(contentId) {
-        if (contentId) {
-          this.$router.push({
-            name: 'PostDetailPage',
-            params: { contentId },
-          });
-        }
-      },
+    async subscribeLocal() {
+      await this.$store.dispatch('anotherUser/subscribeLocal', {
+        reader: this.myUserId,
+        localId: this.localId,
+      });
     },
-  };
+    async cancelSubscribeLocal() {
+      await this.$store.dispatch('anotherUser/cancelSubscribeLocal', {
+        reader: this.myUserId,
+        localId: this.localId,
+      });
+    },
+    routeDetailPage(contentId) {
+      if (contentId) {
+        this.$router.push({
+          name: 'PostDetailPage',
+          params: { contentId },
+        });
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>

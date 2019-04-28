@@ -37,6 +37,7 @@ import { mapState } from 'vuex';
 export default {
   name: 'HotNewsTab',
   components: {
+  
   },
   data() {
     return {
@@ -44,13 +45,11 @@ export default {
     };
   },
   async created() {
-    const localId = '1';
-    await this.$store.dispatch('hot/hotTopicProcess', {
-      localId: localId,
-    });
+    const localId = '2';
+    await this.$store.dispatch('hot/hotTopicProcess', { localId });
   },
   computed: {
-    ...mapState('hot', [
+    ...mapState('hot',[
       'hotList',
     ]),
   },

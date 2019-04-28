@@ -22,6 +22,11 @@ const actions = {
     }
     commit(types.SET_LOGIN_STATUS, loginResult.loginStatus);
   },
+  sessionInit: async () => {
+    await api.sessionInit()
+      .then(results => results)
+      .catch(err => err);
+  },
   sessionLoginProcess: async ({ commit, state }) => {
     state.loginLoading = true;
     const sessionResult = await api.sessionLogin()

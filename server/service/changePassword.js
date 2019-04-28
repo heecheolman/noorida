@@ -4,7 +4,6 @@ module.exports = {
   checkPassword: async ({ userId, oldPassword }) => {
     const result = await knex('users')
       .select('password')
-
       .where({ userId, password: oldPassword })
       .then(results => results)
       .catch(err => err);

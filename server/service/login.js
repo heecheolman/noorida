@@ -27,4 +27,12 @@ module.exports = {
       .catch(err => err);
     return result;
   },
+  getPasswordByUserId: async ({ userId }) => {
+    const result = await knex('users')
+      .select('password')
+      .where({ userId })
+      .then(results => results)
+      .catch(err => err);
+    return result;
+  },
 };

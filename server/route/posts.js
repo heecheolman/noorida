@@ -33,7 +33,7 @@ router.get('/local', async (req, res) => {
   const result = await postService.loadPreviewLocalNewsList({ localName, lastId, userId })
     .then(results => results)
     .catch(err => err);
-  res.json(result)
+  res.json(result);
 });
 router.get('/subs', async (req, res) => {
   const { lastId, userId } = req.query;
@@ -45,6 +45,7 @@ router.get('/subs', async (req, res) => {
 
 router.get('/hot-topic', async (req, res) => {
   const { localId } = req.query;
+  console.log('localId', localId);
   const result = await postService.loadPreviewHotNewsList({ localId })
     .then(results => results)
     .catch(err => err);
@@ -83,7 +84,7 @@ router.get('/users/:userId', async (req, res) => {
  */
 router.get('/area/:localId', async (req, res) => {
   const { localId } = req.params;
-  const { lastId, userId} = req.query;
+  const { lastId, userId } = req.query;
   const result = await postService.loadLocalPostList({ localId, lastId, userId })
     .then(results => results)
     .catch(err => err);
@@ -192,4 +193,12 @@ router.post('/report-post', async (req, res) => {
   return res.json('ok');
 });
 
+
+router.get('/report-post/:myUserId/check/:targetPost', async (req, res) => {
+  const { myUserId, targetPost } = req.params;
+  const result = await postService.isReported({ myUserId, targetPost })
+    .then(results => JSON.parse(JSON.stringify(results)))
+    .catch((err => err));
+  res.json(!!result.length);
+});
 module.exports = router;

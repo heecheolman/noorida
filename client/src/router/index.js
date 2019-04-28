@@ -27,7 +27,6 @@ const LocalSearchTab = () => import('../pages/tabs-search/local-search-tab/Local
 const ReporterSearchTab = () => import('../pages/tabs-search/reporter-search-tab/ReporterSearchTab');
 const PostSearchTab = () => import('../pages/tabs-search/post-search-tab/PostSearchTab');
 
-
 Vue.use(Router);
 
 const requireAuth = () => (to, from, next) => {

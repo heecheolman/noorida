@@ -73,10 +73,11 @@
         <div>
           <router-link :to="{ name : 'ProfilePage', params: { userId }}"
                        tag= "p">내 프로필</router-link>
-          <router-link :to="{ name : 'ChangePasswordPage' }"
-                       tag= "p">비밀번호 변경</router-link>
           <router-link :to="{ name : 'WithdrawalPage' }"
                        tag= "p">계정 탈퇴</router-link>
+          <router-link :to="{ name : 'ChangePasswordPage' }"
+                       tag= "p">비밀번호 변경</router-link>
+
           <p @click="logout()">로그아웃</p>
         </div>
         <!-- menu content -->

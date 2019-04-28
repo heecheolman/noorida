@@ -44,7 +44,7 @@ export default {
     };
   },
   async created() {
-    const localId = '2';
+    const localId = '1';
     await this.$store.dispatch('hot/hotTopicProcess', {
       localId: localId,
     });

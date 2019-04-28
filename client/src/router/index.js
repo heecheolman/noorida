@@ -134,6 +134,11 @@ export default new Router({
       props: true,
     },
     {
+      path: 'withdrawal',
+      name: 'WithdrawalPage',
+      component: WithdrawalPage,
+    },
+    {
       path: 'post/:contentId',
       name: 'PostDetailPage',
       component: PostDetailPage,
@@ -143,11 +148,6 @@ export default new Router({
         await store.dispatch('post/getEmotionList', { contentId: to.params.contentId });
         next();
       },
-    },
-    {
-      path: 'withdrawal',
-      name: 'WithdrawalPage',
-      component: WithdrawalPage,
     },
     {
       path: '*',

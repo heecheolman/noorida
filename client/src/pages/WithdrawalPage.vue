@@ -40,7 +40,7 @@
                @cancel="decVisible = false"
                @ok="withdrawalProcess()" >
         <div>
-          <span> <strong>{{this.myNickName}} 님! </strong><br/></span>
+          <span><strong>{{this.myNickName}} 님! </strong><br/></span>
           <br />
           <p>탈퇴 버튼을 누르시면 사진, 댓글, 좋아요 및 구독관계등을 포함한
             모든 데이터가 영구적으로 삭제되어 복구할 수 없습니다.

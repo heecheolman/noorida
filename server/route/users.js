@@ -54,7 +54,6 @@ router.put('/:userId/avatar', async (req, res) => {
 });
 
 router.put('/disabled-user', async (req, res) => {
-
   const { userId, nickName, password } = req.body;
   const result = await userService.withdraw({ userId, nickName, password })
     .then(results => results)

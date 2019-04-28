@@ -11,7 +11,7 @@ import subscribe from './modules/subscribe/subscribe';
 import search from './modules/search/search';
 import scrap from './modules/scrap/scrap';
 import hot from './modules/hot/hot';
-import withdrawal from './modules/withdrawal/withdrawal' ;
+import withdrawal from './modules/withdrawal/withdrawal';
 
 Vue.use(Vuex);
 

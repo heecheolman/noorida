@@ -41,7 +41,6 @@ module.exports = {
       .where({ userId, nickName })
       .then(result => (result.length ? secret.checkHashword(result[0].password, password) : false))
       .catch(err => err);
-
     if (correct) {
       const result = await knex('users')
         .update('active', 'N')

@@ -1,24 +1,26 @@
 const express = require('express');
 const changePasswordService = require('../service/changePassword');
+const loginService = require('../service/login');
+const secret = require('./../secret');
 
 const router = express.Router();
 
 router.post('', async (req, res) => {
   const { userId, oldPassword } = req.body;
-  const result = await changePasswordService.checkPassword({ userId, oldPassword })
-    .then(results => results)
+  const correct = await loginService.getPasswordByUserId({ userId })
+    .then(pwData => (pwData.length ? secret.checkHashword(pwData[0].password, oldPassword) : false))
     .catch(err => err);
-  if (result.length !== 0) {
-    res.json(true);
-  } else {
-    res.json(false);
-  }
+  res.json(correct);
 });
 
 
 router.put('', async (req, res) => {
   const { userId, newPassword } = req.body;
-  const result = await changePasswordService.insertNewPassword({ userId, newPassword })
+  const saltedPassword = secret.salting(newPassword);
+  const result = await changePasswordService.insertNewPassword({
+    userId,
+    newPassword: saltedPassword,
+  })
     .then(results => results)
     .catch(err => err);
   res.json(result[0]);

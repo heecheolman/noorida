@@ -1,11 +1,17 @@
 const crypto = require('crypto');
+
+const algorithm = 'aes256';
+
+
 module.exports = {
   salting: (data) => {
+    const stringifyData = data.toString();
     const buf = crypto.randomBytes(64);
     const salt = buf.toString('base64');
-    const digest = crypto.pbkdf2Sync(data, salt, 100000, 64, 'sha512');
+    const digest = crypto.pbkdf2Sync(stringifyData, salt, 100000, 64, 'sha512');
     return salt + digest.toString('base64');
   },
+
   hashing: data => crypto.createHash('sha512').update(data).digest('base64'),
 
   checkHashword: (hashword, data) => {
@@ -17,16 +23,19 @@ module.exports = {
   },
 
   encrypt: (data, key) => {
-    const cipher = crypto.createCipher('aes192', key);
-    cipher.update(data, 'utf8', 'base64');
-    return cipher.final('base64');
+    const cipher = crypto.createCipher(algorithm, key);
+    let crypted = cipher.update(data, 'uft8', 'base64');
+    crypted += cipher.final('base64');
+    return crypted;
   },
 
   decrypt: (data, key) => {
-    const decipher = crypto.createDecipher('aes192', key);
-    let clearText = decipher.update(data, 'base64', 'utf8');
-    clearText += decipher.final('utf8');
-    return clearText;
+    const decipher = crypto.createDecipher(algorithm, key);
+    let dec = decipher.update(data, 'base64', 'utf8');
+    dec += decipher.final('utf8');
+    return dec
   },
 };
+
+
 

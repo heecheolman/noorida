@@ -3,25 +3,31 @@ const joinService = require('../service/join');
 const loginService = require('../service/login');
 const findService = require('../service/find');
 const PostOffice = require('./../mail-config/mail-password');
-const tokenBuilder = require('uuid/v4');
+const rn = require('random-number');
 const secret = require('../secret/index');
 const uuid = require('uuid/v4');
-const key = 'thisiskdkdk';
+
+const key = 'keyValue';
 
 let mapper = {};
-
+const rnConfig = {
+  min: 111111,
+  max: 999999,
+  integer: true,
+};
 
 const router = express.Router();
 
 /**
  * 회원가입
+ *
  */
 router.post('/join', async (req, res) => {
   const result = await joinService.insertUser({
-    realName: secret.hashing(req.body.realName),
+    realName: secret.encrypt(req.body.realName, key),
     nickName: req.body.nickName,
     password: secret.salting(req.body.password),
-    email: secret.hashing(req.body.email),
+    email: secret.encrypt(req.body.email, key),
   })
     .then(results => results)
     .catch(err => err);
@@ -70,13 +76,14 @@ router.post('/login', async (req, res) => {
     const results = await loginService.getUserDataByNickname({ nickName })
       .then(result => ({
         userId: result[0].userId,
-        realName: result[0].realName,
-        nickname: result[0].nickname,
-        email: result[0].email,
+        realName: secret.decrypt(result[0].realName, key),
+        nickname: result[0].nickName,
+        email: secret.decrypt(result[0].email, key),
         avatar: result[0].avatar,
         description: result[0].description,
       }))
       .catch(err => err);
+
     if (results) {
       const key = uuid();
       req.session.key = key;
@@ -87,17 +94,21 @@ router.post('/login', async (req, res) => {
       data: results,
       loginStatus: true,
     });
-  }
-  res.json({
-    data: {},
-    loginStatus: false,
-  });
-});
 
+
+  } else {
+    res.json({
+      data: {},
+      loginStatus: false,
+    });
+  }
+});
 
 router.post('/find-id', async (req, res) => {
   const { realName, email } = req.body;
-  const result = await findService.findId({ realName, email })
+  const encryptedRealName = secret.encrypt(realName, key);
+  const encryptedEmail = secret.encrypt(email, key);
+  const result = await findService.findId({ realName: encryptedRealName, email: encryptedEmail })
     .then(results => results)
     .catch(err => err);
 
@@ -110,7 +121,17 @@ router.post('/find-id', async (req, res) => {
 
 router.post('/find-password', async (req, res) => {
   const { realName, nickName, email } = req.body;
-  const result = await findService.findPassword({ realName, nickName, email })
+  if (!realName && !nickName && !email) {
+    res.json(false);
+  }
+  // 암호화된 정보 전달
+  const encryptedRealName = secret.encrypt(realName, key);
+  const encryptedEmail = secret.encrypt(email, key);
+  const result = await findService.findPassword({
+    realName: encryptedRealName,
+    nickName,
+    email: encryptedEmail,
+  })
     .then(results => results)
     .catch(err => err);
 
@@ -123,9 +144,14 @@ router.post('/find-password', async (req, res) => {
 
 router.put('/find-password', async (req, res) => {
   const email = req.body.email;
-  const tmpPassword = tokenBuilder();
+  const tmpPassword = rn(rnConfig);
+  const encryptedEmail = secret.encrypt(email, key);
+  const saltedPassword = secret.salting(tmpPassword);
 
-  const result = await findService.insertTmpPassword({ email, tmpPassword })
+  const result = await findService.insertTmpPassword({
+    email: encryptedEmail,
+    tmpPassword: saltedPassword,
+  })
     .then(results => results)
     .catch(err => err);
 
@@ -135,7 +161,7 @@ router.put('/find-password', async (req, res) => {
         console.error(err);
         res.sendStatus(500);
       } else {
-        console.log(`EMAIL SENT ${ info.response }`);
+        console.log(`EMAIL SENT ${info.response}`);
         res.sendStatus(200);
       }
     });

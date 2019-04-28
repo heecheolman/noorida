@@ -13,6 +13,7 @@ router.post('', async (req, res) => {
   res.json('ok');
 });
 
+
 /**
  * 뉴스 삭제 */
 
@@ -34,10 +35,18 @@ router.get('/local', async (req, res) => {
     .catch(err => err);
   res.json(result);
 });
-
 router.get('/subs', async (req, res) => {
   const { lastId, userId } = req.query;
   const result = await postService.loadPreviewSubsNewsList({ lastId, userId })
+    .then(results => results)
+    .catch(err => err);
+  res.json(result);
+});
+
+router.get('/hot-topic', async (req, res) => {
+  const { localId } = req.query;
+  console.log('localId', localId);
+  const result = await postService.loadPreviewHotNewsList({ localId })
     .then(results => results)
     .catch(err => err);
   res.json(result);
@@ -70,17 +79,17 @@ router.get('/users/:userId', async (req, res) => {
 });
 
 /**
+ *
  * localId 가 갖는 포스트리스트들 조회
  */
-router.get('/users/:localId', async (req, res) => {
-  const { localId, lastId, userId } = req.params;
+router.get('/area/:localId', async (req, res) => {
+  const { localId } = req.params;
+  const { lastId, userId } = req.query;
   const result = await postService.loadLocalPostList({ localId, lastId, userId })
     .then(results => results)
     .catch(err => err);
-
   res.json(result);
 });
-
 /**
  * 게시글에 감정 표현
  * 이미 표현 하였으면 emotionCode 만 update
@@ -176,4 +185,19 @@ router.post('/views', async (req, res) => {
   res.json('ok');
 });
 
+router.post('/report-post', async (req, res) => {
+  const { myUserId, targetPost, reportCode, text } = req.body;
+  const result = await postService.reportPost({ myUserId, targetPost, reportCode, text })
+    .then(results => results)
+    .catch(err => err);
+  return res.json('ok');
+});
+
+router.get('/report-post/:myUserId/check/:targetPost', async (req, res) => {
+  const { myUserId, targetPost } = req.params;
+  const result = await postService.isReported({ myUserId, targetPost })
+    .then(results => JSON.parse(JSON.stringify(results)))
+    .catch((err => err));
+  res.json(!!result.length);
+});
 module.exports = router;

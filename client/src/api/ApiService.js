@@ -88,7 +88,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   uploadImage(formData, nickName = '') {
-    return axios.post(`/api/upload/image?nickName=${nickName}`, formData, {
+    return axios.post(`/api/upload/image?nickName=${ nickName }`, formData, {
       timeout: 5000,
     });
   },
@@ -98,7 +98,7 @@ export default {
    * google geolocation api
    */
   getLocation() {
-    return axios.post(`${env.geoLocation.baseUrl}?key=${env.key}`);
+    return axios.post(`${ env.geoLocation.baseUrl }?key=${ env.key }`);
   },
 
   /**
@@ -106,7 +106,7 @@ export default {
    * google reverse geocoding api
    */
   getParsedLocalName(lat, lng) {
-    return axios.get(`${env.geoCoding.baseUrl}?latlng=${lat},${lng}&key=${env.key}`);
+    return axios.get(`${ env.geoCoding.baseUrl }?latlng=${ lat },${ lng }&key=${ env.key }`);
   },
 
 
@@ -154,6 +154,17 @@ export default {
       },
     });
   },
+
+  /**
+   * 지역별 Hot -Topic 리스트
+   */
+  loadHotPreviewPostList(localId) {
+    return axios.get('/api/posts/hot-topic', {
+      params: {
+        localId,
+      },
+    });
+  },
   /**
    * 아이디 찾기
    * @param realName
@@ -194,7 +205,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getPostContent(id) {
-    return axios.get(`/api/posts/${id}`);
+    return axios.get(`/api/posts/${ id }`);
   },
 
   /**
@@ -203,7 +214,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getUserProfileCard(id) {
-    return axios.get(`/api/users/${id}/profile-card`);
+    return axios.get(`/api/users/${ id }/profile-card`);
   },
 
   /**
@@ -212,7 +223,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   getUser(id) {
-    return axios.get(`/api/users/${id}`);
+    return axios.get(`/api/users/${ id }`);
   },
 
   /**
@@ -222,17 +233,16 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   loadUserPostList(userId, lastId) {
-    return axios.get(`/api/posts/users/${userId}`, {
+    return axios.get(`/api/posts/users/${ userId }`, {
       params: { lastId },
     });
   },
 
   loadLocalPostList(localId, lastId, userId) {
-    return axios.get(`/api/posts/users/${localId}`, {
+    return axios.get(`/api/posts/area/${ localId }`, {
       params: { lastId, userId },
     });
   },
-
   writeComment(contentId, userId, commentContent) {
     return axios.post('/api/comments', {
       contentId,
@@ -266,7 +276,7 @@ export default {
    * @returns {AxiosPromise<any>}
    */
   updateDescription(userId, description) {
-    return axios.put(`/api/users/${userId}/description`, {
+    return axios.put(`/api/users/${ userId }/description`, {
       description,
     });
   },
@@ -328,9 +338,9 @@ export default {
     });
   },
 
-  localList(userId) {
+  localList(userId, localId) {
     return axios.get('api/subscription/local', {
-      params: { userId },
+      params: { userId, localId },
     });
   },
   cancelSubscriptionReporter(reader, reporter) {
@@ -340,7 +350,7 @@ export default {
   },
 
   cancelSubscriptionLocal(reader, localId) {
-    return axios.delete('api/subscription/reporter', {
+    return axios.delete('api/subscription/local', {
       params: { reader, localId },
     });
   },
@@ -358,7 +368,7 @@ export default {
     });
   },
   getReliabilityScore(userId) {
-    return axios.get(`api/posts/evaluation/${userId}`);
+    return axios.get(`api/posts/evaluation/${ userId }`);
   },
   isEvaluated(userId, contentId) {
     return axios.get('/api/posts/evaluation/check/is-evaluated', {
@@ -390,8 +400,14 @@ export default {
   },
 
   updateProfileImage(userId, filename) {
-    return axios.put(`/api/users/${userId}/avatar`, {
+    return axios.put(`/api/users/${ userId }/avatar`, {
       filename,
+    });
+  },
+// 회원 탈퇴  api
+  withdraw(userId, nickName, password) {
+    return axios.put('/api/users/disabled-user', {
+      userId, nickName, password,
     });
   },
 
@@ -419,21 +435,21 @@ export default {
     });
   },
 
-  searchUser(word) {
+  searchUser(word, userId) {
     return axios.get('api/search/user', {
-      params: { word: encodeURI(word) },
+      params: { word: encodeURI(word), userId },
     });
   },
 
-  searchPostTitle(word) {
+  searchPostTitle(word, userId) {
     return axios.get('api/search/post-title', {
-      params: { word: encodeURI(word) },
+      params: { word: encodeURI(word), userId },
     });
   },
 
 
   getScrappedPostList(userId, lastId) {
-    return axios.get(`/api/scrap/${userId}`, {
+    return axios.get(`/api/scrap/${ userId }`, {
       params: { lastId },
     });
   },
@@ -472,5 +488,15 @@ export default {
     return axios.get('/api/posts/subs', {
       params: { userId, lastId },
     });
+  },
+
+  reportPost(myUserId, targetPost, reportCode, text) {
+    return axios.post('api/posts/report-post', {
+      myUserId, targetPost, reportCode, text,
+    });
+  },
+
+  isReported(myUserId, targetPost) {
+    return axios.get(`/api/posts/report-post/${myUserId}/check/${targetPost}`);
   },
 };

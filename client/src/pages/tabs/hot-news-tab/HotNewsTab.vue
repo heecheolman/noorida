@@ -1,14 +1,12 @@
 <template>
   <div>
     <a-list>
-      <!--<a-list :loading="loading">-->
       <div class="padding--10">
         <a-list-item v-for="item in hotList"
                      :key="item.contentId" class="box-size"
                      @click="routeDetailPage(item.contentId)">
 
           <a-list-item-meta>
-
             <span slot="avatar" class="design-card text-center design-rank">{{item.rank}}</span>
             <a slot="title" class="title">{{ item.title }}</a>
             <a-avatar class="avatar-line" v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
@@ -21,8 +19,8 @@
               <div class="description-row" style="justify-content: space-between">
                 {{ item.localName }}
                 <span class="view">
-                     <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.view }}
-                    </span>
+                     <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.views }}
+                </span>
               </div>
             </div>
 
@@ -36,12 +34,10 @@
 <script>
 import { mapState } from 'vuex';
 
-const VirtualList = () => import('@/components/VirtualList');
-
 export default {
   name: 'HotNewsTab',
   components: {
-    VirtualList,
+  
   },
   data() {
     return {
@@ -76,14 +72,7 @@ export default {
     font-size: 20px;
   }
   .design-rank{
-
-
   }
-  /*.scroller {*/
-  /*!* 120px = header + footer *!*/
-  /*height: calc(100vh - 120px);*/
-  /*}*/
-
   .ant-list-item {
     padding: 12px 10px;
     font-size: 10px;
@@ -120,14 +109,8 @@ export default {
                 display: flex;
                 align-items: center;
                 height: 17px;
-                /*border-radius: 15px;*/
-                /*background-color: #fff;*/
-                /*border: 1px solid rgba(215, 215, 215, 0.4);*/
-                /*color: powderblue;*/
-
               }
               .timeline {
-                /*color: pink;*/
               }
 
             }
@@ -136,10 +119,6 @@ export default {
       }
 
       .ant-list-item-content {
-        /*.timeline {*/
-        /*//@include font-size-small;*/
-        /*color: pink;*/
-        /*}*/
       }
     }
   }

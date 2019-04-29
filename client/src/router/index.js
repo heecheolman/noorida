@@ -16,6 +16,7 @@ const ProfilePage = () => import('../pages/ProfilePage');
 const ShowFoundIdPage = () => import('../pages/ShowFoundIdPage');
 const SearchPage = () => import('../pages/SearchPage');
 const SearchAreaPage = () => import('../pages/SearchAreaPage');
+const WithdrawalPage = () => import('../pages/WithdrawalPage');
 
 /*  Tabs  */
 const LocalNewsTab = () => import('../pages/tabs/local-news-tab/LocalNewsTab');
@@ -25,7 +26,6 @@ const HotNewsTab = () => import('../pages/tabs/hot-news-tab/HotNewsTab');
 const LocalSearchTab = () => import('../pages/tabs-search/local-search-tab/LocalSearchTab');
 const ReporterSearchTab = () => import('../pages/tabs-search/reporter-search-tab/ReporterSearchTab');
 const PostSearchTab = () => import('../pages/tabs-search/post-search-tab/PostSearchTab');
-
 
 Vue.use(Router);
 
@@ -132,6 +132,11 @@ export default new Router({
         next();
       },
       props: true,
+    },
+    {
+      path: 'withdrawal',
+      name: 'WithdrawalPage',
+      component: WithdrawalPage,
     },
     {
       path: 'post/:contentId',

@@ -187,11 +187,12 @@ router.post('/views', async (req, res) => {
 
 router.post('/report-post', async (req, res) => {
   const { myUserId, targetPost, reportCode, text } = req.body;
-  const result = await postService.reportPost({ myUserId, targetPost, reportCode, text })
+  const result = await postService.reportPost({ myUserId, targetPost, reportCode, text})
     .then(results => results)
     .catch(err => err);
   return res.json('ok');
 });
+
 
 router.get('/report-post/:myUserId/check/:targetPost', async (req, res) => {
   const { myUserId, targetPost } = req.params;

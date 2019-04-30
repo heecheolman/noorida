@@ -64,7 +64,8 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
+
 const Toolbar = () => import('@/components/Toolbar');
 
 export default {
@@ -91,8 +92,11 @@ export default {
     ]),
   },
   methods: {
+    ...mapMutations('user', {
+      userInit: 'INIT_USER_DATA',
+    }),
     boolName() {
-      if (this.myNickName === this.confirmNickname){
+      if (this.myNickName === this.confirmNickname) {
         this.decVisible = true;
       } else {
         this.decVisible = false;
@@ -108,6 +112,9 @@ export default {
       if (this.withdrawalSuccess === true) {
         this.decVisible = false;
         this.trueWithdrawal = true;
+        this.userInit();
+        await this.$store.dispatch('auth/sessionInit');
+        this.$router.replace({ name: 'LoginPage' });
       } else {
         this.$message.warning('비밀번호가 일치하지 않습니다.');
         this.decVisible = false;

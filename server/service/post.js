@@ -183,8 +183,14 @@ module.exports = {
     };
   },
 
-  loadPreviewHotNewsList: async ({ localId }) => {
+  loadPreviewHotNewsList: async ({ localName }) => {
     const LIMIT = 10;
+
+    const extractedData = await knex('local')
+      .select('localId')
+      .where({ localName })
+      .then(rowData => JSON.parse(JSON.stringify(rowData))[0].localId)
+      .catch(err => err);
 
 
     const result = await knex('contents')
@@ -198,7 +204,7 @@ module.exports = {
         'contents.views',
         'local.localName',
       )
-      .where('local.localId', localId)
+      .where('local.localId', extractedData)
       .where('contents.active', 'Y')
       .where('users.active','Y')
       .join('users', 'users.userId', '=', 'contents.userId')

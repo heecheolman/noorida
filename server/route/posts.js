@@ -44,9 +44,8 @@ router.get('/subs', async (req, res) => {
 });
 
 router.get('/hot-topic', async (req, res) => {
-  const { localId } = req.query;
-  console.log('localId', localId);
-  const result = await postService.loadPreviewHotNewsList({ localId })
+  const { localName } = req.query;
+  const result = await postService.loadPreviewHotNewsList({ localName })
     .then(results => results)
     .catch(err => err);
   res.json(result);

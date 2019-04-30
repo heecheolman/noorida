@@ -158,10 +158,10 @@ export default {
   /**
    * 지역별 Hot -Topic 리스트
    */
-  loadHotPreviewPostList(localId) {
+  loadHotPreviewPostList(localName) {
     return axios.get('/api/posts/hot-topic', {
       params: {
-        localId,
+        localName,
       },
     });
   },

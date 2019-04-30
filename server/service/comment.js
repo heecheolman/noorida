@@ -52,6 +52,7 @@ module.exports = {
       .where('comments.contentId', contentId)
       .where('comments.commentId', opr, lastId)
       .where('comments.active', 'Y')
+      .where('users.active','Y')
       .join('users', 'users.userId', '=', 'comments.userId')
       .join('contents', 'contents.contentId', '=', 'comments.contentId')
       .orderBy('comments.createdAt', 'desc')

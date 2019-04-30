@@ -22,6 +22,7 @@ module.exports = {
         'users.userId', 'users.nickName', 'users.avatar', 'contents.contentId', 'contents.title', 'contents.content', 'contents.updatedAt', 'contents.views', 'local.localName')
       .where('scrap.userId', userId)
       .where('contents.active', 'Y')
+      .where('users.active','Y')
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
       .join('scrap', 'scrap.contentId', '=', 'contents.contentId')

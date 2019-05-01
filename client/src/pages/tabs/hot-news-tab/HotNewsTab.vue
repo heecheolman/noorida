@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="hot-wrap">
     <a-list>
       <div class="padding--10">
         <a-list-item v-for="item in hotList"
@@ -65,59 +65,65 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-  .design-card{
-    float: left;
-    margin: 20px;
-    font-size: 20px;
-  }
-  .design-rank{
-  }
-  .ant-list-item {
-    padding: 12px 10px;
-    font-size: 10px;
-    .ant-list-item-meta {
-      .ant-list-item-meta-content {
-        .ant-list-item-meta-title {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          word-break: break-all;
-          width: 55vw;
+  .hot-wrap {
+    width: 100%;
+    height: calc(100vh - 110px);
+    overflow-y: scroll;
 
-          .title {
-            color: #222;
+    .design-card{
+      float: left;
+      margin: 20px;
+      font-size: 20px;
+    }
+    .design-rank{
+    }
+    .ant-list-item {
+      padding: 12px 10px;
+      font-size: 10px;
+      .ant-list-item-meta {
+        .ant-list-item-meta-content {
+          .ant-list-item-meta-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            word-break: break-all;
+            width: 55vw;
+
+            .title {
+              color: #222;
+            }
           }
-        }
-        .ant-list-item-meta-description {
-          line-height: 22px;
+          .ant-list-item-meta-description {
+            line-height: 22px;
 
-          .description {
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            width: 100%;
-
-            &-row {
-              width: 100%;
-              height: auto;
+            .description {
               display: flex;
-              align-items: center;
-              font-size: 10px;
+              justify-content: center;
+              flex-direction: column;
+              width: 100%;
 
-              .view {
+              &-row {
+                width: 100%;
+                height: auto;
                 display: flex;
                 align-items: center;
-                height: 17px;
-              }
-              .timeline {
-              }
+                font-size: 10px;
 
+                .view {
+                  display: flex;
+                  align-items: center;
+                  height: 17px;
+                }
+                .timeline {
+                }
+
+              }
             }
           }
         }
-      }
 
-      .ant-list-item-content {
+        .ant-list-item-content {
+        }
       }
     }
   }

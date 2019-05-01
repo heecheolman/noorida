@@ -38,7 +38,9 @@
       <a-layout-footer :style="{
                           width: '100%',
                           height: '70px',
-                          padding: '0',
+                          padding: '5px 0 0 0',
+                          bottom: '0',
+                          position: 'absolute',
                           backgroundColor: '#fff',
                        }">
         <div class="flex-container flex-between-sort flex-row footer">

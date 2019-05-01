@@ -44,9 +44,8 @@ router.get('/subs', async (req, res) => {
 });
 
 router.get('/hot-topic', async (req, res) => {
-  const { localId } = req.query;
-  console.log('localId', localId);
-  const result = await postService.loadPreviewHotNewsList({ localId })
+  const { localName } = req.query;
+  const result = await postService.loadPreviewHotNewsList({ localName })
     .then(results => results)
     .catch(err => err);
   res.json(result);
@@ -187,11 +186,12 @@ router.post('/views', async (req, res) => {
 
 router.post('/report-post', async (req, res) => {
   const { myUserId, targetPost, reportCode, text } = req.body;
-  const result = await postService.reportPost({ myUserId, targetPost, reportCode, text })
+  const result = await postService.reportPost({ myUserId, targetPost, reportCode, text})
     .then(results => results)
     .catch(err => err);
   return res.json('ok');
 });
+
 
 router.get('/report-post/:myUserId/check/:targetPost', async (req, res) => {
   const { myUserId, targetPost } = req.params;

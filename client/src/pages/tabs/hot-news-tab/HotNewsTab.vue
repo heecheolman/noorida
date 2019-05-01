@@ -1,14 +1,12 @@
 <template>
-  <div>
+  <div class="hot-wrap">
     <a-list>
-      <!--<a-list :loading="loading">-->
       <div class="padding--10">
         <a-list-item v-for="item in hotList"
                      :key="item.contentId" class="box-size"
                      @click="routeDetailPage(item.contentId)">
 
           <a-list-item-meta>
-
             <span slot="avatar" class="design-card text-center design-rank">{{item.rank}}</span>
             <a slot="title" class="title">{{ item.title }}</a>
             <a-avatar class="avatar-line" v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
@@ -21,8 +19,8 @@
               <div class="description-row" style="justify-content: space-between">
                 {{ item.localName }}
                 <span class="view">
-                     <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.view }}
-                    </span>
+                     <a-icon theme="filled" type="eye" style="margin-right: 2px;"/>{{ item.views }}
+                </span>
               </div>
             </div>
 
@@ -36,12 +34,9 @@
 <script>
 import { mapState } from 'vuex';
 
-const VirtualList = () => import('@/components/VirtualList');
-
 export default {
   name: 'HotNewsTab',
   components: {
-    VirtualList,
   },
   data() {
     return {
@@ -49,11 +44,11 @@ export default {
     };
   },
   async created() {
-    const localId = '2';
-    await this.$store.dispatch('hot/hotTopicProcess', { localId });
+    const localName = this.$store.state.user.location.address;
+    await this.$store.dispatch('hot/hotTopicProcess', { localName });
   },
   computed: {
-    ...mapState('hot',[
+    ...mapState('hot', [
       'hotList',
     ]),
   },
@@ -70,76 +65,65 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-  .design-card{
-    float: left;
-    margin: 20px;
-    font-size: 20px;
-  }
-  .design-rank{
+  .hot-wrap {
+    width: 100%;
+    height: calc(100vh - 110px);
+    overflow-y: scroll;
 
+    .design-card{
+      float: left;
+      margin: 20px;
+      font-size: 20px;
+    }
+    .design-rank{
+    }
+    .ant-list-item {
+      padding: 12px 10px;
+      font-size: 10px;
+      .ant-list-item-meta {
+        .ant-list-item-meta-content {
+          .ant-list-item-meta-title {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            word-break: break-all;
+            width: 55vw;
 
-  }
-  /*.scroller {*/
-  /*!* 120px = header + footer *!*/
-  /*height: calc(100vh - 120px);*/
-  /*}*/
-
-  .ant-list-item {
-    padding: 12px 10px;
-    font-size: 10px;
-    .ant-list-item-meta {
-      .ant-list-item-meta-content {
-        .ant-list-item-meta-title {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          word-break: break-all;
-          width: 55vw;
-
-          .title {
-            color: #222;
+            .title {
+              color: #222;
+            }
           }
-        }
-        .ant-list-item-meta-description {
-          line-height: 22px;
+          .ant-list-item-meta-description {
+            line-height: 22px;
 
-          .description {
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            width: 100%;
-
-            &-row {
-              width: 100%;
-              height: auto;
+            .description {
               display: flex;
-              align-items: center;
-              font-size: 10px;
+              justify-content: center;
+              flex-direction: column;
+              width: 100%;
 
-              .view {
+              &-row {
+                width: 100%;
+                height: auto;
                 display: flex;
                 align-items: center;
-                height: 17px;
-                /*border-radius: 15px;*/
-                /*background-color: #fff;*/
-                /*border: 1px solid rgba(215, 215, 215, 0.4);*/
-                /*color: powderblue;*/
+                font-size: 10px;
+
+                .view {
+                  display: flex;
+                  align-items: center;
+                  height: 17px;
+                }
+                .timeline {
+                }
 
               }
-              .timeline {
-                /*color: pink;*/
-              }
-
             }
           }
         }
-      }
 
-      .ant-list-item-content {
-        /*.timeline {*/
-        /*//@include font-size-small;*/
-        /*color: pink;*/
-        /*}*/
+        .ant-list-item-content {
+        }
       }
     }
   }

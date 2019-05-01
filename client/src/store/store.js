@@ -11,6 +11,7 @@ import subscribe from './modules/subscribe/subscribe';
 import search from './modules/search/search';
 import scrap from './modules/scrap/scrap';
 import hot from './modules/hot/hot';
+import withdrawal from './modules/withdrawal/withdrawal';
 
 Vue.use(Vuex);
 
@@ -26,6 +27,7 @@ export default new Vuex.Store({
     search,
     scrap,
     hot,
+    withdrawal,
   },
   state: {},
   getters: {},

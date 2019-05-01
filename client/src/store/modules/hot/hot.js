@@ -9,8 +9,8 @@ const mutations = {};
 
 const actions = {
   async hotTopicProcess({ commit }, payload) {
-    const { localId } = payload;
-    const resData = await api.loadHotPreviewPostList(localId)
+    const { localName } = payload;
+    const resData = await api.loadHotPreviewPostList(localName)
       .then(result => result.data)
       .catch(err => err);
 

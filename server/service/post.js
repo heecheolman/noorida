@@ -94,6 +94,7 @@ module.exports = {
           )
           .where('local.localId', extLocalId)
           .where('contents.contentId', opr, lastId)
+          .where('users.active','Y')
           .where('contents.userId', 'not in', blockedUserList)
           .where('contents.active', 'Y')
           .join('users', 'users.userId', '=', 'contents.userId')
@@ -160,6 +161,7 @@ module.exports = {
         'local.localName',
       )
       .select()
+      .where('users.active','Y')
       .where('contents.contentId', opr, lastId)
       .andWhere('contents.active', 'Y')
       .where('contents.userId', 'in', myReporterList)
@@ -181,8 +183,14 @@ module.exports = {
     };
   },
 
-  loadPreviewHotNewsList: async ({ localId }) => {
+  loadPreviewHotNewsList: async ({ localName }) => {
     const LIMIT = 10;
+
+    const extractedData = await knex('local')
+      .select('localId')
+      .where({ localName })
+      .then(rowData => JSON.parse(JSON.stringify(rowData))[0].localId)
+      .catch(err => err);
 
 
     const result = await knex('contents')
@@ -196,8 +204,9 @@ module.exports = {
         'contents.views',
         'local.localName',
       )
-      .where('local.localId', localId)
+      .where('local.localId', extractedData)
       .where('contents.active', 'Y')
+      .where('users.active','Y')
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
       .join('hottopic', 'hottopic.contentId', '=', 'contents.contentId')
@@ -285,6 +294,7 @@ module.exports = {
         'contents.createdAt',
         'local.localName')
       .where('local.localId', localId)
+      .where('users.active','Y')
       .where('contents.contentId', opr, lastId)
       .where('contents.userId', 'not in', blockedUserList)
       .where('contents.active', 'Y')

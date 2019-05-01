@@ -4,6 +4,7 @@ module.exports = {
   getUserDataByNickname: async ({ nickName }) => {
     const result = await knex('users')
       .select('userId', 'realName', 'nickName', 'email', 'avatar', 'description')
+      .where('active', 'Y')
       .where({ nickName })
       .then(results => results)
       .catch(err => err);
@@ -22,6 +23,7 @@ module.exports = {
   getPasswordByNickname: async ({ nickName }) => {
     const result = await knex('users')
       .select('password')
+      .where('active', 'Y')
       .where({ nickName })
       .then(results => results)
       .catch(err => err);

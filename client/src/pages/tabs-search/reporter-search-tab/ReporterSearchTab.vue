@@ -2,7 +2,7 @@
   <a-list class="padding--10">
     <a-list-item v-for="users in reportUserList" :key="users.userId" >
       <div @click="routeUserProfile(users.userId)">
-        <a-avatar v-if="users.avatar" :src="`http://localhost:3000/images/${users.avatar}`"></a-avatar>
+        <a-avatar v-if="users.avatar" :src="`/images/${users.avatar}`"></a-avatar>
         <a-avatar v-else icon="user"></a-avatar>
         <span  class="text-center design-name">{{ users.nickName }}</span>
       </div>

@@ -24,11 +24,11 @@
             </div>
           </div>
           <template v-if="loadType === 'user'">
-            <a-avatar v-if="avatar" slot="avatar" :src="`http://localhost:3000/images/${avatar}`"/>
+            <a-avatar v-if="avatar" slot="avatar" :src="`/images/${avatar}`"/>
             <a-avatar v-else slot="avatar" icon="user"></a-avatar>
           </template>
           <template v-else>
-            <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
+            <a-avatar v-if="item.avatar" slot="avatar" :src="`/images/${item.avatar}`"/>
             <a-avatar v-else slot="avatar" icon="user"></a-avatar>
           </template>
         </a-list-item-meta>

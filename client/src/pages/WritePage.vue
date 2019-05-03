@@ -107,12 +107,12 @@ export default {
         const file = input.files[0];
         if (/^image\//.test(file.type)) {
           const formData = new FormData();
-          formData.append('image', file);
+          formData.append('image'
           const filename = await this.$api.uploadImage(formData)
             .then(result => result.data)
             .catch(err => err);
           const range = this.$refs.editor.quill.getSelection();
-          this.$refs.editor.quill.insertEmbed(range.index, 'image', `http://localhost:3000/images/${filename}`);
+          this.$refs.editor.quill.insertEmbed(range.index, 'image', `/images/${filename}`);
         }
       };
     },

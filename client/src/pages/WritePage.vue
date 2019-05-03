@@ -107,7 +107,7 @@ export default {
         const file = input.files[0];
         if (/^image\//.test(file.type)) {
           const formData = new FormData();
-          formData.append('image'
+          formData.append('image', file);
           const filename = await this.$api.uploadImage(formData)
             .then(result => result.data)
             .catch(err => err);

@@ -60,8 +60,8 @@ router.get('/reporter', async (req, res) => {
 });
 
 router.get('/local', async (req, res) => {
-  const { userId, localId } = req.query;
-  const result = await subscriptionService.localList({ userId, localId })
+  const { userId } = req.query;
+  const result = await subscriptionService.localList({ userId })
     .then(results => results)
     .catch(err => err);
   return res.json(result);

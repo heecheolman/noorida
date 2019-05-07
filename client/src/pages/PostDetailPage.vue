@@ -106,7 +106,7 @@
         <div class="comment-wrap">
           <a-comment class="comment-write-wrap">
             <a-avatar v-if="user.avatar" slot="avatar"
-                      :src="`http://localhost:3000/images/${user.avatar}`"/>
+                      :src="`/images/${user.avatar}`"/>
             <a-avatar v-else slot="avatar" icon="user"></a-avatar>
             <div slot="content">
 
@@ -138,7 +138,7 @@
               <a-comment :author="item.nickName"
                          :content="item.commentContent"
                          :datetime="item.updatedAt | timeline">
-                <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"></a-avatar>
+                <a-avatar v-if="item.avatar" slot="avatar" :src="`/images/${item.avatar}`"></a-avatar>
                 <a-avatar v-else slot="avatar" icon="user"></a-avatar>
               </a-comment>
             </a-list-item>

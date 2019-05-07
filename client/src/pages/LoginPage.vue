@@ -26,10 +26,10 @@
             </a-form-item>
 
             <a-form-item>
-              <div class="flex-container flex-center-sort">
-                <a-checkbox v-decorator="['remember',
-                            { valuePropName: 'checked', initialValue: true, }]">로그인 유지</a-checkbox>
-              </div>
+              <!--<div class="flex-container flex-center-sort">-->
+                <!--<a-checkbox v-decorator="['remember',-->
+                            <!--{ valuePropName: 'checked', initialValue: true, }]">로그인 유지</a-checkbox>-->
+              <!--</div>-->
               <div class="flex-container flex-column flex-center-sort">
                 <a-button type="primary"
                           htmlType="submit"

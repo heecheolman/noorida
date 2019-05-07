@@ -112,7 +112,7 @@ export default {
             .then(result => result.data)
             .catch(err => err);
           const range = this.$refs.editor.quill.getSelection();
-          this.$refs.editor.quill.insertEmbed(range.index, 'image', `http://localhost:3000/images/${filename}`);
+          this.$refs.editor.quill.insertEmbed(range.index, 'image', `/images/${filename}`);
         }
       };
     },

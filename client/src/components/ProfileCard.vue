@@ -5,7 +5,7 @@
         <i class="fas fa-medal medal" :class="medalColorPicker"></i>
       </div>
       <div class="avatar-wrap flex-container flex-center-sort">
-        <a-avatar v-if="profileCard.avatar" :src="`http://localhost:3000/images/${profileCard.avatar}`"></a-avatar>
+        <a-avatar v-if="profileCard.avatar" :src="`/images/${profileCard.avatar}`"></a-avatar>
         <a-avatar v-else icon="user"></a-avatar>
       </div>
     </div>

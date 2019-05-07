@@ -24,7 +24,7 @@
             <a-list-item-meta>
               <a slot="title" class="title">{{ item.title }}</a>
               <span slot="description" class="title-nickname">{{ item.nickName }}</span>
-              <a-avatar v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
+              <a-avatar v-if="item.avatar" slot="avatar" :src="`/images/${item.avatar}`"/>
               <a-avatar v-else slot="avatar" icon="user"></a-avatar>
             </a-list-item-meta>
           </a-list-item>

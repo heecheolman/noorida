@@ -338,9 +338,9 @@ export default {
     });
   },
 
-  localList(userId, localId) {
+  localList(userId) {
     return axios.get('api/subscription/local', {
-      params: { userId, localId },
+      params: { userId },
     });
   },
   cancelSubscriptionReporter(reader, reporter) {

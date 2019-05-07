@@ -142,14 +142,14 @@ export default {
             message: '닉네임을 입력해주세요',
           }, {
             pattern: /^(?!.*\.\.)(?!.*\.$)[^\W][\w.]{5,21}$/,
-            message: '닉네임형식이 유효하지 않습니다.',
+            message: '영문 대소문자, 특수기호(마침표,언더바) 포함 22글자 이하',
           }],
         },
         password: {
           rules: [{
             required: true,
             pattern: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{10,}$/,
-            message: '비밀번호를 입력하세요',
+            message: '영문 대소문자, 특수기호 최소  각 1개씩 포함 10글자 이상',
           }, {
             validator: this.validateToNextPassword,
             message: '비밀번호가 일치하지 않아요',
@@ -327,6 +327,7 @@ export default {
     width: 100%;
     height: 100%;
     padding: 20px;
+    font-size: 2000px;
 
     .title {
       @include font-size-x-large();

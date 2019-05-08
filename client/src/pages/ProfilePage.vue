@@ -107,7 +107,7 @@
               <li v-for="(user, index) in modalSubscribeList"
                   :key="index"
                   class="sub-item flex-container flex-row"
-                  @click="routeProfilePage(user.hasOwnProperty('userId'), user.userId || user.localId)">
+                  @click="routeProfilePage(user.userId || user.localId, user.localName)">
                 <a-avatar v-if="user.avatar" slot="avatar"
                           :src="`/images/${user.avatar}`"/>
                 <a-avatar v-else-if="user.localName" slot="avatar"
@@ -371,11 +371,11 @@ export default {
       this.modalVisible = true;
 
     },
-    routeProfilePage(isUser, id) {
-      if (isUser) {
+    routeProfilePage(id, localName) {
+      if (!localName) {
         this.$router.replace({ name: 'ProfilePage', params: { userId: id } });
       } else {
-        this.$router.replace({ name: 'SearchAreaPage', params: { localId: id } });
+        this.$router.replace({ name: 'SearchAreaPage', params: { localId: id, localName, userId: this.user.userId } });
       }
       this.modalVisible = false;
     },

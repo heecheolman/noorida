@@ -2,8 +2,11 @@ const express = require('express');
 const rn = require('random-number');
 const PostOffice = require('./../mail-config/mail-config');
 const certService = require('./../service/cert');
-
+const secret = require('../secret/index');
 const router = express.Router();
+
+
+const key = 'keyValue';
 
 const rnConfig = {
   min: 111111,
@@ -62,7 +65,7 @@ router.get('/valid/nick-names', async (req, res) => {
  */
 router.get('/valid/emails', async (req, res) => {
   const { email } = req.query;
-  const isComparedEmail = await certService.compareEmail({ email })
+  const isComparedEmail = await certService.compareEmail({ email:  secret.encrypt(email, key)})
     .then(result => result)
     .catch(err => err);
   res.send(isComparedEmail);

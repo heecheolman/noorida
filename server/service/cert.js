@@ -1,4 +1,7 @@
 const knex = require('./service.config');
+const secret = require('../secret/index');
+const key = 'keyValue';
+
 
 module.exports = {
   upsertUserToken: async ({ tmpEmail, tmpToken }) => {
@@ -23,6 +26,7 @@ module.exports = {
       .where({ email })
       .then(results => results)
       .catch(err => err);
+    console.log(result);
     return result.length !== 0;
   },
 

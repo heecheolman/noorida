@@ -15,7 +15,7 @@
             <div class="avatar-zone">
               <img v-if="profilePath"
                    class="avatar"
-                   :src="`/images/${profilePath}`"
+                   :src="`http://localhost:3000/images/${profilePath}`"
                    alt="profile">
               <a-avatar v-else icon="user" :size="150"></a-avatar>
             </div>
@@ -109,9 +109,12 @@
                   class="sub-item flex-container flex-row"
                   @click="routeProfilePage(user.userId)">
                 <a-avatar v-if="user.avatar" slot="avatar"
-                          :src="`/images/${user.avatar}`"/>
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                <a-avatar v-else-if="user.localName" slot="avatar"
+                          type="environment"  icon="environment"
+                          style="color: #1890FF; backgroundColor: white" />
                 <a-avatar v-else slot="avatar" icon="user"></a-avatar>
-                <div class="sub-item-text text-center">{{ user.nickName }}</div>
+                <div class="sub-item-text text-center">{{ user.nickName || user.localName}}</div>
               </li>
             </ul>
           </a-modal>
@@ -156,7 +159,7 @@
                 :key="index" class="user-list-item flex-container flex-between-sort flex-row">
               <div class="block-avatar-wrap">
                 <a-avatar v-if="user.avatar"
-                          :src="`/images/${user.avatar}`"/>
+                          :src="`http://localhost:3000/images/${user.avatar}`"/>
                 <a-avatar v-else icon="user"></a-avatar>
               </div>
               <div class="block-nickname-wrap text-center">
@@ -180,310 +183,317 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations } from 'vuex';
+  import { mapState, mapGetters, mapMutations } from 'vuex';
 
-const Toolbar = () => import('@/components/Toolbar');
-const VirtualList = () => import('@/components/VirtualList');
+  const Toolbar = () => import('@/components/Toolbar');
+  const VirtualList = () => import('@/components/VirtualList');
 
-export default {
-  name: 'ProfilePage',
-  components: {
-    Toolbar,
-    VirtualList,
-  },
-  props: {
-    userId: {
-      type: Number,
+  export default {
+    name: 'ProfilePage',
+    components: {
+      Toolbar,
+      VirtualList,
     },
-  },
-  watch: {
-    async $route(to) {
-      this.pageSwitchLoading = true;
-      const { userId } = to.params;
-      await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
+    props: {
+      userId: {
+        type: Number,
+      },
+    },
+    watch: {
+      async $route(to) {
+        this.pageSwitchLoading = true;
+        const { userId } = to.params;
+        await this.$store.dispatch('anotherUser/fetchAnotherUser', userId);
+        await this.dataUpdate();
+        this.pageSwitchLoading = false;
+      },
+    },
+    async created() {
+      await this.initPreviewList();
+      if (this.isMe) {
+        await this.initScrapPostList();
+        await this.initBlockedUserList();
+        await this.$store.dispatch('user/fetchBlockUserList');
+      }
       await this.dataUpdate();
-      this.pageSwitchLoading = false;
     },
-  },
-  async created() {
-    await this.initPreviewList();
-    if (this.isMe) {
-      await this.initScrapPostList();
-      await this.initBlockedUserList();
-      await this.$store.dispatch('user/fetchBlockUserList');
-    }
-    await this.dataUpdate();
-  },
-  computed: {
-    ...mapState('anotherUser', [
-      'info',
-      'readerList',
-      'reporterList',
-      'localList',
-      'isSubscribe',
-      'reliabilityScore',
-    ]),
-    ...mapState('user', [
-      'user',
-      'blockedUserList',
-    ]),
-    ...mapState('post', [
-      'previewPostList',
-    ]),
-    ...mapState('scrap', [
-      'scrapPostList',
-    ]),
-    ...mapGetters('user', [
-      'avatar',
-    ]),
-    isMe() {
-      return this.info.userId === this.$store.state.user.user.userId;
-    },
-    profilePath() {
-      return this.isMe ? this.avatar : this.info.avatar;
-    },
-    noDescript() {
-      return {
-        'text-justify': this.description,
-        'text-center': !this.description,
-      };
-    },
-    descriptionLength() {
-      if (this.copiedDescription) {
-        return this.copiedDescription.length;
-      }
-      return 0;
-    },
-    medalColorPicker() {
-      switch (parseInt(this.reliabilityScore / 100, 10)) {
-        case 0:
-        case 1:
-          return 'medal-bronze';
-        case 2:
-        case 3:
-          return 'medal-silver';
-        default:
-          return 'medal-gold';
-      }
-    },
-  },
-  data() {
-    return {
-      badgeStyle: { backgroundColor: '#1F74FF' },
-      editMode: false,
-      description: '',
-      copiedDescription: '',
-      descriptionLoading: false,
-      modalTitle: '',
-      modalVisible: false,
-      modalSubscribeList: [],
-      pageSwitchLoading: false,
-      blockVisible: false,
-      modalLoading: false,
-    };
-  },
-  methods: {
-    ...mapMutations('post', {
-      initPreviewList: 'INIT_PREVIEW_LIST',
-    }),
-    ...mapMutations('scrap', {
-      initScrapPostList: 'INIT_SCRAP_POST_LIST',
-    }),
-    ...mapMutations('user', {
-      initBlockedUserList: 'INIT_BLOCKED_USER_LIST',
-      deleteBlockedUserListElement: 'DELETE_BLOCKED_USER_LIST_ELEMENT',
-    }),
-    toggleEditMode() {
-      this.editMode = !this.editMode;
-      if (this.editMode) {
-        this.copiedDescription = this.description;
-      }
-    },
-    selectProfile() {
-      this.$refs.inputFile.click();
-    },
-    async changeDefaultProfile() {
-      await this.$store.dispatch('user/changeDefaultProfile', { userId: this.user.userId });
-    },
-    uploadProcess(e) {
-      const file = e.target.files[0];
-      if (file && /^image\//.test(file.type)) {
-        // const reader = new FileReader();
-        // reader.readAsDataURL(file);
-        // reader.onload = (event) => {
-        //   // something
-        //   const image = new Image();
-        //   image.src = event.target.result;
-        //   image.onload = () => {
-        //     // resize
-        //     const canvas = document.createElement('canvas');
-        //     const maxSize = 1280;
-        //     let width = image.width;
-        //     let height = image.height;
-        //     if (width > height && width > maxSize) {
-        //       height *= maxSize / width;
-        //       width = maxSize;
-        //     } else if (height > maxSize) {
-        //       width *= maxSize / height;
-        //       height = maxSize;
-        //     }
-        //     canvas.width = width;
-        //     canvas.height = height;
-        //     canvas.getContext('2d').drawImage(image, 0, 0, width, height);
-        //     const dataUrl = canvas.toDataURL('image/jpeg');
-        //     const BASE64 = ';base64,';
-        //
-        //     if (dataUrl.indexOf(BASE64) === -1) {
-        //       const parts = dataUrl.split(',');
-        //       const contentType = parts[0].split(':')[1];
-        //       const raw = parts[1];
-        //       const blob = new Blob([raw], {
-        //         type: contentType,
-        //       });
-        //       const formData = new FormData();
-        //       formData.append('image', blob);
-        //       const payload = {
-        //         formData,
-        //         nickName: this.user.nickName,
-        //         userId: this.user.userId,
-        //       };
-        //       this.$store.dispatch('user/updateProfileImage', payload);
-        //       this.$message.success('프로필 사진이 업데이트 되었습니다');
-        //       return;
-        //     }
-        //
-        //     const parts = dataUrl.split(BASE64);
-        //     const contentType = parts[0].split(':')[1];
-        //     const raw = window.atob(parts[1]);
-        //     const rawLength = raw.length;
-        //     const uInt8Array = new Uint8Array(rawLength);
-        //     for (let i = 0; i < rawLength; i++) {
-        //       uInt8Array[i] = raw.charCodeAt(i);
-        //     }
-        //     const blob = new Blob([uInt8Array], {
-        //       type: contentType,
-        //     });
-        //
-        //     const formData = new FormData();
-        //     formData.append('image', blob);
-        //     const payload = {
-        //       formData,
-        //       nickName: this.user.nickName,
-        //       userId: this.user.userId,
-        //     };
-        //     console.log(blob);
-        //     this.$store.dispatch('user/updateProfileImage', payload);
-        //     this.$message.success('프로필 사진이 업데이트 되었습니다');
-        //   };
-        // };
-
-
-        const formData = new FormData();
-        formData.append('image', file);
-        const payload = {
-          formData,
-          nickName: this.user.nickName,
-          userId: this.user.userId,
+    computed: {
+      ...mapState('anotherUser', [
+        'info',
+        'readerList',
+        'reporterList',
+        'localList',
+        'isSubscribe',
+        'reliabilityScore',
+      ]),
+      ...mapState('user', [
+        'user',
+        'blockedUserList',
+      ]),
+      ...mapState('post', [
+        'previewPostList',
+      ]),
+      ...mapState('scrap', [
+        'scrapPostList',
+      ]),
+      ...mapGetters('user', [
+        'avatar',
+      ]),
+      isMe() {
+        return this.info.userId === this.$store.state.user.user.userId;
+      },
+      profilePath() {
+        return this.isMe ? this.avatar : this.info.avatar;
+      },
+      noDescript() {
+        return {
+          'text-justify': this.description,
+          'text-center': !this.description,
         };
-        this.$store.dispatch('user/updateProfileImage', payload);
-        this.$message.success('프로필 사진이 업데이트 되었습니다');
-      }
+      },
+      descriptionLength() {
+        if (this.copiedDescription) {
+          return this.copiedDescription.length;
+        }
+        return 0;
+      },
+      medalColorPicker() {
+        switch (parseInt(this.reliabilityScore / 100, 10)) {
+          case 0:
+          case 1:
+            return 'medal-bronze';
+          case 2:
+          case 3:
+            return 'medal-silver';
+          default:
+            return 'medal-gold';
+        }
+      },
     },
-    async updateDescription() {
-      this.descriptionLoading = true;
-      await this.$store.dispatch('user/updateDescription', this.copiedDescription);
-      if (this.$store.state.user.committed) {
-        this.description = this.$store.state.user.user.description;
-        this.$message.success('자기소개가 변경되었습니다');
-      } else {
-        this.$message.warning('다시 시도해주세요');
-      }
-      this.descriptionLoading = false;
-      this.editMode = false;
+    data() {
+      return {
+        badgeStyle: { backgroundColor: '#1F74FF' },
+        editMode: false,
+        description: '',
+        copiedDescription: '',
+        descriptionLoading: false,
+        modalTitle: '',
+        modalVisible: false,
+        modalSubscribeList: [],
+        pageSwitchLoading: false,
+        blockVisible: false,
+        modalLoading: false,
+      };
     },
+    methods: {
+      ...mapMutations('post', {
+        initPreviewList: 'INIT_PREVIEW_LIST',
+      }),
+      ...mapMutations('scrap', {
+        initScrapPostList: 'INIT_SCRAP_POST_LIST',
+      }),
+      ...mapMutations('user', {
+        initBlockedUserList: 'INIT_BLOCKED_USER_LIST',
+        deleteBlockedUserListElement: 'DELETE_BLOCKED_USER_LIST_ELEMENT',
+      }),
+      toggleEditMode() {
+        this.editMode = !this.editMode;
+        if (this.editMode) {
+          this.copiedDescription = this.description;
+        }
+      },
+      selectProfile() {
+        this.$refs.inputFile.click();
+      },
+      async changeDefaultProfile() {
+        await this.$store.dispatch('user/changeDefaultProfile', { userId: this.user.userId });
+      },
+      uploadProcess(e) {
+        const file = e.target.files[0];
+        if (file && /^image\//.test(file.type)) {
+          // const reader = new FileReader();
+          // reader.readAsDataURL(file);
+          // reader.onload = (event) => {
+          //   // something
+          //   const image = new Image();
+          //   image.src = event.target.result;
+          //   image.onload = () => {
+          //     // resize
+          //     const canvas = document.createElement('canvas');
+          //     const maxSize = 1280;
+          //     let width = image.width;
+          //     let height = image.height;
+          //     if (width > height && width > maxSize) {
+          //       height *= maxSize / width;
+          //       width = maxSize;
+          //     } else if (height > maxSize) {
+          //       width *= maxSize / height;
+          //       height = maxSize;
+          //     }
+          //     canvas.width = width;
+          //     canvas.height = height;
+          //     canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+          //     const dataUrl = canvas.toDataURL('image/jpeg');
+          //     const BASE64 = ';base64,';
+          //
+          //     if (dataUrl.indexOf(BASE64) === -1) {
+          //       const parts = dataUrl.split(',');
+          //       const contentType = parts[0].split(':')[1];
+          //       const raw = parts[1];
+          //       const blob = new Blob([raw], {
+          //         type: contentType,
+          //       });
+          //       const formData = new FormData();
+          //       formData.append('image', blob);
+          //       const payload = {
+          //         formData,
+          //         nickName: this.user.nickName,
+          //         userId: this.user.userId,
+          //       };
+          //       this.$store.dispatch('user/updateProfileImage', payload);
+          //       this.$message.success('프로필 사진이 업데이트 되었습니다');
+          //       return;
+          //     }
+          //
+          //     const parts = dataUrl.split(BASE64);
+          //     const contentType = parts[0].split(':')[1];
+          //     const raw = window.atob(parts[1]);
+          //     const rawLength = raw.length;
+          //     const uInt8Array = new Uint8Array(rawLength);
+          //     for (let i = 0; i < rawLength; i++) {
+          //       uInt8Array[i] = raw.charCodeAt(i);
+          //     }
+          //     const blob = new Blob([uInt8Array], {
+          //       type: contentType,
+          //     });
+          //
+          //     const formData = new FormData();
+          //     formData.append('image', blob);
+          //     const payload = {
+          //       formData,
+          //       nickName: this.user.nickName,
+          //       userId: this.user.userId,
+          //     };
+          //     console.log(blob);
+          //     this.$store.dispatch('user/updateProfileImage', payload);
+          //     this.$message.success('프로필 사진이 업데이트 되었습니다');
+          //   };
+          // };
 
-    async showSubListModal(dataType) {
-      /**
-       * fetchType 에 따라 보여주는 리스트가 달라야함
-       * readers : 구독자들
-       * reporters : 리포터들
-       * locals : 지역들
-       */
-      const subDataMap = {
-        readers: {
-          title: '구독자들',
-          data: this.readerList,
-        },
-        reporters: {
-          title: '리포터들',
-          data: this.reporterList,
-        },
-        locals: {
-          title: '지역들',
-          data: this.localList,
-        },
-      };
-      this.modalTitle = subDataMap[dataType].title;
-      this.modalSubscribeList = subDataMap[dataType].data;
-      this.modalVisible = true;
+
+          const formData = new FormData();
+          formData.append('image', file);
+          const payload = {
+            formData,
+            nickName: this.user.nickName,
+            userId: this.user.userId,
+          };
+          this.$store.dispatch('user/updateProfileImage', payload);
+          this.$message.success('프로필 사진이 업데이트 되었습니다');
+        }
+      },
+      async updateDescription() {
+        this.descriptionLoading = true;
+        await this.$store.dispatch('user/updateDescription', this.copiedDescription);
+        if (this.$store.state.user.committed) {
+          this.description = this.$store.state.user.user.description;
+          this.$message.success('자기소개가 변경되었습니다');
+        } else {
+          this.$message.warning('다시 시도해주세요');
+        }
+        this.descriptionLoading = false;
+        this.editMode = false;
+      },
+
+      async showSubListModal(dataType) {
+        /**
+         * fetchType 에 따라 보여주는 리스트가 달라야함
+         * readers : 구독자들
+         * reporters : 리포터들
+         * locals : 지역들
+         */
+        const subDataMap = {
+          readers: {
+            title: '구독자들',
+            data: this.readerList,
+          },
+          reporters: {
+            title: '리포터들',
+            data: this.reporterList,
+          },
+          locals: {
+            title: '지역들',
+            data: this.localList,
+          },
+        };
+        this.modalTitle = subDataMap[dataType].title;
+        this.modalSubscribeList = subDataMap[dataType].data;
+        this.modalVisible = true;
+
+        this.modalSubscribeList.forEach((value, index) => {
+          const before = value.localName;
+          value.localName = before.substring(before.lastIndexOf(' '));
+          this.modalSubscribeList[index] = this.modalSubscribeList[index];
+        });
+
+      },
+      routeProfilePage(userId) {
+        this.$router.replace({ name: 'ProfilePage', params: { userId } });
+        this.modalVisible = false;
+      },
+      async dataUpdate() {
+        this.description = this.isMe
+          ? this.$store.state.user.user.description
+          : this.$store.state.anotherUser.info.description;
+        const userId = this.isMe ? this.user.userId : this.info.userId;
+        await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
+        await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+        await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
+        await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
+        await this.$store.dispatch('anotherUser/fetchUserReliabilityScore', { userId });
+      },
+      async subscribeReporter() {
+        const payload = {
+          me: this.$store.state.user.user.userId,
+          another: this.info.userId,
+        };
+        await this.$store.dispatch('anotherUser/subscribeReporter', payload);
+        const userId = this.isMe ? this.user.userId : this.info.userId;
+        await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+      },
+      async cancelSubscribeReporter() {
+        const payload = {
+          me: this.$store.state.user.user.userId,
+          another: this.info.userId,
+        };
+        await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
+        const userId = this.isMe ? this.user.userId : this.info.userId;
+        await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
+      },
+      copiedDescriptionChange(e) {
+        this.copiedDescription = e;
+      },
+      async cancelBlock(targetId) {
+        const payload = { targetId };
+        await this.$store.dispatch('user/cancelBlock', payload);
+        await this.$store.dispatch('user/fetchBlockUserList');
+        this.deleteBlockedUserListElement(targetId);
+        this.$message.success('차단해제 완료');
+      },
+      async userBlockProcess() {
+        this.modalLoading = true;
+        const payload = {
+          myUserId: this.user.userId,
+          targetId: this.info.userId,
+        };
+        await this.$store.dispatch('user/blockUserProcess', payload);
+        this.modalLoading = false;
+        this.blockVisible = false;
+        this.$message.success(`${this.info.nickName} 님을 차단했습니다.`);
+        this.$router.replace({ name: 'LocalNewsTab' });
+      },
     },
-    routeProfilePage(userId) {
-      this.$router.replace({ name: 'ProfilePage', params: { userId } });
-      this.modalVisible = false;
-    },
-    async dataUpdate() {
-      this.description = this.isMe
-        ? this.$store.state.user.user.description
-        : this.$store.state.anotherUser.info.description;
-      const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/isSubscribe', { reader: this.user.userId, reporter: this.info.userId });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'reporters', userId });
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'locals', userId });
-      await this.$store.dispatch('anotherUser/fetchUserReliabilityScore', { userId });
-    },
-    async subscribeReporter() {
-      const payload = {
-        me: this.$store.state.user.user.userId,
-        another: this.info.userId,
-      };
-      await this.$store.dispatch('anotherUser/subscribeReporter', payload);
-      const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
-    },
-    async cancelSubscribeReporter() {
-      const payload = {
-        me: this.$store.state.user.user.userId,
-        another: this.info.userId,
-      };
-      await this.$store.dispatch('anotherUser/cancelSubscribeReporter', payload);
-      const userId = this.isMe ? this.user.userId : this.info.userId;
-      await this.$store.dispatch('anotherUser/fetchSubscribeList', { fetchType: 'readers', userId });
-    },
-    copiedDescriptionChange(e) {
-      this.copiedDescription = e;
-    },
-    async cancelBlock(targetId) {
-      const payload = { targetId };
-      await this.$store.dispatch('user/cancelBlock', payload);
-      await this.$store.dispatch('user/fetchBlockUserList');
-      this.deleteBlockedUserListElement(targetId);
-      this.$message.success('차단해제 완료');
-    },
-    async userBlockProcess() {
-      this.modalLoading = true;
-      const payload = {
-        myUserId: this.user.userId,
-        targetId: this.info.userId,
-      };
-      await this.$store.dispatch('user/blockUserProcess', payload);
-      this.modalLoading = false;
-      this.blockVisible = false;
-      this.$message.success(`${this.info.nickName} 님을 차단했습니다.`);
-      this.$router.replace({ name: 'LocalNewsTab' });
-    },
-  },
-};
+  };
 </script>
 
 

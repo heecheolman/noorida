@@ -44,6 +44,7 @@ module.exports = {
       .join('local', 'local.localId', '=', 'subscriptionLocal.localId')
       .then(results => results)
       .catch(err => err);
+    console.log(result);
     return result;
   },
 

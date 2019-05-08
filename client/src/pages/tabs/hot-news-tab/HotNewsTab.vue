@@ -9,8 +9,8 @@
           <a-list-item-meta>
             <span slot="avatar" class="design-card text-center design-rank">{{item.rank}}</span>
             <a slot="title" class="title">{{ item.title }}</a>
-            <a-avatar class="avatar-line" v-if="item.avatar" slot="avatar" :src="`/images/${item.avatar}`"/>
-            <a-avatar v-else slot="avatar" icon="user"></a-avatar>
+            <a-avatar  class="avatar-line" v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
+            <a-avatar class="avatar-line" v-else slot="avatar" icon="user"></a-avatar>
             <div slot="description" class="description">
               <div class="description-row" style="justify-content: space-between">
                 {{ item.nickName }}
@@ -65,21 +65,33 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
+.avatar-line{
+  margin-top: 25px;
+  margin-left: -7px;
+}
   .hot-wrap {
     width: 100%;
     height: calc(100vh - 110px);
     overflow-y: scroll;
 
+
     .design-card{
       float: left;
       margin: 20px;
-      font-size: 20px;
+      font-size: 18px;
     }
     .design-rank{
+      margin-top: 28px;
+      margin-left: 1px;
     }
+
+
     .ant-list-item {
       padding: 12px 10px;
       font-size: 10px;
+
+
       .ant-list-item-meta {
         .ant-list-item-meta-content {
           .ant-list-item-meta-title {
@@ -88,6 +100,8 @@ export default {
             white-space: nowrap;
             word-break: break-all;
             width: 55vw;
+            height: 20px;
+            margin-top: 10px;
 
             .title {
               color: #222;
@@ -123,6 +137,7 @@ export default {
         }
 
         .ant-list-item-content {
+
         }
       }
     }

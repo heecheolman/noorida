@@ -159,13 +159,14 @@ module.exports = {
         'contents.createdAt',
         'contents.views',
         'local.localName',
+        'contents.active',
       )
       .select()
-      .where('users.active','Y')
       .where('contents.contentId', opr, lastId)
-      .andWhere('contents.active', 'Y')
-      .where('contents.userId', 'in', myReporterList)
-      .orWhere('contents.localId', 'in', myLocalList)
+      .where('contents.active', 'Y')
+      .andWhere('users.active','Y')
+      .andWhere('contents.localId', 'in', myLocalList)
+      .orWhere('contents.userId', 'in', myReporterList)
       .join('users', 'users.userId', '=', 'contents.userId')
       .join('local', 'local.localId', '=', 'contents.localId')
       .orderBy('contents.createdAt', 'desc')
@@ -173,6 +174,8 @@ module.exports = {
       .then(results => results)
       .catch(err => err);
 
+
+    console.log(result);
     /* 초기일시 lastId 기준 처리 */
     lastId = lastId === -1 ? 0 : lastId;
 

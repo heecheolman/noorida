@@ -121,6 +121,7 @@ const actions = {
       .catch(err => err);
   },
 
+  // this.$store.dispatch('post/loadLocalPreviewPostList');
   async loadLocalPreviewPostList({ commit, state, rootState }) {
     if (state.hasNextPost) {
       state.loading = true;

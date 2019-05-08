@@ -9,7 +9,7 @@
           <a-list-item-meta>
             <span slot="avatar" class="design-card text-center design-rank">{{item.rank}}</span>
             <a slot="title" class="title">{{ item.title }}</a>
-            <a-avatar  class="avatar-line" v-if="item.avatar" slot="avatar" :src="`http://localhost:3000/images/${item.avatar}`"/>
+            <a-avatar  class="avatar-line" v-if="item.avatar" slot="avatar" :src="`/images/${item.avatar}`"/>
             <a-avatar class="avatar-line" v-else slot="avatar" icon="user"></a-avatar>
             <div slot="description" class="description">
               <div class="description-row" style="justify-content: space-between">

@@ -15,7 +15,7 @@
             <div class="avatar-zone">
               <img v-if="profilePath"
                    class="avatar"
-                   :src="`http://localhost:3000/images/${profilePath}`"
+                   :src="`/images/${profilePath}`"
                    alt="profile">
               <a-avatar v-else icon="user" :size="150"></a-avatar>
             </div>
@@ -109,7 +109,7 @@
                   class="sub-item flex-container flex-row"
                   @click="routeProfilePage(user.userId)">
                 <a-avatar v-if="user.avatar" slot="avatar"
-                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                          :src="`/images/${user.avatar}`"/>
                 <a-avatar v-else-if="user.localName" slot="avatar"
                           type="environment"  icon="environment"
                           style="color: #1890FF; backgroundColor: white" />
@@ -159,7 +159,7 @@
                 :key="index" class="user-list-item flex-container flex-between-sort flex-row">
               <div class="block-avatar-wrap">
                 <a-avatar v-if="user.avatar"
-                          :src="`http://localhost:3000/images/${user.avatar}`"/>
+                          :src="`/images/${user.avatar}`"/>
                 <a-avatar v-else icon="user"></a-avatar>
               </div>
               <div class="block-nickname-wrap text-center">

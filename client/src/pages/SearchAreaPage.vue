@@ -71,7 +71,9 @@ export default {
   },
   async created() {
     this.initIsSubscribeLocal();
-    this.localNameTag = this.localName.substring(this.localName.lastIndexOf(' '));
+    if (!!this.localName) {
+      this.localNameTag = this.localName.substring(this.localName.lastIndexOf(' '));
+    }
     await this.$store.dispatch('search/loadSearchLocalPost', {
       localId: this.localId,
       userId: this.myUserId,

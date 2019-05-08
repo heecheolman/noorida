@@ -26,7 +26,6 @@ module.exports = {
       .where({ email })
       .then(results => results)
       .catch(err => err);
-    console.log(result);
     return result.length !== 0;
   },
 
